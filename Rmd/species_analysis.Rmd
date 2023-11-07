@@ -1,0 +1,186 @@
+---
+params:
+  obs: ""
+  spatialScale: ""
+  sp: ""
+  sp_french: ""
+  sp_latin: ""
+  sumOccurrenceSp: ""
+  dataLongTermTrendSp: ""
+  dataShortTermTrendSp: ""
+  pathToPlotSp: ""
+  pathToMapSp: ""
+  warningUncertainty: ""
+  warningNoPlot: ""
+
+output: 
+  pdf_document:
+    includes:
+      in_header: "preambule.tex"
+    keep_tex: true
+    
+header-includes:
+  - \usepackage{graphicx}
+  - \usepackage{fancyhdr}
+
+always_allow_html: true
+urlcolor: black
+
+sansfont: Calibri Light
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r params, include=FALSE}
+sp = params$sp 
+sp_french = params$sp_french 
+sp_latin = params$sp_latin 
+obs = params$obs
+spatialScale = params$spatialScale
+sumOccurrenceSp = params$sumOccurrenceSp
+dataLongTermTrendSp = params$dataLongTermTrendSp
+dataShortTermTrendSp = params$dataShortTermTrendSp
+pathToPlotSp = params$pathToPlotSp
+pathToMapSp = params$pathToMapSp
+warningUncertainty = params$warningUncertainty
+warningNoPlot = params$warningNoPlot
+
+```
+
+```{r globalVar, include=FALSE}
+minYear = dataLongTermTrendSp$minYear
+maxYear = dataLongTermTrendSp$maxYear
+period = maxYear - minYear
+header = paste0("Tendances ", obs, " - ", spatialScale, " - ", minYear, "/", maxYear)
+
+```
+
+```{=tex}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\large\textcolor{gray}{{\itshape `r header`}}}
+\fancyhead[R]{}
+\fancyhead[C]{}
+```
+::: {.OrangeLargeBox data-latex=""}
+# \textcolor{myorange}{`r sp_french`} \textcolor{myorange}{-} _\textcolor{myorange}{`r sp_latin`}_
+:::
+
+## \textcolor{myorange}{Données : quelques chiffres clés}
+
+```{r fig.align = "center", echo = FALSE}
+`%>%` = magrittr::`%>%`
+
+kableExtra::kbl(sumOccurrenceSp, align = "c", booktabs = T, centering = T) %>%
+  # kable_styling(position = "center") %>%
+  kableExtra::row_spec(0, color = "#E68146", bold = T, font_size = 11) %>%
+  kableExtra::row_spec(1:2, color = "#E68146", font_size = 11) %>%
+  kableExtra::column_spec(2, width = '2.5cm') %>%
+  kableExtra::column_spec(3, width = '2cm') %>%
+  kableExtra::column_spec(4, width = '2cm') %>%
+  kableExtra::column_spec(5, width = '2.5cm') %>%
+  kableExtra::column_spec(6, width = '2.8cm')
+
+```
+
+*(a) nombre de visites où l'espèce a été vue ramené à l'ensemble des visites* \
+*(b) abondance totale ramenée au nombre de visites sur les sites où l'espèce a été vue au moins une fois*
+
+## \textcolor{myorange}{Répartition spatiale depuis `r minYear`}
+
+```{r map, echo = FALSE, fig.align = "center", out.width="100%", warning=FALSE}
+knitr::include_graphics(pathToMapSp)
+
+
+```
+
+\newpage
+
+## \textcolor{myorange}{Tendance temporelle depuis `r minYear`}
+
+`r if(warningUncertainty){"**Attention** : les variations annuelles sont très incertaines et ne permettent pas de réaliser un graphique classique. Le résultat qui suit peut donc être difficilement lisible."}`
+
+`r if(warningNoPlot){"**Attention** : le calcul des tendances long-terme ou des variations annuelles n'a pas fonctionné, et aucun graphique n'est donc réalisé."}`
+
+```{r varForTrends, echo = FALSE}
+# LONG-TERM TREND #
+# Taux de croissance
+GR_LT = round(dataLongTermTrendSp$GR, 3)
+infGR_LT = round(dataLongTermTrendSp$infGR, 3)
+supGR_LT = round(dataLongTermTrendSp$supGR, 3)
+
+# Pourcentages d'évolution
+perc_LT = gsub("%", "",dataLongTermTrendSp$perc)
+infPerc_LT = gsub("%", "",dataLongTermTrendSp$infPerc)
+supPerc_LT = gsub("%", "",dataLongTermTrendSp$supPerc)
+
+# Catégorie
+cat_LT = dataLongTermTrendSp$trend
+catEBCC_LT = dataLongTermTrendSp$trendEBCC
+catQuadr_LT = dataLongTermTrendSp$quadraticTrend
+  
+if(!is.null(dataShortTermTrend)){
+  # SHORT-TERM TREND #
+# Taux de croissance
+GR_ST = round(dataShortTermTrendSp$GR, 3)
+infGR_ST = round(dataShortTermTrendSp$infGR, 3)
+supGR_ST = round(dataShortTermTrendSp$supGR, 3)
+
+# Pourcentages d'évolution
+perc_ST = gsub("%", "", dataShortTermTrendSp$perc)
+infPerc_ST = gsub("%", "", dataShortTermTrendSp$infPerc)
+supPerc_ST = gsub("%", "", dataShortTermTrendSp$supPerc)
+
+# Catégorie
+cat_ST = dataShortTermTrendSp$trend
+catEBCC_ST = dataShortTermTrendSp$trendEBCC
+}
+
+  
+```
+
+```{r plotTrend, fig.align = "center", out.width="100%", echo=FALSE, eval = !warningNoPlot}
+knitr::include_graphics(pathToPlotSp)
+```
+`r if(warningNoPlot){"<!--"}`
+*NB : le chiffre bleu sur le graphique (`r GR_LT`) correspond au taux de croissance annuel moyen sur l'ensemble de la période, le chiffre rouge à celui sur les dix dernières années.*
+`r if(warningNoPlot){"-->"}`
+
+::: {.cols data-latex=""}
+::: {.col data-latex="{0.499\\textwidth}"}
+::: {.OrangeMediumBox data-latex=""}
+**\large \textcolor{myorange}{Long terme (`r minYear` - `r maxYear`)}**\
+*\normalsize Sur cette période de `r period` ans :*\
+**EBCC :** \textcolor{myorange}{`r catEBCC_LT`}\
+**Liste Rouge :** \textcolor{myorange}{`r cat_LT`}\
+**Quadratique :** \textcolor{myorange}{`r catQuadr_LT`}\
+\
+Taux annuel de croissance : \textcolor{myorange}{`r GR_LT` [`r infGR_LT` ; `r supGR_LT`]}\
+Changement d'abondance : \textcolor{myorange}{`r perc_LT`\% [`r infPerc_LT`\% ; `r supPerc_LT`\%]}
+:::
+:::
+
+::: {.col data-latex="{0.002\\textwidth}"}
+\textcolor{white}{a}
+:::
+
+`r if(is.null(dataShortTermTrendSp)){"<!--"}`
+
+::: {.col data-latex="{0.499\\textwidth}"}
+::: {.OrangeMediumBox data-latex=""}
+**\large \textcolor{myorange}{Court terme (`r maxYear - 10` - `r maxYear`)}**\
+*\normalsize Sur cette période de 10 ans :*\
+**EBCC :** \textcolor{myorange}{`r catEBCC_ST`}\
+**Liste Rouge :** \textcolor{myorange}{`r cat_ST`}\
+\
+Taux annuel de croissance : \textcolor{myorange}{`r GR_ST` [`r infGR_ST` ; `r supGR_ST`]}\
+Changement d'abondance : \textcolor{myorange}{`r perc_ST`\% [`r infPerc_ST`\% ; `r supPerc_ST`\%]}
+:::
+:::
+
+`r if(is.null(dataShortTermTrendSp)){"-->"}`
+
+
+:::

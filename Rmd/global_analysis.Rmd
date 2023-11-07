@@ -1,0 +1,144 @@
+---
+params:
+  obs: ""
+  spatialScale: ""
+  makeGroupPlot: ""
+  groupComp: ""
+  frenchComp: ""
+  groupNames: ""
+  pathToGroupPlot: ""
+  dataLongTermTrend: ""
+  dataTable: ""
+
+output: 
+  pdf_document:
+    includes:
+      in_header: "preambule.tex"
+    keep_tex: true
+    
+header-includes:
+  - \usepackage{graphicx}
+  - \usepackage{fancyhdr}
+
+always_allow_html: true
+urlcolor: black
+
+sansfont: Calibri Light
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r params, include=FALSE}
+obs = params$obs
+spatialScale = params$spatialScale
+makeGroupPlot = params$makeGroupPlot
+groupComp = params$groupComp 
+frenchComp = params$frenchComp
+groupNames = params$groupNames 
+pathToGroupPlot = params$pathToGroupPlot 
+dataLongTermTrend = params$dataLongTermTrend
+dataTable = params$dataTable
+
+```
+
+```{r globalVar, include=FALSE}
+minYear = min(unique(dataLongTermTrend$minYear[!is.na(dataLongTermTrend$minYear)]))
+maxYear = max(unique(dataLongTermTrend$maxYear[!is.na(dataLongTermTrend$maxYear)]))
+period = maxYear - minYear
+header = paste0("Tendances ", obs, " - ", spatialScale, " - ", minYear, "/", maxYear)
+```
+
+```{=tex}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\large\textcolor{gray}{{\itshape `r header`}}}
+\fancyhead[R]{}
+\fancyhead[C]{}
+```
+
+`r if(!makeGroupPlot){"<!--"}`
+## \textcolor{myorange}{Tendances par groupe}
+`r if(!makeGroupPlot){"-->"}`
+
+```{r plot, fig.align = "center", out.width="100%", echo = FALSE, eval = makeGroupPlot}
+knitr::include_graphics(pathToGroupPlot)
+
+```
+
+`r if(!makeGroupPlot){'<!--'}`
+:::: {.OrangeGroupBox data-latex=""}
+
+```{r groupNames, echo = FALSE, eval = makeGroupPlot, results="asis"}
+if(is.null(groupComp)){
+  cat("**Toutes espèces : **", paste(frenchComp, collapse = ", "), sep = "")
+  cat("  \n")
+  cat("  \n")
+}else{
+  for (i in 1:length(groupComp)){
+  cat("**",groupNames[i], " : **", paste(frenchComp[[i]], collapse = ", "), sep = "")
+  cat("  \n")
+  cat("  \n")
+  }
+}
+
+```
+
+::::
+
+\newpage
+`r if(!makeGroupPlot){'-->'}`
+
+## \textcolor{myorange}{Tendances sur `r period` ans par espèce}
+
+
+```{r table, echo = FALSE, results="asis"}
+`%>%` = magrittr::`%>%`
+if(is.null(groupComp) | !makeGroupPlot){
+  kableExtra::kbl(dataTable[,c("Espèce", "Tendance", "IC", "Classification")], 
+    align = c("l", "c", "c", "l"), 
+    booktabs = T, centering = T, longtable = TRUE) %>%
+  kableExtra::row_spec(0, color = "#E68146", bold = T) %>%
+  kableExtra::kable_styling(latex_options = c("repeat_header"), repeat_header_text = "") %>%
+  kableExtra::column_spec(1, bold = T, color = "#E68146",width = "3.5cm") %>%
+  kableExtra::column_spec(3, width = "4cm") %>%
+  kableExtra::column_spec(4, width = "5cm") %>%
+  kableExtra::column_spec(2, width = "2cm")
+}else{
+  kableExtra::kbl(dataTable[,c("Groupe", "Espèce", "Tendance", "IC", "Classification")], 
+    align = c("l", "l", "c", "c", "l"), 
+    booktabs = T, centering = T, longtable = TRUE) %>%
+  kableExtra::row_spec(0, color = "#E68146", bold = T) %>%
+  kableExtra::kable_styling(latex_options = c("repeat_header"), repeat_header_text = "") %>%
+  kableExtra::column_spec(2, bold = T, color = "#E68146",width = "3.5cm") %>%
+  kableExtra::column_spec(1, color = dataTable$col, width = "3.5cm") %>%
+  kableExtra::column_spec(c(1,5), width = "3.5cm") %>%
+  kableExtra::column_spec(4, width = "3cm") %>%
+  kableExtra::column_spec(3, width = "2cm")
+}
+
+
+```
+__\textcolor{myorange}{*}__ _\textcolor{myorange}{espèces dont l'occurrence annuelle est trop faible (médiane inférieure à 12) pour que la tendance calculée soit fiable}_ \
+
+:::: {.OrangeGroupBox data-latex=""}
+**Augmentation forte :** taux annuel de croissance et intervalle de confiance supérieurs à 1.036.\
+
+**Augmentation modérée à forte:** taux annuel de croissance et intervalle de confiance supérieurs à 1 et recoupant 1.036. \
+
+**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.036.\
+
+**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle (0.964 ; 1.036). \
+
+**Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.964 et 1. \
+
+**Déclin modéré à fort:**  taux annuel de croissance et intervalle de confiance inférieurs à 1 et recoupant 0.964. \
+
+**Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.964.\
+
+**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.964 ; 1.036). \
+
+*NB : ces catégories sont basées sur le critère Liste Rouge de classement des espèces comme Vulnérable (réduction de population supérieure à 30% sur 10 ans)*
+
+::::

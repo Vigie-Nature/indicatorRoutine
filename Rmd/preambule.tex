@@ -1,0 +1,81 @@
+\geometry{
+  a4paper,
+  left=20mm,
+  right=20mm,
+  headheight=0cm,
+  top=2cm,
+  bottom=4.5cm,
+  footskip=4cm
+}
+
+\usepackage{floatrow}
+\usepackage{float}
+
+\usepackage{color}
+\definecolor{myorange}{HTML}{E68146}
+\definecolor{MYORANGE}{HTML}{E68146}
+\definecolor{mycolor}{HTML}{E68146}
+\definecolor{MYCOLOR}{HTML}{E68146}
+
+\usepackage{tcolorbox}
+\newtcolorbox{OrangeLargeBox}{
+  colback=white,
+  colframe=mycolor,
+  coltext=black,
+  boxsep=4pt,
+  arc=4pt,
+ halign=center}
+
+\newtcolorbox{OrangeMediumBox}{
+  colback=white,
+  colframe=mycolor,
+  coltext=black,
+  boxsep=4pt,
+  arc=4pt,
+  height=4.5cm,
+  valign=center}
+
+\newtcolorbox{OrangeGroupBox}{
+  colback=white,
+  colframe=mycolor,
+  coltext=black,
+  boxsep=4pt,
+  arc=4pt}
+
+\newtcolorbox{OrangeSmallBox}{
+  colback=white,
+  colframe=mycolor,
+  coltext=black,
+  boxsep=5pt,
+  arc=4pt,
+  width=0.4\textwidth}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\newenvironment{cols}[1][]{}{}
+
+\newenvironment{col}[1]{\begin{minipage}{#1}\ignorespaces}{%
+\end{minipage}
+\ifhmode\unskip\fi
+\aftergroup\useignorespacesandallpars}
+
+\def\useignorespacesandallpars#1\ignorespaces\fi{%
+#1\fi\ignorespacesandallpars}
+
+\makeatletter
+\def\ignorespacesandallpars{%
+  \@ifnextchar\par
+    {\expandafter\ignorespacesandallpars\@gobble}%
+    {}%
+}
+\makeatother
+

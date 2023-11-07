@@ -1,0 +1,177 @@
+---
+title: "Spécificités de l'analyse"
+output: html_document
+date: "`r format(Sys.Date(), format = '%d/%m/%Y')`"
+params: 
+ repo: ""
+ obs: ""
+ spatialScale: ""
+ data: ""
+ form: ""
+ formVar: ""
+ distribution: ""
+ interestVar: ""
+ makeShortTrend: ""
+ makeGammTrend: ""
+ makeQuadraticTrend: ""
+ dataSpecLT: ""
+ dataSpecST: ""
+ dataSpecVar: ""
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r params, include=FALSE}
+# Context 
+repo = params$repo
+obs = params$obs
+spatialScale = params$spatialScale
+# Data
+data = params$data
+interestVar = params$interestVar
+distribution = params$distribution
+# Formula
+form = params$form
+formVar = params$formVar
+# Parameters for making each type of model
+makeShortTrend = params$makeShortTrend
+makeGammTrend = params$makeGammTrend
+makeQuadraticTrend = params$makeQuadraticTrend
+# Specifications
+dataSpecLT = params$dataSpecLT
+dataSpecST = params$dataSpecST
+dataSpecVar = params$dataSpecVar
+```
+
+## Généralités 
+
+```{r observations, echo = FALSE}
+nbObsPres = nrow(data[data[,interestVar[1]]>0,])
+nbObsTot = nrow(data)
+```
+
+```{r species, echo = FALSE}
+nbSpecies = length(unique(data$species))
+
+```
+
+```{r formula, echo = FALSE}
+analysisFormula = paste(as.character(form[2]), as.character(form[1]), as.character(form[3])) 
+analysisFormulaVar = paste(as.character(formVar[2]), as.character(formVar[1]), as.character(formVar[3]))
+```
+
+L'analyse a été réalisée sur les données du **`r obs`**, à l'échelle **`r spatialScale`**.\
+
+Le jeu de données contient **`r nbObsPres` observations** (de présence). Il est stocké dans le répertoire : *`r here::here("data", repo)`*.\
+\
+L'analyse a été réalisée sur **`r nbSpecies` espèces**.\
+\
+Les options de modélisation choisies sont les suivantes :\
+
+- Tendance court-terme réalisée : **`r ifelse(makeShortTrend, "oui", "non")`** ;\
+
+- Tendances gamm réalisée : **`r ifelse(makeGammTrend, "oui", "non")`** ;\
+
+- Tendance quadratique réalisée : **`r ifelse(makeQuadraticTrend, "oui", "non")`**.
+
+\
+Les résultats sont stockés dans le répertoire : *`r here::here("outputs", repo)`*.
+
+## Contexte spatio-temporel
+
+```{r date, echo = FALSE}
+minYear = min(data$year)
+maxYear = max(data$year)
+
+```
+
+```{r coordinates, echo = FALSE}
+
+minLong = maxLong = minLat = maxLat = NA
+if("longitude" %in% colnames(data) & "latitude" %in% colnames(data)){
+  # Longitude
+minLong = min(data$longitude)
+maxLong = max(data$longitude)
+
+# Latitude
+minLat = min(data$latitude)
+maxLat = max(data$latitude)
+}
+
+
+```
+
+Série temporelle : **`r minYear` ; `r maxYear`**.\
+\
+Longitude : **`r minLong` ; `r maxLong`**.\
+\
+Latitude : **`r minLat` ; `r maxLat`**.
+
+## Espèces et abondance
+
+Le tableau suivant présente pour chaque espèce le nombre d'observations (de présence) ainsi que l'abondance totale. _NB : pour des données d'occurrence, la colonne 'Abondance totale' correspond au nombre de succès total._
+
+```{r speciesAbundance, echo = FALSE}
+`%>%` = magrittr::`%>%`
+
+dataSpecies = dplyr::group_by(data[data[,interestVar[1]]>0,], species) %>%
+  dplyr::summarise(`Nombre d'observations` = dplyr::n(),
+                   `Abondance totale` = sum(get(interestVar[1])))
+
+kableExtra::kable(dataSpecies) %>%
+  kableExtra:: kable_paper(c("striped", "condensed", "hover"), fixed_thead = T,
+                           full_width = F) %>%
+  kableExtra::column_spec(1:3, width = "4cm") %>%
+  kableExtra::scroll_box(width = "600px", height = "300px")
+```
+
+## Variables, convergence et distribution
+
+Les tableaux présentés dans cette partie donnent, pour chaque espèce, le nombre d'observations contenues dans le jeu de données initial (*nbRowsInit*), le nombre d'observations gardées pour l'analyse (*nbRows*), ainsi que des informations sur la convergence du modèle (*convergence*), la distribution appliquée (*distribution*) et les variables retirées pour l'analyse (*removedVars*). Une première sous-section rappelle les spécifications (variables et distribution) demandées pour l'analyse. Les sous-sections suivantes rappelle le modèle demandé en début de chaque sous-section.
+
+### Rappel sur les modèles demandés
+
+Le **modèle pour l'analyse des tendances long-terme** (et court-terme, si demandé) demandé est le suivant :\
+`r analysisFormula`.\
+
+Le **modèle pour l'analyse des variations annuelles** demandé est le suivant :\
+`r analysisFormulaVar`.\
+\
+La **loi de distribution** utilisée pour les modèles est la suivante : **`r distribution`**\
+\
+
+### Tendance long-terme
+Modèle demandé : `r analysisFormula`.
+
+```{r longTermModel, echo = FALSE}
+kableExtra::kable(dataSpecLT[,colnames(dataSpecLT) != "modelName"]) %>%
+  kableExtra:: kable_paper(c("striped", "condensed", "hover"), fixed_thead = T) %>%
+  kableExtra::scroll_box(width = "1000px", height = "300px")
+```
+
+`r if(!makeShortTrend){"<!--"}`
+### Tendance court-terme
+Modèle demandé : `r analysisFormula`.
+
+```{r shortTermModel, echo = FALSE, eval = makeShortTrend}
+`%>%` = magrittr::`%>%`
+
+kableExtra::kable(dataSpecST[,colnames(dataSpecST) != "modelName"]) %>%
+  kableExtra:: kable_paper(c("striped", "condensed", "hover"), fixed_thead = T) %>%
+  kableExtra::scroll_box(width = "1000px", height = "300px")
+```
+
+`r if(!makeShortTrend){"-->"}`
+
+### Variations annuelles
+Modèle demandé : `r analysisFormulaVar`.
+
+```{r yearlyVariations, echo = FALSE}
+
+kableExtra::kable(dataSpecVar[,colnames(dataSpecVar) != "modelName"]) %>%
+  kableExtra:: kable_paper(c("striped", "condensed", "hover"), fixed_thead = T) %>%
+  kableExtra::scroll_box(width = "1000px", height = "300px")
+```
