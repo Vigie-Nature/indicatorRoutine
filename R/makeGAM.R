@@ -11,6 +11,8 @@
 #' @param poly a `vector` containing variables that should be treated as 2-degree polynom
 #' @param distribution a `string` containing the chosen distribution between: "gaussian", "poisson", "binomial", "betabinomial", "nbinom2" (by default : "gaussian")
 #'
+#' @importFrom stats as.formula
+#' 
 #' @return a 3-elements `list` :
 #' - value a `glmmTMB` object containing results of the regression
 #' - warnings a `vector` of potential warnings encountered during the regression

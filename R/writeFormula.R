@@ -11,6 +11,8 @@
 #' @param slopeRandomEffects a `list` of 2-elements vectors with variable names that should be treated as random slopes 
 #' @param raw a `boolean` specifying if polynomial terms should be raw or orthogonal (for quadraticTrends only)
 #' 
+#' @importFrom stats as.formula
+#' 
 #' @return a formula object
 #' @example 
 writeFormula <- function(interestVar = "count",

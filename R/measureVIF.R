@@ -3,7 +3,9 @@
 #' Measure the VIF associated with each variable
 #'
 #' @param model an 3-elements `list` (value, warnings, error) containing results of the regression
-#'   
+#'  
+#' @importFrom stats vcov 
+#'
 measureVIF<- function(model){
   
   if(!is.null(model$error)){

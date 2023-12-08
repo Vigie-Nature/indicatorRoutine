@@ -9,6 +9,7 @@
 #' @param groupNames a `vector` containing names for each group
 #' @param groupComp a `list` containing vectors of species names contained in each group
 #' 
+#' @importFrom stats rnorm sd
 #' 
 agregateTrendsPerGroup <- function(data, groupNames, groupComp){
   

@@ -105,6 +105,8 @@ quadraticDerivative <- function(data, sp, perc = 0.5){
 #' @param data : a `data.frame` containing the formatted estimates from raw quadratic trends
 #' @param sp : a `string` specifying the species to consider
 #' 
+#' @importFrom stats quantile
+#' 
 quadraticCurve <- function(data, sp){
   
   # Filter data for studied species

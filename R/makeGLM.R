@@ -14,6 +14,7 @@
 #' @param distribution a `string` containing the chosen distribution between: "gaussian", "poisson", "binomial", "betabinomial", "nbinom2" (by default : "gaussian")
 #' @param raw a `string` ('raw' or 'ortho') specifying for quadratic models only, if polynoms should be raw or orthogonal
 #'
+#' @importFrom stats sigma
 #' @return a list of 3 objects :
 #' - value a `glmmTMB` object containing results of the regression
 #' - warnings a `vector` of warnings encountered during the regression
