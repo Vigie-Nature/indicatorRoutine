@@ -9,6 +9,8 @@
 #' @param repo : a `string` specifying the name of the repository
 #' @param fileName : a `string` either 'longTermTrends', 'shortTermTrends' or 'yearlyVariations'
 #'
+#' @importFrom utils write.csv
+#'
 saveTrendTable <- function(data, dataName = NULL, dataQuadrTrends, distribution, repo, fileName = ""){
   
   # Merge data with dataName if dataName exists
@@ -65,7 +67,7 @@ saveTrendTable <- function(data, dataName = NULL, dataQuadrTrends, distribution,
     ####################
     
     # Arrange data by decreasing estimate value
-    data = dplyr::arrange(data, desc(estimate))
+    data = dplyr::arrange(data, dplyr::desc(estimate))
     
     # Initialize the rank column
     data$rank = NA

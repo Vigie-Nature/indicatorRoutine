@@ -43,7 +43,7 @@ makeMap <- function(data, speciesList, interestVar, path){
       }
       
       # Arrange according to the type of squares
-      dataSite_All = dplyr::arrange(dataSite_All, desc(Type))
+      dataSite_All = dplyr::arrange(dataSite_All, dplyr::desc(Type))
       
       ############################
       # ADAPT ZOOM TO DEPARTMENT #

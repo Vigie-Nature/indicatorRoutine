@@ -9,6 +9,7 @@
 #' @param groupNames : a `vector` containing names associated to each group
 #' @param groupCols : a `vector` containing colors associated to each group
 #'
+#' @importFrom stats median
 #'
 makeGroupSummaryTable <- function(dataTrend, dataObs, makeGroupPlot, groupComp, groupNames, groupCols){
   

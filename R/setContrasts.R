@@ -8,6 +8,7 @@
 #' - "mean" or NULL --> mean of all levels chosen as reference
 #' - levelX (e.g, 2001, 2002, ...) --> levelX chosen as reference
 #'
+#' @importFrom stats contrasts<-
 #' @return a `data.frame` with the right contrasts set
 #' 
 #'
