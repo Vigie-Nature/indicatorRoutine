@@ -77,29 +77,31 @@ classifyQuadraticTrends <- function(dataRaw, dataOrtho){
     dataRaw2$trend[dataRaw2$trend == "Stable" & dataRaw2$estimate > 0] = "Convexe"
     dataRaw2$trend[dataRaw2$trend == "Stable" & dataRaw2$estimate < 0] = "Concave"
     
-    # ACCELERATION #
-    # Extract sign of 2nd order estimate
-    coefSign = dataRaw2$estimate[dataRaw2$trend %in% c("Augmentation", "Déclin")]
-    coefSign = coefSign / abs(coefSign)
+    # ACCELERATION #, for increases or declines only
     
-    # Extract sign of curvature 1st derivative
-    curvatureSign = sapply(dataRaw2$species[dataRaw2$trend %in% c("Augmentation", "Déclin")], 
-                           function(sp) quadraticCurve(dataRaw, sp))
-    
-    # Calculate the product of 2nd order estimate and curvature 1st derivative
-    productSign = coefSign * curvatureSign
-    
-    # If the sign of the product is negative, classify in acceleration
-    spAcc = names(productSign)[which(productSign < 0)]
-    dataRaw2$trend[dataRaw2$species %in% spAcc] = paste(dataRaw2$trend[dataRaw2$species %in% spAcc], "accéléré")
-    
-    # If the sign of the product is positive, classify in acceleration
-    spDec = names(productSign)[which(productSign > 0)]
-    dataRaw2$trend[dataRaw2$species %in% spDec] = paste(dataRaw2$trend[dataRaw2$species %in% spDec], "ralenti")
-    
-    # Add and 'e' to 'accéléré' and 'ralenti' when associated with 'Accélération'
-    dataRaw2$trend[dataRaw2$trend == 'Augmentation accéléré'] = paste0(dataRaw2$trend[dataRaw2$trend == 'Augmentation accéléré'], "e")
-    dataRaw2$trend[dataRaw2$trend == 'Augmentation ralenti'] = paste0(dataRaw2$trend[dataRaw2$trend == 'Augmentation ralenti'], "e")
+    if (length(dataRaw2$estimate[dataRaw2$trend %in% c("Augmentation", "Déclin")]) > 0) {
+      # Extract sign of 2nd order estimate
+      coefSign = dataRaw2$estimate[dataRaw2$trend %in% c("Augmentation", "Déclin")]
+      coefSign = coefSign / abs(coefSign)
+      
+      # Extract sign of curvature 1st derivative
+      curvatureSign = sapply(dataRaw2$species[dataRaw2$trend %in% c("Augmentation", "Déclin")], 
+                             function(sp) quadraticCurve(dataRaw, sp))
+      # Calculate the product of 2nd order estimate and curvature 1st derivative
+      productSign = coefSign * curvatureSign
+      
+      # If the sign of the product is negative, classify in acceleration
+      spAcc = names(productSign)[which(productSign < 0)]
+      dataRaw2$trend[dataRaw2$species %in% spAcc] = paste(dataRaw2$trend[dataRaw2$species %in% spAcc], "accéléré")
+      
+      # If the sign of the product is positive, classify in acceleration
+      spDec = names(productSign)[which(productSign > 0)]
+      dataRaw2$trend[dataRaw2$species %in% spDec] = paste(dataRaw2$trend[dataRaw2$species %in% spDec], "ralenti")
+      
+      # Add and 'e' to 'accéléré' and 'ralenti' when associated with 'Accélération'
+      dataRaw2$trend[dataRaw2$trend == 'Augmentation accéléré'] = paste0(dataRaw2$trend[dataRaw2$trend == 'Augmentation accéléré'], "e")
+      dataRaw2$trend[dataRaw2$trend == 'Augmentation ralenti'] = paste0(dataRaw2$trend[dataRaw2$trend == 'Augmentation ralenti'], "e")
+    }
     
     # Filter data.frame for only species and trend classification
     dataRaw2 = dataRaw2[,c("species", "trend")]
