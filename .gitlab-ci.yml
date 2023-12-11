@@ -1,0 +1,48 @@
+# using a custom image that already has
+# the required packages installed in renv's library
+# (this considerably speeds up the CI pipeline)
+image: jguerber/custom-renv-cache
+
+# for clarity, this is the paths (in the container)
+# that contain renv's cache and library folders :
+variables:
+  RENV_PATHS_CACHE: "/home/workspace/.renv/cache"
+  RENV_PATHS_LIBRARY: "/home/workspace/.renv/library"
+
+# rules template :
+# run on merge request or commit on master
+.custom_rules: &rules_definition
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+
+stages:
+  - build
+  - check
+  - test
+
+build-package:
+  stage: build
+  <<: *rules_definition
+  script:
+    - echo "build stage !!"
+    - Rscript -e 'print(renv::paths$library())'
+    - Rscript -e 'devtools::build()'
+
+check-package:
+  stage: check
+  <<: *rules_definition
+  script:
+    - echo "Checking package..."
+    - Rscript -e 'devtools::check(error_on = "error")'
+
+test-package:
+  stage: test
+  <<: *rules_definition
+  script:
+    - echo "Testing package..."
+    - echo "Not implemented yet !"
+
+# ideas for other possible stages :
+# - write a minimal test suite and use it
+# - build documentation and deploy it somewhere
