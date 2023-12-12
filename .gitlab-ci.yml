@@ -19,7 +19,7 @@ variables:
 stages:
   - build
   - check
-  - test
+  - make
 
 build-package:
   stage: build
@@ -33,16 +33,25 @@ check-package:
   stage: check
   <<: *rules_definition
   script:
-    - echo "Checking package..."
+    - echo "Checking package and running tests..."
     - Rscript -e 'devtools::check(error_on = "error")'
 
-test-package:
-  stage: test
+make-pipeline:
+  stage: make
   <<: *rules_definition
   script:
-    - echo "Testing package..."
-    - echo "Not implemented yet !"
+    - echo "Making the pipeline"
+    - Rscript -e 'source(here::here("utils/write_test_data.R"))'
+    - Rscript -e 'tinytex::reinstall_tinytex(force = T)'
+    - Rscript -e 'source("make.R")'
+  dependencies:
+    - check-package
+  artifacts:
+    paths:
+      - data/test
+      - outputs/test/pdf
+    expire_in: 1 day
 
 # ideas for other possible stages :
-# - write a minimal test suite and use it
 # - build documentation and deploy it somewhere
+# - code coverage with covr

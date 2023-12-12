@@ -2,7 +2,7 @@
 cat("# ESTIMATE TRENDS FOR ALL SPECIES #\n")
 
 # Initialize all repositories ----
-dir.create(path = here::here("outputs", repo), showWarnings = FALSE)
+dir.create(path = here::here("outputs", repo), showWarnings = FALSE, recursive = T)
 dir.create(path = here::here("outputs", repo, "models"), showWarnings = FALSE)
 dir.create(path = here::here("outputs", repo, "models", "longTermTrend"), showWarnings = FALSE)
 dir.create(path = here::here("outputs", repo, "models", "shortTermTrend"), showWarnings = FALSE)

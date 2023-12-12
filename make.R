@@ -8,10 +8,12 @@
 #' 
 #' @date 2022/11/09
 
-if(system.file(package='devtools') == ""){ install.packages("devtools") }
+if(system.file(package='renv') == ""){
+  install.packages("renv", repos = "https://pbil.univ-lyon1.fr/CRAN/")
+}
 
 ## DEPENDENCIES (see DESCRIPTION) ##
-devtools::install_deps(upgrade = "never")
+renv::restore(prompt = FALSE)
 
 ## PACKAGES AND FUNCTIONS ## 
 devtools::load_all(here::here())

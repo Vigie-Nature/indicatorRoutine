@@ -7,14 +7,14 @@ cat("# LOAD PARAMETERS #\n")
 
 # Nom du répertoire où les données sont mises (sans caractères spéciaux)
 # Exemple : "STOC_2023_Ile_de_France"
-repo <- "STOC_2023_National" 
+repo <- "test"
 
 # Nom de l'observatoire étudié (sans caractères spéciaux)
-obs <- "STOC"
+obs <- "random"
 
 # Nom de l'échelle d'observation (sans caractères spéciaux)
 # Exemple : "France" ou "Bretagne" ou "ONF" ou ...
-spatialScale <- "France"
+spatialScale <- "random"
 
 # Est-ce que la tendance court-terme doit être réalisée ?
 makeShortTrend <- TRUE # FALSE
@@ -26,7 +26,7 @@ makeGammTrend <- TRUE # FALSE
 makeQuadraticTrend <- TRUE # FALSE
 
 # Est-ce qu'un graphe résumé par groupe d'espèces doit être réalisé ?
-makeGroupPlot <- TRUE # FALSE
+makeGroupPlot <- FALSE # TRUE
 
 # Est-ce que le pdf doit être créé ?
 makePDF <- TRUE # FALSE
@@ -53,14 +53,14 @@ yearRange <- NULL # c(2001, 2021)
 distribution <- NULL
 
 # Quelle est la variable à expliquer ?
-interestVar <- "abondance" # c("abond_cumul", "fail")
+interestVar <- "abundance" # c("abond_cumul", "fail")
 
 # Quels sont les effets fixes continus / numériques à considérer ?
-fixedEffects <-  c("year", "prop_for", "prop_urb", "prop_water", "prop_other", "longlat")
+fixedEffects <-  c("year")
 
 # Quelles sont les effets fixes catégoriels à considérer (hors year) ?
 # NULL, si pas de variables catégorielles
-factorVariables <- c("passage")
+factorVariables <- c("habitat")
 
 # Quels est le niveau de référence pour la variable  ?
 # Si NULL, automatiquement mis à la moyenne des années
@@ -74,16 +74,16 @@ randomEffects <- NULL # c("r_resp")
 # Quels sont les effets emboîtés à considérer ?
 # list() si pas d'effets emboîtés
 # NB : si une variable est renseignée dans l'effet emboîté, elle ne doit pas être mise dans l'effet aléatoire
-nestedEffects <- list(c("site", "num_dep"))
+nestedEffects <- list(c("point", "site"))
 
 # Quels sont les effets de pentes aléatoires à considérer ?
 # list() si pas de pentes aléatoires
-slopeRandomEffects <- list(c("year", "site"))
+slopeRandomEffects <- list(c("year", "point"))
 
 # Quels sont les effets polynomiaux de degré 2 à considérer ?
 # NULL si pas d'effet polynomial
 # NB : si une variable est renseignée dans l'effet polynomial, elle ne doit pas être mise dans les effets fixes continus
-poly <- c("longitude", "latitude") 
+poly <- NULL
 
 
 #####################################
@@ -93,29 +93,28 @@ poly <- c("longitude", "latitude")
 
 # Nom du/des groupes d'espèces
 # NULL si toutes les espèces doivent être mises dans le même groupe
-groupNames <- c("Généralistes", "Spécialistes agricoles", "Spécialistes forestiers", "Spécialistes urbains") 
+groupNames <- NULL # c("Généralistes", "Spécialistes agricoles", "Spécialistes forestiers", "Spécialistes urbains") 
 
 # Composition du/des groupes d'espèces
 # NULL si toutes les espèces doivent être mises dans le même groupe
-groupComp <- list(c("COLPAL", "CUCCAN", "PICVIR", "SYLATR", "FRICOE", "LUSMEG",
-                    "TURMER","PRUMOD", "ORIORI", "PARMAJ", "PARCAE", "CORCOR",
-                    "GARGLA", "HIPPOL"),
+groupComp <- NULL # list(c("COLPAL", "CUCCAN", "PICVIR", "SYLATR", "FRICOE", "LUSMEG",
+                  #  "TURMER","PRUMOD", "ORIORI", "PARMAJ", "PARCAE", "CORCOR",
+                  #  "GARGLA", "HIPPOL"),
 
-                  c("VANVAN", "BUTBUT", "FALTIN", "ALERUF", "PERPER", "COTCOT",
-                    "UPUEPO", "ALAARV", "LULARB", "GALCRI", "ANTPRA", "ANTCAM",
-                    "MOTFLA", "SYLCOM", "SAXTOR", "SAXRUB", "LANCOL",
-                    "CORFRU", "CARCAN", "EMBCIT", "EMBCIR", "MILCAL", "EMBHOR"), # OENOEN
+                  # c("VANVAN", "BUTBUT", "FALTIN", "ALERUF", "PERPER", "COTCOT",
+                  #  "UPUEPO", "ALAARV", "LULARB", "GALCRI", "ANTPRA", "ANTCAM",
+                  #  "MOTFLA", "SYLCOM", "SAXTOR", "SAXRUB", "LANCOL",
+                  #  "CORFRU", "CARCAN", "EMBCIT", "EMBCIR", "MILCAL", "EMBHOR"), # OENOEN
 
-                  c("DENMAJ", "DENMED", "DRYMAR", "SYLMEL", "PHYBON",
-                    "PHYSIB", "PHYCOL", "PHYTRO", "REGREG", "REGIGN", "SITEUR",
-                    "CERBRA", "CERFAM", "TROTRO", "TURPHI", "TURVIS", "ERIRUB",
-                    "PARCRI", "PARATE", "PARPAL", "PARMON", "COCCOC", "PYRPYR"), # PICCAN
+                  # c("DENMAJ", "DENMED", "DRYMAR", "SYLMEL", "PHYBON",
+                  #   "PHYSIB", "PHYCOL", "PHYTRO", "REGREG", "REGIGN", "SITEUR",
+                  #  "CERBRA", "CERFAM", "TROTRO", "TURPHI", "TURVIS", "ERIRUB",
+                  #  "PARCRI", "PARATE", "PARPAL", "PARMON", "COCCOC", "PYRPYR"), # PICCAN
 
-                  c("STRDEC", "APUAPU", "DELURB", "HIRRUS", "PHOOCH", "PHOPHO",
-                    "CORMON", "PICPIC", "CARCAR", "CARCHL", "SERSER", "PASDOM",
-                    "PASMON"))
+                  # c("STRDEC", "APUAPU", "DELURB", "HIRRUS", "PHOOCH", "PHOPHO",
+                  #  "CORMON", "PICPIC", "CARCAR", "CARCHL", "SERSER", "PASDOM",
+                  #  "PASMON"))
 
 # Couleurs associées aux groupes
 # NULL si pas de couleurs associées
-groupCols <- c("#1FA3D4","#F3AA20", "#235D3A", "#58094F") 
-
+groupCols <- NULL # c("#1FA3D4","#F3AA20", "#235D3A", "#58094F") 
