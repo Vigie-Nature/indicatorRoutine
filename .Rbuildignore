@@ -1,2 +1,7 @@
 ^renv$
 ^renv\.lock$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.gitlab-ci\.yml$
+^data$
+^outputs$
