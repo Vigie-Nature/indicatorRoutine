@@ -8,12 +8,20 @@
 #' 
 #' @date 2022/11/09
 
-if(system.file(package='renv') == ""){
-  install.packages("renv", repos = "https://pbil.univ-lyon1.fr/CRAN/")
+if (.Platform$OS.type == "unix") {
+  if(system.file(package='renv') == ""){
+    install.packages("renv", repos = "https://pbil.univ-lyon1.fr/CRAN/")
+  }
+  
+  ## DEPENDENCIES (see DESCRIPTION) ##
+  renv::restore(prompt = FALSE)
+} else {
+  if (system.file(package = 'devtools') == "") {
+    install.packages("devtools", repos = "https://pbil.univ-lyon1.fr/CRAN/")
+  }
+  
+  devtools::install_deps(upgrade = "all")
 }
-
-## DEPENDENCIES (see DESCRIPTION) ##
-renv::restore(prompt = FALSE)
 
 ## PACKAGES AND FUNCTIONS ## 
 devtools::load_all(here::here())
