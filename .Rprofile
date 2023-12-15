@@ -1,1 +1,3 @@
-source("renv/activate.R")
+if (.Platform$OS.type == "unix") {
+  source("renv/activate.R")
+}
