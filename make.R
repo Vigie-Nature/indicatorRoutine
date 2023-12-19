@@ -20,7 +20,7 @@ if (.Platform$OS.type == "unix") {
     install.packages("devtools", repos = "https://pbil.univ-lyon1.fr/CRAN/")
   }
   
-  devtools::install_deps(upgrade = "all")
+  devtools::install_deps(upgrade = "always")
 }
 
 ## PACKAGES AND FUNCTIONS ## 
