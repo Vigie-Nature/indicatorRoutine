@@ -31,6 +31,19 @@ makeGroupPlot <- FALSE # TRUE
 # Est-ce que le pdf doit être créé ?
 makePDF <- TRUE # FALSE
 
+###########################
+# Optionnel : performance #
+###########################
+
+# Les espèces doivent-elles être traitées en parallèle ?
+parallelizeSpecies <- FALSE # TRUE
+
+# Si oui, combien de processeurs sont à disposition ?
+nbCores <- 2
+
+# Quel est le package à utiliser pour foreach()%dopar%{...} ?
+parallelPackage <- "doParallel" # some clusters prefer "doMPI"
+
 #########################
 # Formatter les données #
 #########################
