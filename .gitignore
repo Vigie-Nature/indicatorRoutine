@@ -8,3 +8,6 @@ outputs/
 data/
 analyses/0b-load-parameters.R
 analyses/parameters/
+inst/doc
+/doc/
+/Meta/

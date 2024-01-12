@@ -1,0 +1,20 @@
+---
+title: "Méthodologie - Lois et dispersion"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{dispersion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+```
+
+```{r setup, include = FALSE}
+devtools::load_all(here::here())
+```
