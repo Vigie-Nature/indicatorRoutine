@@ -14,8 +14,6 @@ estimateTrends <- function(
     makeQuadraticTrend,
     makeGammTrend
 ) {
-  cat(sp, "\n")
-  
   ## Filter for considered species
   dataSp = data[data$species == sp, ]
   
