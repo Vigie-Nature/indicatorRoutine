@@ -12,25 +12,59 @@ dir.create(path = here::here("outputs", repo, "models", "yearlyVariations"), sho
 dir.create(path = here::here("outputs", repo, "models", "gammVariations"), showWarnings = FALSE)
 
 # Loop on species & make GLM / GAM ----
-for (sp in speciesList){
+
+if (!parallelizeSpecies) {
+  cat("Computing species trends sequentially. It might take a very long time !\n")
   
-  estimateTrends(
-    sp = sp,
-    data = data,
-    interestVar = interestVar,
-    fixedEffects = fixedEffects,
-    factorVariables = factorVariables,
-    randomEffects = randomEffects,
-    nestedEffects = nestedEffects,
-    slopeRandomEffects = slopeRandomEffects,
-    poly = poly,
-    contr = contr,
-    distribution = distribution,
-    makeShortTrend = makeShortTrend,
-    makeQuadraticTrend = makeQuadraticTrend,
-    makeGammTrend = makeGammTrend
-  )
+  for (sp in speciesList){
+    cat(sp, "\n")
+    
+    estimateTrends(
+      sp = sp,
+      data = data,
+      interestVar = interestVar,
+      fixedEffects = fixedEffects,
+      factorVariables = factorVariables,
+      randomEffects = randomEffects,
+      nestedEffects = nestedEffects,
+      slopeRandomEffects = slopeRandomEffects,
+      poly = poly,
+      contr = contr,
+      distribution = distribution,
+      makeShortTrend = makeShortTrend,
+      makeQuadraticTrend = makeQuadraticTrend,
+      makeGammTrend = makeGammTrend
+    )
+    
+  }
+} else {
+  cat("Computing species trends in parallel. It might take a long time !\n")
   
+  cl <- start_cluster(nbCores, parallelPackage)
+  
+  try_parallel <- catchConditions({ foreach (
+    sp = speciesList,
+    .packages = c("glmmTMB", "dplyr"),
+    ) %dopar% {
+      devtools::load_all(here::here()) # load custom functions
+      
+      estimateTrends(
+        sp = sp,
+        data = data,
+        interestVar = interestVar,
+        fixedEffects = fixedEffects,
+        factorVariables = factorVariables,
+        randomEffects = randomEffects,
+        nestedEffects = nestedEffects,
+        slopeRandomEffects = slopeRandomEffects,
+        poly = poly,
+        contr = contr,
+        distribution = distribution,
+        makeShortTrend = makeShortTrend,
+        makeQuadraticTrend = makeQuadraticTrend,
+        makeGammTrend = makeGammTrend
+      )
+  } })
 }
 
 ###########################
