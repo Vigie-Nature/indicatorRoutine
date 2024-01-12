@@ -13,8 +13,84 @@ knitr::opts_chunk$set(
   comment = "#>",
   echo = FALSE
 )
+
 ```
 
 ```{r setup, include = FALSE}
 devtools::load_all(here::here())
 ```
+
+## Introduction
+
+La construction d’un modèle de régression passe aussi par le choix de la loi de distribution adaptée aux données. Le choix de cette loi dépend notamment de la façon dont est distribuée la variable réponse, ici l’abondance d’une espèce pour le STOC et l’occurrence d’une espèce pour Vigie-Flore. La loi de distribution classiquement utilisée est la loi normale, et elle est adaptée notamment à des variables continues. Les variables réponses des différents observatoires ne sont malheureusement pas distribuées normalement : l’abondance du STOC est une information de comptage avec une moyenne, quand l’occurrence dans Vigie-Flore est une donnée de présence/absence, bornée entre 0 et 10.
+
+Cette section a pour objectif de présenter les lois existantes pour les données non gaussiennes, et de choisir pour chacun des observatoires la loi la plus adaptée.
+
+## Lois de distribution des données
+
+### *Données de comptage*
+
+La loi classique utilisée pour modéliser des données de comptage est la loi de Poisson. Cette loi fait une hypothèse forte sur la distribution des données i.e, elle fait l’hypothèse de l’égalité entre variance et espérance ($\sigma^2 = \mu$). Dans le cadre de données biologiques, il arrive souvent que cette hypothèse ne soit pas respectée, notamment que la variance soit supérieure à l’espérance ($\sigma^2 > \mu$). Certaines lois permettent ainsi de s’écarter de cette hypothèse en autorisant la variance à s’éloigner de l’espérance. C’est le cas de la **loi négative binomiale**, qui introduit un paramètre de dispersion $\phi$ tel que : 
+
+$$
+\sigma^2 = \mu (1 + \frac{\mu}{\phi})
+$$
+
+### *Données de présence / absence*
+
+La loi classique utilisée pour modéliser des données de présence / absence est la **loi binomiale**. Cette loi fait, elle aussi, une hypothèse forte sur la distribution des données : $\sigma^2 = n \mu (1-\mu)$. De la même façon que pour les données de comptage, il peut arriver que les données biologiques ne respectent pas parfaitement cette contrainte. Certaines lois permettent ainsi de s’écarter de cette hypothèse : c’est le cas de la **loi béta-binomiale**, qui introduit un paramètre de dispersion $\phi$ tel que : 
+
+$$
+\sigma^2 = n \mu (1-\mu) \frac{n + \phi}{1 + \phi}
+$$
+
+## Prise en compte de la dispersion : une amélioration de l’ajustement
+
+### *Démarche*
+
+On cherche à étudier, sur les données des différents observatoires, si l’utilisation d’une loi autorisant la sur-dispersion permet une amélioration de la qualité de l’ajustement. Pour cela :
+ - On a sélectionné dans la section précédente (`variableSelecion`) l’ensemble des covariables à inclure dans les modèles pour chaque observatoire. Ces modèles seront ceux utilisés dans cette analyse ;
+ - On se propose de tester pour chaque observatoire deux lois de distributions : une distribution classique (loi de Poisson pour le STOC et loi binomiale pour Vigie-Flore) et une distribution permettant la prise en compte de la sur-dispersion (loi négative binomiale pour le STOC et loi béta-binomiale pour Vigie-Flore) ;
+ - Pour chaque espèce, on fait tourner les deux modèles et on utilise le critère BIC pour comparer la qualité d’ajustement.
+ 
+On portera également une attention particulière à la convergence des modèles, et aux valeurs du paramètre de dispersion.
+ 
+```{r}
+knitr::kable(
+  data.frame(
+    survey = c("STOC", "Vigie-Flore"),
+    fixed = c('"complet"', '"conditions"'),
+    random = c('"complet structuré par départements"', '"complet structuré par une maille"'),
+    law_normal = c("poisson", "binomiale"),
+    law_disp = c("négative binomiale", "beta-binomiale")
+  ),
+  col.names = c("Observatoire", "Effets fixes", "Effets aléatoires", "Loi sans dispersion", "Loi avec dispersion"),
+  caption = "Tab. 1 : Caractéristiques des modèles utilisés pour tester la meilleure loi de distribution",
+  align = "lcccc"
+)
+```
+
+### *Résultats*
+
+Les résultats sont regroupés dans le Tableau 2. On remarque que pour les deux observatoires, le meilleur modèle pour une majorité d’espèces est le modèle avec une loi autorisant la sur-dispersion (84% des espèces pour le STOC et 96% des espèces pour Vigie-Flore). Pour le STOC, sur les 22 modèles n’ayant pas convergé avec la loi négative binomiale, 11 problèmes de convergence sont dus à l’absence de dispersion puisqu’ils montrent des paramètres de dispersion extrêmes ($\phi > 10^5$). De la même façon pour Vigie-Flore, sur les 9 modèles n’ayant pas convergé avec la loi béta-binomiale, 5 problèmes de convergence sont dus à l’absence de dispersion. Pour ces cas précis, la routine prévoit la possibilité de repasser à une loi sans dispersion si le modèle ne converge pas et que le paramètre de dispersion calculé est extrême. 
+
+```{r}
+knitr::kable(
+  data.frame(
+    obs = c("STOC", "Vigie-Flore"),
+    law_raw = c("18 (16%)", "13 (4%)"),
+    law_disp = c("98 (64%)", "277 (96%)"),
+    tot = c("116 (151)", "290 (300)")
+  ),
+  caption = "Tab. 2 : Nombre d'espèces pour lesquelles chacun des modèles obtient le plus petit BIC",
+  align = "lccc",
+  col.names = c("Observatoire", "Loi sans dispersion", "Loi avec dispersion", "Total")
+)
+```
+
+## Conclusion
+
+Dans cette section, on a vu que l’utilisation d’une loi autorisant la sur-dispersion améliore la qualité d’ajustement pour une majorité d’espèces, et ce pour les deux observatoires. Pour ces raisons, il semble pertinent d’utiliser une loi négative binomiale pour la modélisation de la tendance STOC, et une loi béta-binomiale pour la tendance Vigie-Flore.
+
+
+
