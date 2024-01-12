@@ -15,7 +15,7 @@ dir.create(path = here::here("outputs", repo, "models", "gammVariations"), showW
 
 if (!parallelizeSpecies) {
   cat("Computing species trends sequentially. It might take a very long time !\n")
-  
+
   for (sp in speciesList){
     cat(sp, "\n")
     
@@ -37,20 +37,23 @@ if (!parallelizeSpecies) {
     )
     
   }
+
 } else {
   cat("Computing species trends in parallel. It might take a long time !\n")
   
-  cl <- start_cluster(nbCores, parallelPackage)
-  
-  try_parallel <- catchConditions({ foreach (
+  library(parallelPackage, character.only = T) # load correct library
+  cl <- start_cluster(nbCores, parallelPackage) # spawn a cluster and register it
+
+  try_parallel <- foreach (
     sp = speciesList,
-    .packages = c("glmmTMB", "dplyr"),
+    .packages = c("glmmTMB", "dplyr")
     ) %dopar% {
-      devtools::load_all(here::here()) # load custom functions
+      devtools::load_all(here::here()) # load routine functions
       
       estimateTrends(
         sp = sp,
         data = data,
+        repo = repo,
         interestVar = interestVar,
         fixedEffects = fixedEffects,
         factorVariables = factorVariables,
@@ -64,7 +67,9 @@ if (!parallelizeSpecies) {
         makeQuadraticTrend = makeQuadraticTrend,
         makeGammTrend = makeGammTrend
       )
-  } })
+  }
+  
+  stop_cluster(cl, parallelPackage)
 }
 
 ###########################

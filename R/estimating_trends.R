@@ -1,6 +1,7 @@
 estimateTrends <- function(
     sp,
     data,
+    repo,
     interestVar,
     fixedEffects,
     factorVariables,
