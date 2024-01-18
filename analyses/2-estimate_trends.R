@@ -90,9 +90,14 @@ if(makeShortTrend){
 }
 
 ## Yearly-variations
-dataSpecVar = makeSpecificationsTable(data, speciesList, interestVar, fixedEffects_var, factorVariables_var, 
-                                     randomEffects, nestedEffects, slopeRandomEffects_var, poly,
-                                     repo, modelName = "yearlyVariations")
+dataSpecVar = makeSpecificationsTable(
+  data,
+  speciesList,
+  interestVar,
+  fixedEffects[fixedEffects != "year"],
+  c(factorVariables, "year"), 
+  randomEffects, nestedEffects, slopeRandomEffects_var, poly,
+  repo, modelName = "yearlyVariations")
 
 # Create the specifications file
 pathToSpec = here::here("outputs", repo)
