@@ -22,6 +22,7 @@ if (!parallelizeSpecies) {
     estimateTrends(
       sp = sp,
       data = data,
+      repo = repo,
       interestVar = interestVar,
       fixedEffects = fixedEffects,
       factorVariables = factorVariables,
@@ -77,6 +78,24 @@ if (!parallelizeSpecies) {
 ###########################
 
 # Make table specifications
+
+## re-build helper variables
+
+fixedEffects_var = fixedEffects[fixedEffects != "year"]
+factorVariables_var = c(factorVariables, "year")
+slopeRandomEffects_var = slopeRandomEffects[slopeRandomEffects != "year"]
+
+# Build formula a second time, this time to include it in the report
+formVar = writeFormula(
+  interestVar,
+  fixedEffects_var,
+  factorVariables_var,
+  poly,
+  randomEffects,
+  nestedEffects,
+  slopeRandomEffects_var, raw = "FALSE"
+)
+
 ## Long-term
 dataSpecLT = makeSpecificationsTable(data, speciesList, interestVar, fixedEffects, factorVariables, 
                                      randomEffects, nestedEffects, slopeRandomEffects, poly, 
@@ -94,10 +113,15 @@ dataSpecVar = makeSpecificationsTable(
   data,
   speciesList,
   interestVar,
-  fixedEffects[fixedEffects != "year"],
-  c(factorVariables, "year"), 
-  randomEffects, nestedEffects, slopeRandomEffects_var, poly,
-  repo, modelName = "yearlyVariations")
+  fixedEffects_var,
+  factorVariables_var, 
+  randomEffects,
+  nestedEffects,
+  slopeRandomEffects_var,
+  poly,
+  repo,
+  modelName = "yearlyVariations"
+)
 
 # Create the specifications file
 pathToSpec = here::here("outputs", repo)
