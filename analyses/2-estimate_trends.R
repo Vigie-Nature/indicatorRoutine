@@ -43,7 +43,7 @@ if (!parallelizeSpecies) {
   cat("Computing species trends in parallel. It might take a long time !\n")
   
   library(parallelPackage, character.only = T) # load correct library
-  cl <- start_cluster(nbCores, parallelPackage) # spawn a cluster and register it
+  cl <- start_cluster(as.numeric(nbCores), parallelPackage) # spawn a cluster and register it
 
   try_parallel <- foreach (
     sp = speciesList,
