@@ -11,8 +11,14 @@ cd $PBS_O_WORKDIR
 module load texlive/2023
 module load R/4.3.1
 
+# i couldn't manage to renv::install("doMPI") on the cluster,
+# but it is installed in the global R/4.3.1 environment :
+# setting sandbox to false allows to library() globally installed
+# packages
 export RENV_CONFIG_SANDBOX_ENABLED=FALSE
 
+# with more than -n 24 the parallel loop crashes on start
+# (with a segmentation fault)
 mpirun -n 24 /bin/bash $(which R) CMD BATCH --no-save make.R
 
 exit 0
