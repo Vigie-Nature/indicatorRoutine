@@ -55,6 +55,7 @@ if (!parallelizeSpecies) {
         dplyr::filter(species == sp)
       
       estimateTrends(
+        sp,
         dataSp = dataSp,
         repo = repo,
         interestVar = interestVar,
