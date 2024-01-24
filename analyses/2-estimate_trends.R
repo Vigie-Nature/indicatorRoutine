@@ -51,9 +51,11 @@ if (!parallelizeSpecies) {
     ) %dopar% {
       devtools::load_all(here::here()) # load routine functions
       
+      dataSp <- data %>% 
+        dplyr::filter(species == sp)
+      
       estimateTrends(
-        sp = sp,
-        data = data,
+        dataSp = dataSp,
         repo = repo,
         interestVar = interestVar,
         fixedEffects = fixedEffects,

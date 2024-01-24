@@ -1,6 +1,5 @@
 estimateTrends <- function(
-    sp,
-    data,
+    dataSp,
     repo,
     interestVar,
     fixedEffects,
@@ -15,8 +14,6 @@ estimateTrends <- function(
     makeQuadraticTrend,
     makeGammTrend
 ) {
-  ## Filter for considered species
-  dataSp = data[data$species == sp, ]
   
   #######################
   #   LONG-TERM TREND   #
