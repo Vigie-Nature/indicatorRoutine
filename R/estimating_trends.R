@@ -1,4 +1,5 @@
 estimateTrends <- function(
+    sp,
     dataSp,
     repo,
     interestVar,
