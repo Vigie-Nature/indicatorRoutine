@@ -44,19 +44,24 @@ if (!parallelizeSpecies) {
   
   library(parallelPackage, character.only = T) # load correct library
   cl <- start_cluster(as.numeric(nbCores), parallelPackage) # spawn a cluster and register it
+  
+  split_data <- sapply(speciesList, function(s) {
+    return(list(
+      dataSp = data %>% 
+        dplyr::filter(species == s),
+      sp = s
+    ))
+  }, simplify = F)
 
   try_parallel <- foreach (
-    sp = speciesList,
+    sp_data = split_data,
     .packages = c("glmmTMB", "dplyr")
     ) %dopar% {
       devtools::load_all(here::here()) # load routine functions
       
-      dataSp <- data %>% 
-        dplyr::filter(species == sp)
-      
       estimateTrends(
-        sp,
-        dataSp = dataSp,
+        sp = sp_data$sp,
+        dataSp = sp_data$dataSp,
         repo = repo,
         interestVar = interestVar,
         fixedEffects = fixedEffects,
