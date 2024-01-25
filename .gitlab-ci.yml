@@ -47,6 +47,7 @@ make-pipeline:
   dependencies:
     - check-package
   artifacts:
+    when: always
     paths:
       - data/test
       - outputs/test/pdf
