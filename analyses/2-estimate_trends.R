@@ -19,9 +19,12 @@ if (!parallelizeSpecies) {
   for (sp in speciesList){
     cat(sp, "\n")
     
+    dataSp <- data %>% 
+      dplyr::filter(species == sp)
+    
     estimateTrends(
       sp = sp,
-      data = data,
+      data = dataSp,
       repo = repo,
       interestVar = interestVar,
       fixedEffects = fixedEffects,
