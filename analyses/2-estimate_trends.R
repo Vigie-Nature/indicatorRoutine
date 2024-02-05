@@ -12,112 +12,76 @@ dir.create(path = here::here("outputs", repo, "models", "yearlyVariations"), sho
 dir.create(path = here::here("outputs", repo, "models", "gammVariations"), showWarnings = FALSE)
 
 # Loop on species & make GLM / GAM ----
-for (sp in speciesList){
-  cat(sp, "\n")
-  
-  ## Filter for considered species
-  dataSp = data[data$species == sp, ]
-  
-  #######################
-  #   LONG-TERM TREND   #
-  #######################
-  longTermTrend <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects,
-                           factorVariables = factorVariables, randomEffects = randomEffects,
-                           nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                           poly = poly, contr = contr, distribution = distribution, raw = "raw")
-  
-  cat("Long-Term Trend --> DONE\n")
-  save(longTermTrend, file = here::here("outputs", repo, "models", "longTermTrend", paste0(sp, ".rdata")))
-  
-  #########################
-  #   YEARLY VARIATIONS   #
-  #########################
-  
-  # Change year from continuous to categorical effect
-  fixedEffects_var = fixedEffects[fixedEffects != "year"]
-  if(length(fixedEffects_var) == 0){
-    fixedEffects_var = NULL
-  }
-  factorVariables_var = c(factorVariables, "year")
-  
-  # Erase the slope
-  indSlope = grep("year", slopeRandomEffects)
-  slopeRandomEffects_var = slopeRandomEffects[-indSlope]
-  
-  # Save the associated formula
-  formVar = writeFormula(interestVar, fixedEffects_var, factorVariables_var, poly, randomEffects, nestedEffects, slopeRandomEffects_var, raw = "FALSE")
-  
-  # Make the model
-  yearlyVariations <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects_var,
-                              factorVariables = factorVariables_var, randomEffects = randomEffects,
-                              nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects_var, 
-                              poly = poly, contr = contr, distribution = distribution)
-  
-  cat("Categorical Model --> DONE\n")
-  save(yearlyVariations, file = here::here("outputs", repo, "models", "yearlyVariations", paste0(sp, ".rdata")))
-  
-  ########################
-  #   SHORT-TERM TREND   #
-  ########################  
-  if(makeShortTrend){
-    # Filter for the latest 10 years
-    dataSp_ST = dataSp[dataSp$year >= max(dataSp$year) - 10,]
+
+if (!parallelizeSpecies) {
+  cat("Computing species trends sequentially. It might take a very long time !\n")
+
+  for (sp in speciesList){
+    cat(sp, "\n")
     
-    # Make the model
-    shortTermTrend <- makeGLM(data = dataSp_ST, interestVar = interestVar, fixedEffects = fixedEffects,
-                              factorVariables = factorVariables, randomEffects = randomEffects,
-                              nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                              poly = poly, contr = contr,
-                              distribution = distribution, raw = "raw")
+    dataSp <- data %>% 
+      dplyr::filter(species == sp)
     
-    cat("Short-Term Trend --> DONE\n")
-    save(shortTermTrend, file = here::here("outputs", repo, "models", "shortTermTrend", paste0(sp, ".rdata")))
+    estimateTrends(
+      sp = sp,
+      data = dataSp,
+      repo = repo,
+      interestVar = interestVar,
+      fixedEffects = fixedEffects,
+      factorVariables = factorVariables,
+      randomEffects = randomEffects,
+      nestedEffects = nestedEffects,
+      slopeRandomEffects = slopeRandomEffects,
+      poly = poly,
+      contr = contr,
+      distribution = distribution,
+      makeShortTrend = makeShortTrend,
+      makeQuadraticTrend = makeQuadraticTrend,
+      makeGammTrend = makeGammTrend
+    )
     
   }
+
+} else {
+  cat("Computing species trends in parallel. It might take a long time !\n")
   
-  ########################
-  #   QUADRATIC TRENDS   #
-  ########################
-  if (makeQuadraticTrend){
-    
-    ## Change effect of year from linear to polynomial
-    if(length(fixedEffects) == 1){ 
-      fixedEffects_quadr = NULL
-    }else{
-      fixedEffects_quadr = fixedEffects[fixedEffects != "year"]
-    }
-    poly_quadr = c(poly, "year")
-    
-    ## Make orthogonal quadratic trend
-    orthoQuadraticTrend <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects_quadr,
-                                   factorVariables = factorVariables, randomEffects = randomEffects,
-                                   nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                                   poly = poly_quadr, contr = contr, distribution = distribution, raw = "ortho")
-    
-    cat("Orthogonal Quadratic Trend --> DONE\n")
-    save(orthoQuadraticTrend, file = here::here("outputs", repo, "models", "orthoQuadraticTrend", paste0(sp, ".rdata")))
-    
-    ## Make raw quadratic trend
-    rawQuadraticTrend <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects_quadr,
-                                 factorVariables = factorVariables, randomEffects = randomEffects,
-                                 nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                                 poly = poly_quadr, contr = contr, distribution = distribution, raw = "raw")
-    cat("Raw Quadratic Trend --> DONE\n")
-    save(rawQuadraticTrend, file = here::here("outputs", repo, "models", "rawQuadraticTrend", paste0(sp, ".rdata")))
-    
+  library(parallelPackage, character.only = T) # load correct library
+  cl <- start_cluster(as.numeric(nbCores), parallelPackage) # spawn a cluster and register it
+  
+  split_data <- sapply(speciesList, function(s) {
+    return(list(
+      dataSp = data %>% 
+        dplyr::filter(species == s),
+      sp = s
+    ))
+  }, simplify = F)
+
+  try_parallel <- foreach (
+    sp_data = split_data,
+    .packages = c("glmmTMB", "dplyr")
+    ) %dopar% {
+      devtools::load_all(here::here()) # load routine functions
+      
+      estimateTrends(
+        sp = sp_data$sp,
+        dataSp = sp_data$dataSp,
+        repo = repo,
+        interestVar = interestVar,
+        fixedEffects = fixedEffects,
+        factorVariables = factorVariables,
+        randomEffects = randomEffects,
+        nestedEffects = nestedEffects,
+        slopeRandomEffects = slopeRandomEffects,
+        poly = poly,
+        contr = contr,
+        distribution = distribution,
+        makeShortTrend = makeShortTrend,
+        makeQuadraticTrend = makeQuadraticTrend,
+        makeGammTrend = makeGammTrend
+      )
   }
   
-  #######################
-  #   GAMM VARIATIONS   #
-  #######################
-  if(makeGammTrend){
-    gammVariations <- makeGAM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects,
-                              factorVariables = factorVariables, randomEffects = randomEffects,
-                              nestedEffects = nestedEffects, poly = poly, distribution = distribution)
-    cat("GAM Model --> DONE\n")
-    save(gammVariations, file =  here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata")))
-  }
-  
+  stop_cluster(cl, parallelPackage)
 }
 
 ###########################
@@ -125,6 +89,24 @@ for (sp in speciesList){
 ###########################
 
 # Make table specifications
+
+## re-build helper variables
+
+fixedEffects_var = fixedEffects[fixedEffects != "year"]
+factorVariables_var = c(factorVariables, "year")
+slopeRandomEffects_var = slopeRandomEffects[slopeRandomEffects != "year"]
+
+# Build formula a second time, this time to include it in the report
+formVar = writeFormula(
+  interestVar,
+  fixedEffects_var,
+  factorVariables_var,
+  poly,
+  randomEffects,
+  nestedEffects,
+  slopeRandomEffects_var, raw = "FALSE"
+)
+
 ## Long-term
 dataSpecLT = makeSpecificationsTable(data, speciesList, interestVar, fixedEffects, factorVariables, 
                                      randomEffects, nestedEffects, slopeRandomEffects, poly, 
@@ -138,9 +120,19 @@ if(makeShortTrend){
 }
 
 ## Yearly-variations
-dataSpecVar = makeSpecificationsTable(data, speciesList, interestVar, fixedEffects_var, factorVariables_var, 
-                                     randomEffects, nestedEffects, slopeRandomEffects_var, poly,
-                                     repo, modelName = "yearlyVariations")
+dataSpecVar = makeSpecificationsTable(
+  data,
+  speciesList,
+  interestVar,
+  fixedEffects_var,
+  factorVariables_var, 
+  randomEffects,
+  nestedEffects,
+  slopeRandomEffects_var,
+  poly,
+  repo,
+  modelName = "yearlyVariations"
+)
 
 # Create the specifications file
 pathToSpec = here::here("outputs", repo)
