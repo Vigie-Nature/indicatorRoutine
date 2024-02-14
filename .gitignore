@@ -4,3 +4,6 @@
 man/
 outputs/
 .Rhistory
+.RData
+data/
+analyses/0b-load-parameters.R
