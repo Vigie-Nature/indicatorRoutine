@@ -29,7 +29,12 @@ devtools::load_all(here::here())
 
 ## RUN PROJECT ##
 # Load parameters
-source(here::here("analyses", "0-parameters.R"))
+source(here::here("analyses", "0-parameters.R"))#default parameters
+
+# Replace with customized parameters if exist
+if (file.exists(here::here("analyses", "0b-load-parameters.R"))) {
+  source(here::here("analyses", "0b-load-parameters.R"))
+}
 
 # Import and format data
 source(here::here("analyses", "1-import_and_clean_data.R"))
