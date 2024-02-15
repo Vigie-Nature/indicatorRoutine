@@ -74,7 +74,7 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
     }
     
     # Put factor variables in the right format
-    data[, factorVariables] = factor(data[, factorVariables])
+    data[, factorVariables] <- lapply(data[, factorVariables], factor)
   }
   
   
