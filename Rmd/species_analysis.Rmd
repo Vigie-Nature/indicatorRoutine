@@ -65,7 +65,7 @@ header = paste0("Tendances ", obs, " - ", spatialScale, " - ", minYear, "/", max
 \fancyhead[C]{}
 ```
 ::: {.OrangeLargeBox data-latex=""}
-# \textcolor{myorange}{`r sp_french`} \textcolor{myorange}{-} _\textcolor{myorange}{`r sp_latin`}_
+# \textcolor{myorange}{`r sp_french`} \textcolor{myorange}{-} \textcolor{myorange}{`r sp_latin`}
 :::
 
 ## \textcolor{myorange}{Données : quelques chiffres clés}
@@ -85,7 +85,8 @@ kableExtra::kbl(sumOccurrenceSp, align = "c", booktabs = T, centering = T) %>%
 
 ```
 
-*(a) nombre de visites où l'espèce a été vue ramené à l'ensemble des visites* \
+\
+*(a) nombre de visites où l'espèce a été vue ramené à l'ensemble des visites*\
 *(b) abondance totale ramenée au nombre de visites sur les sites où l'espèce a été vue au moins une fois*
 
 ## \textcolor{myorange}{Répartition spatiale depuis `r minYear`}
@@ -95,6 +96,9 @@ knitr::include_graphics(pathToMapSp)
 
 
 ```
+\
+***Présence :** Sites où l'espèce a été observée au moins une fois depuis `r minYear`*\
+***Absence :** Ensemble des sites suivis au cours du `r obs` où l'espèce n'a jamais été observée depuis `r minYear`*
 
 \newpage
 
@@ -144,17 +148,18 @@ catEBCC_ST = dataShortTermTrendSp$trendEBCC
 ```{r plotTrend, fig.align = "center", out.width="100%", echo=FALSE, eval = !warningNoPlot}
 knitr::include_graphics(pathToPlotSp)
 ```
-`r if(warningNoPlot){"<!--"}`
-*NB : le chiffre bleu sur le graphique (`r GR_LT`) correspond au taux de croissance annuel moyen sur l'ensemble de la période, le chiffre rouge à celui sur les dix dernières années.*
-`r if(warningNoPlot){"-->"}`
+
+`r if(warningNoPlot){"<!--"}` *NB : le chiffre bleu sur le graphique (`r GR_LT`) correspond au taux de croissance annuel moyen sur l'ensemble de la période, le chiffre rouge à celui sur les dix dernières années.* `r if(warningNoPlot){"-->"}`
+
+\
 
 ::: {.cols data-latex=""}
 ::: {.col data-latex="{0.499\\textwidth}"}
 ::: {.OrangeMediumBox data-latex=""}
-**\large \textcolor{myorange}{Long terme (`r minYear` - `r maxYear`)}**\
-*\normalsize Sur cette période de `r period` ans :*\
-**EBCC :** \textcolor{myorange}{`r catEBCC_LT`}\
-**Liste Rouge :** \textcolor{myorange}{`r cat_LT`}\
+\large \textcolor{myorange}{Long terme (`r minYear` - `r maxYear`)}\
+\normalsize Sur cette période de `r period` ans :\
+**EBCC criteria :** \textcolor{myorange}{`r catEBCC_LT`}\
+**IUCN criteria :** \textcolor{myorange}{`r cat_LT`}\
 **Quadratique :** \textcolor{myorange}{`r catQuadr_LT`}\
 \
 Taux annuel de croissance : \textcolor{myorange}{`r GR_LT` [`r infGR_LT` ; `r supGR_LT`]}\
@@ -170,10 +175,10 @@ Changement d'abondance : \textcolor{myorange}{`r perc_LT`\% [`r infPerc_LT`\% ; 
 
 ::: {.col data-latex="{0.499\\textwidth}"}
 ::: {.OrangeMediumBox data-latex=""}
-**\large \textcolor{myorange}{Court terme (`r maxYear - 10` - `r maxYear`)}**\
-*\normalsize Sur cette période de 10 ans :*\
-**EBCC :** \textcolor{myorange}{`r catEBCC_ST`}\
-**Liste Rouge :** \textcolor{myorange}{`r cat_ST`}\
+\large \textcolor{myorange}{Court terme (`r maxYear - 10` - `r maxYear`)}\
+\normalsize Sur cette période de 10 ans :\
+**EBCC criteria:** \textcolor{myorange}{`r catEBCC_ST`}\
+**IUCN criteria :** \textcolor{myorange}{`r cat_ST`}\
 \
 Taux annuel de croissance : \textcolor{myorange}{`r GR_ST` [`r infGR_ST` ; `r supGR_ST`]}\
 Changement d'abondance : \textcolor{myorange}{`r perc_ST`\% [`r infPerc_ST`\% ; `r supPerc_ST`\%]}
@@ -181,6 +186,55 @@ Changement d'abondance : \textcolor{myorange}{`r perc_ST`\% [`r infPerc_ST`\% ; 
 :::
 
 `r if(is.null(dataShortTermTrendSp)){"-->"}`
-
-
 :::
+\
+*Les catégories de tendances sont basées sur les critères de l'EBCC ou de l'IUCN. Cf. détail des critères en p3.*
+
+\newpage
+
+## \textcolor{myorange}{Détail des critères de classification}\
+
+:::: {.OrangeGroupBox data-latex=""}
+\large \textcolor{myorange}{Classification UICN }\
+\normalsize
+\
+
+**Augmentation forte :** taux annuel de croissance et intervalle de confiance supérieurs à 1.036.\
+
+**Augmentation modérée à forte:** taux annuel de croissance et intervalle de confiance supérieurs à 1 et recoupant 1.036. \
+
+**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.036.\
+
+**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle (0.964 ; 1.036). \
+
+**Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.964 et 1. \
+
+**Déclin modéré à fort:**  taux annuel de croissance et intervalle de confiance inférieurs à 1 et recoupant 0.964. \
+
+**Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.964.\
+
+**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.964 ; 1.036). \
+
+*NB : Ces catégories sont basées sur le critère A2 de l'UICN classant comme vulnérable les espèces ayant une réduction de population supérieure à 30% sur 10 ans*
+
+::::
+\
+
+:::: {.OrangeGroupBox data-latex=""}
+\large \textcolor{myorange}{Classification EBCC}\
+\normalsize
+\
+
+**Forte augmentation :** taux annuel de croissance et intervalle de confiance supérieurs à 1.05 (augmentation de plus de 5% par an).\
+
+**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.05 (augmentation de moins de 5% par an).\
+
+**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle [0.95 ; 1.05]. \
+
+**Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.95 et 1 (déclin de moins de 5% par an). \
+
+**Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.95 (déclin de plus de 5% par an).\
+
+**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.95 ; 1.05). \
+
+::::
