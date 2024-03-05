@@ -70,11 +70,10 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
                 paste(levelsToErase, collapse = ", "), "', from variable '", var, "'")
       }
       
-      
+      # Put factor variables in the right format
+      data[, var] = factor(data[, var])
     }
-    
-    # Put factor variables in the right format
-    data[, factorVariables] <- lapply(data[, factorVariables], factor)
+
   }
   
   
