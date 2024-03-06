@@ -54,7 +54,9 @@ cat(as.character(form[2]), as.character(form[1]), as.character(form[3]), "\n")
 #   FILL ABSENCES   #
 #####################
 
-data <- fillAbsence(data, interestVar, speciesList, method = "once")
+if(createAbsence){
+  data <- fillAbsence(data, interestVar, speciesList, method = "once")
+}
 
 ################################
 #   NAME CORRESPONDANCE DATA   #

@@ -16,6 +16,9 @@ obs <- "random"
 # Exemple : "France" ou "Bretagne" ou "ONF" ou ...
 spatialScale <- "random"
 
+# Est-ce que les absences (0) doivent être générées par la routine ?
+createAbsence <- TRUE # FALSE
+
 # Est-ce que la tendance court-terme doit être réalisée ?
 makeShortTrend <- TRUE # FALSE
 
