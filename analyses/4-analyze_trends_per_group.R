@@ -69,6 +69,7 @@ groupComp = lapply(groupComp, function(gp){
 ## Extract species that must be removed from groups
 spToRemove = c()
 
+
 indInf = unique(c(which(is.infinite(dataLongTermTrend$supGR)),
                   which(is.infinite(dataLongTermTrend$infGR)),
                   which(is.infinite(dataLongTermTrend$GR))))
