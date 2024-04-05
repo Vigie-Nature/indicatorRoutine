@@ -69,6 +69,15 @@ groupComp = lapply(groupComp, function(gp){
 ## Extract species that must be removed from groups
 spToRemove = c()
 
+# Measure for each species the median of the number of sites per species x year
+dataLowOcc = dplyr::group_by(data[data[,interestVar[1]] >0,], species, year) %>%
+  dplyr::summarise(nbSite = dplyr::n()) %>%
+  dplyr::group_by(species) %>%
+  dplyr::summarise(medYear = median(nbSite))
+
+# Extract species with median occurrence inferior to 12
+spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
+
 indInf = unique(c(which(is.infinite(dataLongTermTrend$supGR)),
                   which(is.infinite(dataLongTermTrend$infGR)),
                   which(is.infinite(dataLongTermTrend$GR))))
