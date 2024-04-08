@@ -6,6 +6,7 @@ params:
   sp_french: ""
   sp_latin: ""
   sumOccurrenceSp: ""
+  sumAnnualOcc: ""
   dataLongTermTrendSp: ""
   dataShortTermTrendSp: ""
   pathToPlotSp: ""
@@ -40,6 +41,7 @@ sp_latin = params$sp_latin
 obs = params$obs
 spatialScale = params$spatialScale
 sumOccurrenceSp = params$sumOccurrenceSp
+sumAnnualOcc = params$sumAnnualOcc
 dataLongTermTrendSp = params$dataLongTermTrendSp
 dataShortTermTrendSp = params$dataShortTermTrendSp
 pathToPlotSp = params$pathToPlotSp
@@ -189,6 +191,21 @@ Changement d'abondance : \textcolor{myorange}{`r perc_ST`\% [`r infPerc_ST`\% ; 
 :::
 \
 *Les catégories de tendances sont basées sur les critères de l'EBCC ou de l'UICN. Cf. détail des critères en p3.*
+\
+\newpage
+*Table des occurrences annuelles (nombre de sites où l'espèce a été observée) et des abondances annuelles (nombre d'individus contactés dans l'ensemble des sites)*
+```{r fig.align = "center", echo = FALSE}
+`%>%` = magrittr::`%>%`
+
+kableExtra::kbl(sumAnnualOcc, align = "c", booktabs = T, centering = T, longtable = TRUE) %>%
+  kableExtra::row_spec(0, color = "#E68146", bold = T, font_size = 11) %>%
+  kableExtra::row_spec(1:nrow(sumAnnualOcc), color = "#E68146", font_size = 11) %>%
+  kableExtra::column_spec(2, width = '2.5cm') %>%
+  kableExtra::column_spec(3, width = '2cm')
+
+
+```
+
 
 \newpage
 
