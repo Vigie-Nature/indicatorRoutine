@@ -1,0 +1,146 @@
+---
+title: "Utilisation de la routine"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{routine}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+```
+
+```{r setup, include=FALSE}
+devtools::load_all(here::here())
+library(dplyr)
+library(kableExtra)
+```
+
+## Introduction
+
+Cette routine d’analyses a pour but de calculer les indicateurs de tendances à partir des données d’observations d’espèces issues de différents observatoires de Vigie-Nature. Ce document doit permettre de bien comprendre le fonctionnement du projet R associé, et de prendre en main facilement les différents scripts. Une première partie décrit les pré-requis au bon déroulement de l’analyse, notamment en termes d’installation de l’environnement, de données à fournir et de paramètres à choisir.
+
+## Pré-requis
+
+### Lancement du projet
+
+Pour utiliser correctement la routine, il faut avant toute chose ouvrir le projet *indicatorRoutine.Rproj* dans RStudio. 
+
+### Arborescence
+
+![Figure 1 : Arborescence des dossiers](img/directory_graph.png)
+
+### Traitement des fichiers tex
+
+La routine crée un certain nombre de fichiers sous format pdf. La production de ces fichiers par R requiert l'installation préalable d'un logiciel de traitement des fichiers tex. Vous pouvez télécharger ici un de ces logiciel. Lors de l'installation, une fenêtre « Windows a protégé votre ordinateur » peut apparaître auquel cas : cliquer sur « Informations complémentaires » et « Exécuter quand même ».
+
+*NB : pour que tout fonctionne bien, l'option « Install packages automatically (on-the-fly) » doit être cochée à Yes (lors de l'installation) ou Always (dans les settings, après installation).*
+
+![Figure 2 : Options à cocher dans les paramètres du logiciel MiKTex]
+
+### Packages et versions
+
+L'ensemble des packages utilisés sont regroupés dans le Tableau 1. Tous les packages sont automatiquement chargés/installés au lancement de la routine : si ce n'est pas le cas, R vous demandera s'il faut les installer, charger ou mettre à jour, et il faudra répondre oui (Yes ou 1). 
+La version de R utilisée en local pour développer cette routine est : R 4.3.1.
+
+```{r}
+tab <- knitr::kable(
+  data.frame(
+    utilisation = c(
+      rep("Mise en place de l'environnement", 2),
+      rep("Nettoyage de données et visualisation", 4), 
+      rep("Modèles", 2),
+      "Cartographie",
+      rep("Formattage rmarkdown", 2)
+    ),
+    packages = c(
+      "devtools", "here",
+      "stringr", "tidyverse", "cowplot", "maps",
+      "glmmTMB", "mgcv",
+      "sf",
+      "kableExtra", "rmarkdown"
+    ),
+    versions = c(
+      "2.4.5", "1.0.1",
+      "1.5.0", "2.0.0", "1.1.1", "3.4.1",
+      "1.1.7", "1.8-42",
+      "1.0-13",
+      "1.3.4",
+      "2.22"
+    )
+  ),
+  col.names = c("Utilisation", "Packages", "Versions"),
+  caption = "Tab. 1 : Packages et versions utilisées",
+  align = "lc"
+)
+
+collapse_rows(tab)
+```
+
+### Données
+
+#### Formattage des observations
+
+Les données d'observation doivent être déposées dans le répertoire **data**, au sein d'un sous-répertoire dont le nom est à choisir par l'utilisateur (**observatoire1** sur la Figure 1). Ces données d'observations doivent être au format .csv et porter le nom *countingData.csv*. Elles doivent obligatoirement contenir :
+
+ - Une colonne `species` contenant le nom unique des espèces idéalement sous un format simple sans caractère spécial (ex : TURMER, PARMAJ, …) ;
+ - Une colonne `site` contenant le nom des lieux d'observation. Si le jeu de données contient deux niveaux spatiaux d'observation (e.g, placette et maille, ou point et site) alors une colonne supplémentaire `point` doit être utilisée pour décrire un niveau spatial plus fin ;
+ - Une colonne `year` contenant l'année d'observation. Si le jeu de données contient plusieurs niveaux temporels d'observation (i.e, plusieurs passages dans la même année) alors une colonne supplémentaire `session` doit être renseignée pour identifier chaque passage ;
+ - L'utilisateur peut également renseigner les coordonnées spatiales des sites (ou points) au format décimal, sous le nom de `longitude` et `latitude`, cela permet notamment la création de cartes d'occurrence ;
+  
+L'utilisateur peut également renseigner d'autres variables au nom libre, s'il souhaiter les utiliser comme covariables dans les modèles.
+
+#### Format de la variable réponse
+
+La routine peut prendre en charge les données d'abondance et d'occurrence. Les données d'occurrence doivent être formattées de telle sorte à avoir deux colonnes, une contenant le nombre de fois où l'espèce a été vue, et l'autre contenant le nombre de fois où l'espèce n'a pas été vue. Le nom de ces colonnes n'est pas imposé.
+
+```{r}
+knitr::kable(
+  data.frame(
+    info = c("Description de la colonne", rep("Exemple de remplissage", 4)),
+    success = c(
+      "Nombre de placettes où l'espèce a été vue",
+      "9", "5", "2", "..."
+    ),
+    fail = c(
+      "Nombre de placettes où l'espèce n'a pas été vue",
+      "1", "5", "8", "..."
+    )
+  ),
+  align = "lcc",
+  colnames = c("Exemple de nom de colonne", "nbSuccess", "nbFail"),
+  caption = "Tab 2 : Format de données d'occurence"
+)
+```
+
+La ligne de code R pour renommer les colonnes est la suivante (les noms sont à adapter en fonction de l'ordre des colonnes, et des variables présentes dans le jeu de données):
+
+```{r echo =TRUE, eval = FALSE}
+colnames(data) <- c("species", "site", "point", "year", "longitude", "latitude", "nbSuccess", "nbFail")
+```
+
+#### Fichier optionnel : nom des espèces
+
+Un fichier optionnel *speciesName.csv* peut être déposé dans le répertoire **data / observatoire1 /**. Ce fichier contient les correspondances entre nom de code, nom français et nom scientifique. Le format doit être le suivant :
+
+```{r}
+knitr::kable(
+  data.frame(
+    sp = c("COLPAL", "OENOEN"),
+    french = c("Pigeon ramier", "Traquet motteux"),
+    sci = c("Columba palumbus", "Oenanthe oenanthe")
+  ),
+  align = "ccc",
+  colnames = c("species", "french_name", "scientific_name"),
+  caption = "Tab 3 : Format du jeu de données de noms speciesNames.csv"
+)
+```
+
+### Paramètres 
+
+L'utilisateur peut choisir un certain nombre de paramètres afin d'adapter la routine de calcul d'indicateurs à ses données et à ses besoins. Les paramètres se trouvent dans le dossier analyses, à l'intérieur du fichier 0-parameters.R. Ces paramètres sont à modifier avant de lancer la routine de calculs. 
