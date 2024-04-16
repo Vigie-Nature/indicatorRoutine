@@ -76,10 +76,11 @@ tab <- knitr::kable(
   ),
   col.names = c("Utilisation", "Packages", "Versions"),
   caption = "Tab. 1 : Packages et versions utilisées",
-  align = "lc"
+  align = "lc",
+  format = "html"
 )
 
-collapse_rows(tab)
+collapse_rows(tab, columns = c("Utilisation"))
 ```
 
 ### Données
@@ -144,3 +145,116 @@ knitr::kable(
 ### Paramètres 
 
 L'utilisateur peut choisir un certain nombre de paramètres afin d'adapter la routine de calcul d'indicateurs à ses données et à ses besoins. Les paramètres se trouvent dans le dossier analyses, à l'intérieur du fichier 0-parameters.R. Ces paramètres sont à modifier avant de lancer la routine de calculs. 
+
+Paramètres de contexte :
+
+ - `repo` : nom du sous-dossier où sont contenues les données
+ - `obs` : nom de l’observatoire étudié
+ - `spatialScale` : nom de l’échelle d’étude (e.g, nationale, Île-de-France, …)
+ 
+Paramètres de fonctionnalités :
+
+ - `makeShortTrend` : TRUE si la tendance court-terme doit être réalisée
+ - `makeGammTrend` : TRUE si le GAMM doit être réalisé
+ - `makeQuadraticTrend` : TRUE si la tendance quadratique doit être réalisée
+ - `makeGroupPlot` : TRUE si les figures par groupes d’espèces doivent être réalisées
+ - `makePDF` : TRUE si le pdf doit être généré.
+ 
+Paramètres de filtre des données` :
+
+ - `speciesList` : liste d’espèces à analyser
+ - `yearRange` : valeurs minimales et maximales de la série temporelle à analyser.
+ 
+ Paramètres de spécifications des modèles :
+
+ - `distribution` : loi de distribution.  A choisir entre gaussian, poisson, nbinom2, binomial, betabinomial. *NB: la routine prévoit d’assigner une loi si non renseignée*
+ - `interestVar` : variable à expliquer *NB: si données d’occurrence, les deux variables (vu / non vu) doivent être spécifiées*
+ - `fixedEffects` : variables explicatives continues traitées comme effet fixe
+ - `factorVariables` : variables explicatives catégorielles traitées comme effet fixe
+ - `poly` : variables explicatives continues à traiter comme polynômes du deuxième degré. Un effet spécifié dans `poly` ne doit pas l’être dans `fixedEffects`
+ - `randomEffects` : variables explicatives traitées comme effet aléatoire
+ - `nestedEffects` : variables explicatives traitées comme effet aléatoires emboîtés, avec l’effet le plus précis en premier et celui englobant ensuite (e.g, `c("point", "site")`)
+ - `slopeRandomEffects` : variables explicatives traitées comme une pente en effet aléatoire, avec la pente en premier, et la variable structurante ensuite (e.g, `c("year", "site")`)
+ - `contr`: niveau de référence pour le traitement catégoriel de la variable année. Pour la fixer à la moyenne des années, renseigner `"mean"`.
+ 
+Paramètres pour les groupes :
+
+ - `groupNames` : nom des groupes
+ - `groupComp` : espèces incluses dans chaque groupe
+ - `groupCols` : couleurs à utiliser pour chaque groupe
+ 
+ 
+### Lancement de la routine
+ 
+La routine peut être lancée à partir du fichier make.R, qui se trouve à la racine du dossier. Ce fichier permet d’appeler les scripts d’analyse les uns après les autres. Chaque utilisation de la routine nécessite a minima de lancer les lignes suivantes, qui permettent l’installation de l’environnement selon le système d'exploitation, et le chargement des paramètres et données :
+
+```{r eval =FALSE, echo = TRUE}
+if (.Platform$OS.type == "unix") {
+  if(system.file(package='renv') == ""){
+    install.packages("renv", repos = "https://pbil.univ-lyon1.fr/CRAN/")
+  }
+  
+  ## DEPENDENCIES (see DESCRIPTION) ##
+  renv::restore(prompt = FALSE)
+} else {
+  if (system.file(package = 'devtools') == "") {
+    install.packages("devtools", repos = "https://pbil.univ-lyon1.fr/CRAN/")
+  }
+  
+  devtools::install_deps(upgrade = "always")
+}
+
+## PACKAGES AND FUNCTIONS ## 
+devtools::load_all(here::here())
+`%>%` = magrittr::`%>%`
+
+## RUN PROJECT ##
+# Load parameters
+source(here::here("analyses", "0-parameters.R"))#default parameters
+
+# Replace with customized parameters if exist
+if (file.exists(here::here("analyses", "0b-load-parameters.R"))) {
+  source(here::here("analyses", "0b-load-parameters.R"))
+}
+
+# Import and format data
+source(here::here("analyses", "1-import_and_clean_data.R"))
+```
+
+
+## Déroulé
+
+### 1. Formattage des données
+
+L’importation et la mise en forme des données est réalisée dans le fichier d’analyses 1-import_and_clean_data. Cette étape de mise en forme passe notamment par :
+
+ - La vérification que les variables obligatoires (`year`, `species`, `site`), et celles renseignées comme variables réponses ou explicatives dans les paramètres, sont bien contenues dans le jeu de données. Si ce n’est pas le cas, une erreur apparaîtra. *Remarque : le jeu de données résultant est filtré pour ne contenir que ces variables*
+ - L’ajout d’une variable `ID`, correspondant à un identifiant unique de l’observation
+ - Le remplissage des 0 dans le jeu de données pour tout endroit visité où l’espèce a déjà été vue  au moins une fois
+ - Le filtre des données pour la profondeur temporelle souhaitée (`yearRange`)
+ - Le filtre des données pour les espèces d’intérêt (`speciesList`). Si pas d’espèces renseignées, alors la liste `speciesList` est automatiquement créée pour ne contenir que les espèces contenant au total au moins 5 x nombre d’années d’observation de présence.
+
+*NB : le warning suivant peut apparaître au lancement de ce script, et ne doit pas inquiéter l’utilisateur :*
+
+```
+Warning message:
+In data.table::fread(file = dataPath, encoding = "UTF-8", drop = "V1") :
+  Column name 'V1' (drop[1]) not found
+```
+
+### 2. Estimations des tendances
+
+#### Tendances
+
+L’estimation des tendances est réalisée dans le script *2-estimate-trends*. Pour chaque espèce, la tendance long-terme sur l’ensemble de la série temporelle est réalisée, ainsi que les variations annuelles. Pour les variations annuelles, toute pente aléatoire sur l’année est retirée des analyses puisque la variable `year` est traitée comme une variable catégorielle. La tendance court-terme est réalisée si le paramètre `makeShortTerm` est `TRUE`. Elle est réalisée seulement sur les 10 dernières années. Les tendances quadratiques sont réalisées si le paramètre `makeQuadraticTrend` est `TRUE`. Dans ce cas, l’année `year` est traitée comme une variable polynomiale du second degré (deux modalités possibles : soit le polynôme est brut, soit il est orthogonal). 
+
+En cas de non-convergence d’un de ces modèles, la routine prévoit quatre cas de figures :
+ 
+ 1. Il n’y a pas de dispersion (paramètre de dispersion extrême : $\phi > 10^4$) alors qu’une loi de distribution négative binomiale ou bétabinomiale a été renseignée : le modèle est relancé avec une distribution sans dispersion (i.e, poisson ou binomiale)
+ 2. Une variable aléatoire présente une variance très faible ($\sigma^2 < 10^{-4}$): le modèle est relancé sans cette variable aléatoire. 
+*NB : s’il s’agit d’une variable englobante d’un effet emboîté, le modèle est relancé sans effet emboîté, mais avec une variable aléatoire d’interaction simple. S’il s’agit d’une variable englobée d’un effet emboîté, le modèle est relancé sans cet effet emboîté mais avec l’effet englobant comme variable aléatoire simple.*
+ 3. Un des VIFs présente une valeur trop élevée (VIF > 5) : alors cette variable est retirée du modèle.
+*NB : si cette variable est l’année `year`, alors elle ne peut pas être retirée. Les variables polynomiales ne sont pas concernées par cette étape.*
+ 4. Si malgré ces vérifications, le modèle n’a toujours pas convergé, un deuxième modèle est réalisé en repartant des paramètres estimés dans le modèle non-convergent. Si les estimations de l’année (estimate et erreur standard) de ce deuxième modèle sont suffisamment proches ($10^{-3}$) de ceux du modèle non-convergent, alors on considère qu’on a atteint la convergence.
+ 
+Le GAMM est réalisé si le paramètre `makeGammTrend` est `TRUE`. NB : la loi « bétabinomiale » n’existe pas dans le package mgcv, et on utilise donc ici la « quasibinomiale » en cas de dispersion. Enfin, si le GAMM ne converge pas, aucun autre essai n’est réalisé. 
