@@ -49,7 +49,7 @@ L'ensemble des packages utilisés sont regroupés dans le Tableau 1. Tous les pa
 La version de R utilisée en local pour développer cette routine est : R 4.3.1.
 
 ```{r}
-tab <- knitr::kable(
+table_packages <- knitr::kable(
   data.frame(
     utilisation = c(
       rep("Mise en place de l'environnement", 2),
@@ -80,7 +80,7 @@ tab <- knitr::kable(
   format = "html"
 )
 
-collapse_rows(tab, columns = c("Utilisation"))
+kableExtra::collapse_rows(table_packages, columns = c(1))
 ```
 
 ### Données
@@ -101,7 +101,7 @@ L'utilisateur peut également renseigner d'autres variables au nom libre, s'il s
 La routine peut prendre en charge les données d'abondance et d'occurrence. Les données d'occurrence doivent être formattées de telle sorte à avoir deux colonnes, une contenant le nombre de fois où l'espèce a été vue, et l'autre contenant le nombre de fois où l'espèce n'a pas été vue. Le nom de ces colonnes n'est pas imposé.
 
 ```{r}
-knitr::kable(
+table_occurrence <- knitr::kable(
   data.frame(
     info = c("Description de la colonne", rep("Exemple de remplissage", 4)),
     success = c(
@@ -114,9 +114,11 @@ knitr::kable(
     )
   ),
   align = "lcc",
-  colnames = c("Exemple de nom de colonne", "nbSuccess", "nbFail"),
+  col.names = c("Exemple de nom de colonne", "nbSuccess", "nbFail"),
   caption = "Tab 2 : Format de données d'occurence"
 )
+
+collapse_rows(table_occurrence, columns = c(1))
 ```
 
 La ligne de code R pour renommer les colonnes est la suivante (les noms sont à adapter en fonction de l'ordre des colonnes, et des variables présentes dans le jeu de données):
@@ -137,7 +139,7 @@ knitr::kable(
     sci = c("Columba palumbus", "Oenanthe oenanthe")
   ),
   align = "ccc",
-  colnames = c("species", "french_name", "scientific_name"),
+  col.names = c("species", "french_name", "scientific_name"),
   caption = "Tab 3 : Format du jeu de données de noms speciesNames.csv"
 )
 ```
