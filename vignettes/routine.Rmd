@@ -259,4 +259,34 @@ En cas de non-convergence d’un de ces modèles, la routine prévoit quatre cas
 *NB : si cette variable est l’année `year`, alors elle ne peut pas être retirée. Les variables polynomiales ne sont pas concernées par cette étape.*
  4. Si malgré ces vérifications, le modèle n’a toujours pas convergé, un deuxième modèle est réalisé en repartant des paramètres estimés dans le modèle non-convergent. Si les estimations de l’année (estimate et erreur standard) de ce deuxième modèle sont suffisamment proches ($10^{-3}$) de ceux du modèle non-convergent, alors on considère qu’on a atteint la convergence.
  
-Le GAMM est réalisé si le paramètre `makeGammTrend` est `TRUE`. NB : la loi « bétabinomiale » n’existe pas dans le package mgcv, et on utilise donc ici la « quasibinomiale » en cas de dispersion. Enfin, si le GAMM ne converge pas, aucun autre essai n’est réalisé. 
+Le GAMM est réalisé si le paramètre `makeGammTrend` est `TRUE`. *NB : la loi « bétabinomiale » n’existe pas dans le package mgcv, et on utilise donc ici la « quasibinomiale » en cas de dispersion. Enfin, si le GAMM ne converge pas, aucun autre essai n’est réalisé.*
+
+L’ensemble des modèles est enregistré dans le dossier **outputs / observatoire1 / models**. Ils portent le nom de l’espèce analysée (e.g, *COLPAL.rdata*) et sont regroupés par type de modèles dans des sous-dossiers dont le nom se réfère au modèle (e.g, **longTermTrend** ou **yearlyVariations**).
+
+#### Spécifications
+
+Finalement, un fichier précisant les spécifications de l’analyse peut être retrouvé à la racine du dossier outputs / observatoire1. Il contient :
+
+ - Toutes les informations relatives à l’analyse réalisée dont : formule du modèle, liste d’espèces, 
+ - Un tableau résumant pour chaque espèce gardée dans l’analyse l’abondance et l’occurrence ;
+ - Un tableau résumant pour chaque modèle (long-terme, court-terme et variations annuelles), les spécifications finalement utilisées pour chaque espèce (voir Tableau).
+ 
+```{r}
+knitr::kable(
+  data.frame(
+    col_names = c("species", "model", "nbRowsInit", "nbRows", "conv", "distribution", "removedVars"),
+    col_descr = c("Nom de code de l'espèce", "Nom du modèle considéré", "Nombre de lignes initiales", "Nombre de lignes finales", "Information sur la convergence des modèles (oui / non)", "Distribution utilisée", "Variables retirées par rapport à la spécification de base")
+  ),
+  align = "ccc",
+  col.names = c("Nom des colonnes", "Description des colonnes"),
+  caption = "Tab 4 : Variables contenues dans le tableau de spécifications"
+)
+```
+
+### 3. Figures et tableaux
+
+Une fois l’ensemble des estimations réalisées, le script *3-make_figures_and_tables.R* permet d’analyser les résultats des modèles. Cela passe notamment par différents tableaux et figures.
+
+#### Tableaux de tendances
+
+Pour la tendance long-terme et les variations annuelles, un tableau est réalisé regroupant pour l’ensemble des espèces, des informations à propos : des estimations, des taux de croissance, des pourcentages d’évolution sur la période, des classes de tendances linéaires et quadratiques. Les variables contenues dans chacun des tableaux sont décrites dans les *Tableau 1 et 2*. Un tableau pour les tendances court-terme est aussi réalisé si le paramètre `makeShortTerm` est `TRUE`. L’ensemble de ces tableaux sont regroupés dans le dossier **outputs / observatoire1 / tables / trends**.
