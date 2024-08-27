@@ -35,7 +35,13 @@ if(is.null(speciesList)){
                      nbYear = 5*length(min(year):max(year)))
   
   speciesList <- grData$species[grData$nbOcc > grData$nbYear]
-
+  
+} else { # allow to filter species with a few or no occurrences 
+  grData = dplyr::group_by(data[data$species %in% speciesList & data[,interestVar[1]]>0,], species) %>%
+    dplyr::summarise(nbOcc = length(unique(ID)),
+                     nbYear = 5*length(min(year):max(year)))
+  
+  speciesList <- grData$species[grData$nbOcc > grData$nbYear]
 }
 
 # If required, initialize distribution ----
