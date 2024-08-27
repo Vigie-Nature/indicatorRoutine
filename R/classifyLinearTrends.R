@@ -7,9 +7,11 @@
 #' 
 #' @param data : a `data.frame` containing formatted long-term or short-term trends
 #' @param distribution : a `string` specifying the distribution under which models were fitted (e.g, gaussian, binomial, poisson, ...)
-#' @param threshold : a `numeric` value specifying the limiting growth rates (i.e, 1 +/- 0.036)
+#' @param thresholdInf : a `numeric` value specifying the limiting growth rates (i.e, 1 - 0.036, for a decline of 30% in 10 years)
+#' @param thresholdSup : a `numeric` value specifying the limiting growth rates (i.e, 1 + 0.026, for an increase of 30% in 10 years)
+
 #' 
-classifyLinearTrends = function(data, distribution, threshold = 0.036){
+classifyLinearTrends = function(data, distribution, thresholdInf = 0.036, thresholdSup = 0.026){
   data$trend = NA
   
   # Erase NA values
@@ -26,17 +28,17 @@ classifyLinearTrends = function(data, distribution, threshold = 0.036){
   
   # Decrease
   data$trend[data$pval < 0.05 & data$estimate < limit] = "Déclin modéré"
-  data$trend[data$pval < 0.05 & data$infIC < (limit - threshold)] = "Déclin modéré à fort"
-  data$trend[data$pval < 0.05 & data$supIC < (limit - threshold)] = "Déclin fort"
+  data$trend[data$pval < 0.05 & data$infIC < (limit - thresholdInf)] = "Déclin modéré à fort"
+  data$trend[data$pval < 0.05 & data$supIC < (limit - thresholdInf)] = "Déclin fort"
   
   # Increase
   data$trend[data$pval < 0.05 & data$estimate > limit] = "Augmentation modérée"
-  data$trend[data$pval < 0.05 & data$supIC > (limit + threshold)] = "Augmentation modérée à forte"
-  data$trend[data$pval < 0.05 & data$infIC > (limit + threshold)] = "Augmentation forte"
+  data$trend[data$pval < 0.05 & data$supIC > (limit + thresholdSup)] = "Augmentation modérée à forte"
+  data$trend[data$pval < 0.05 & data$infIC > (limit + thresholdSup)] = "Augmentation forte"
   
   # Stability
-  data$trend[data$pval > 0.05 & (data$infIC < (limit - threshold)|data$supIC > (limit + threshold))] = "Incertain"
-  data$trend[data$pval > 0.05 & data$infIC >= (limit - threshold) & data$supIC <= (limit + threshold)] = "Stable"
+  data$trend[data$pval > 0.05 & (data$infIC < (limit - thresholdInf)|data$supIC > (limit + thresholdSup))] = "Incertain"
+  data$trend[data$pval > 0.05 & data$infIC >= (limit - thresholdInf) & data$supIC <= (limit + thresholdSup)] = "Stable"
   
   # Turn back coefficients
   if(distribution != "gaussian"){

@@ -4,12 +4,14 @@
 #' 
 #' @param data : a `data.frame` containing formatted long or short-term trends
 #' @param type : a `string` either "barplot" or "errorbar" for the type of plot required
-#' @param threshold : a `numeric` value specifying the threshold to classify btw moderate and strong decline. 
-#' NB : 0.036 corresponds to the Red List Criterion i.e, a decline of 50% over 10 years
+#' @param thresholdInf : a `numeric` value specifying the lower threshold to classify btw moderate and strong decline. 
+#' NB : 0.036 corresponds to the Red List Criterion i.e, a decline of 30% over 10 years
+#' #' @param thresholdSup : a `numeric` value specifying the upper threshold to classify btw moderate and strong increase. 
+#' NB : 0.036 corresponds to the Red List Criterion i.e, a decline of 30% over 10 years
 #' @param path : a `string` specifying where the plot should be saved
 #' 
 plotLinearClassification <- function(data, distribution, type = "barplot", 
-                                     threshold = 0.036, path = ""){
+                                     thresholdInf = 0.036, thresholdSup = 0.026, path = ""){
   
   # Erase NA values
   data = data[!is.na(data$trend),]
@@ -86,10 +88,10 @@ plotLinearClassification <- function(data, distribution, type = "barplot",
       ggplot2::geom_vline(xintercept = zeroVal, linetype = "dashed", col = "gray") +
       
       # Add vertical line for strong negative trend
-      ggplot2::geom_vline(xintercept = zeroVal - threshold, linetype = "dashed", col = "#d61a0d") +
+      ggplot2::geom_vline(xintercept = zeroVal - thresholdInf, linetype = "dashed", col = "#d61a0d") +
       
       # Add vertical line for strong positive effect
-      ggplot2::geom_vline(xintercept = zeroVal + threshold, linetype = "dashed", col = "#274034") +
+      ggplot2::geom_vline(xintercept = zeroVal + thresholdSup, linetype = "dashed", col = "#274034") +
       
       # Change color
       ggplot2::scale_color_manual("Classification", values = refCols) +
