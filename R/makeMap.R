@@ -75,7 +75,7 @@ makeMap <- function(data, speciesList, interestVar, path){
       # dataInter = dataInter[dataInter$nbSites >= 2, ]
       
       # Filter for department of presence
-      dataFrance <- dataFrance[dataFrance$region %in% unique(dataInter$region),]
+      # dataFrance <- dataFrance[dataFrance$region %in% unique(dataInter$region),]
       
       #############################
       # PLOT FORMATTING ARGUMENTS #
