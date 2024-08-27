@@ -28,12 +28,12 @@ classifyLinearTrends = function(data, distribution, thresholdInf = 0.036, thresh
   
   # Decrease
   data$trend[data$pval < 0.05 & data$estimate < limit] = "Déclin modéré"
-  data$trend[data$pval < 0.05 & data$infIC < (limit - thresholdInf)] = "Déclin modéré à fort"
+  data$trend[data$pval < 0.05 & data$estimate < (limit - thresholdInf)] = "Déclin modéré à fort"
   data$trend[data$pval < 0.05 & data$supIC < (limit - thresholdInf)] = "Déclin fort"
   
   # Increase
   data$trend[data$pval < 0.05 & data$estimate > limit] = "Augmentation modérée"
-  data$trend[data$pval < 0.05 & data$supIC > (limit + thresholdSup)] = "Augmentation modérée à forte"
+  data$trend[data$pval < 0.05 & data$estimate > (limit + thresholdSup)] = "Augmentation modérée à forte"
   data$trend[data$pval < 0.05 & data$infIC > (limit + thresholdSup)] = "Augmentation forte"
   
   # Stability
