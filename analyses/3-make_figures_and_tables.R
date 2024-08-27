@@ -70,13 +70,26 @@ save(regularPlots, file = here::here("outputs", repo, "figures", "trends", "regu
 pathToPlot = here::here("outputs", repo, "figures", "classification")
 dir.create(path = pathToPlot, showWarnings = FALSE)
 
+# Create filter for species with low annual occurrences
+
+## Measure for each species the median of the number of sites per species x year
+dataLowOcc = dplyr::group_by(data[data[,interestVar[1]] >0,], species, year) %>%
+  dplyr::summarise(nbSite = dplyr::n()) %>%
+  dplyr::group_by(species) %>%
+  dplyr::summarise(medYear = median(nbSite))
+
+### Extract species with median occurrence inferior to 12
+spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
+
+
+
 ###   LINEAR   ###
 cat("Linear trend classification in progress")
 # For each species, match a type of linear trend
-dataLinearClassif_LT = classifyLinearTrends(dataLongTermTrend, distribution, threshold = 0.036)
+dataLinearClassif_LT = classifyLinearTrends(dataLongTermTrend[!dataLongTermTrend$species %in% spToRemove,], distribution, threshold = 0.036)
 
 if(makeShortTrend){
-  dataLinearClassif_ST = classifyLinearTrends(dataShortTermTrend, distribution, threshold = 0.036)
+  dataLinearClassif_ST = classifyLinearTrends(dataShortTermTrend[!dataShortTermTrend$species %in% spToRemove,], distribution, threshold = 0.036)
 }
 cat(" --> DONE\n")
 
@@ -97,8 +110,8 @@ dataQuadrTrends <- NULL
 if(makeQuadraticTrend){
   # Format quadratic trends into table
   cat("Formatting")
-  dataRawQuadrTrend = formatTrendEstimates(data, speciesList, repo, "rawQuadraticTrend")
-  dataOrthoQuadrTrend = formatTrendEstimates(data, speciesList, repo, "orthoQuadraticTrend")
+  dataRawQuadrTrend = formatTrendEstimates(data, speciesList[!speciesList %in% spToRemove], repo, "rawQuadraticTrend")
+  dataOrthoQuadrTrend = formatTrendEstimates(data, speciesList[!speciesList %in% spToRemove], repo, "orthoQuadraticTrend")
   cat(" --> DONE\n")
   
   # For each species, match a type of quadratic trend
