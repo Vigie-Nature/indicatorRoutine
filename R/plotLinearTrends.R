@@ -25,7 +25,7 @@ plotLinearTrends <- function(speciesList, dataLongTerm, dataYearlyVariations, da
     dataLT_sp = dataLongTerm[dataLongTerm$species == sp,]
     dataVar_sp = dataYearlyVariations[dataYearlyVariations$species == sp,]
     
-    if(nrow(dataLT_sp)==0|nrow(dataLT_sp)==0) {
+    if(nrow(dataLT_sp)==0|nrow(dataVar_sp)==0) {
       message('No plot for species ', sp, ': no model was found for either ',
               'long-term trend or yearly variations\n')
     plot = NULL
