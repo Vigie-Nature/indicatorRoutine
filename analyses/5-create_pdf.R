@@ -54,29 +54,7 @@ for (sp in speciesList){
   sumOccurrenceSp_lastYear = makeSummaryTable(data, sp, interestVar, year = max(data$year))
   sumOccurrenceSp = rbind(sumOccurrenceSp, sumOccurrenceSp_lastYear)
   
-  # Make annual summary table
-  if(length(interestVar) == 1){
-    
-    # Filter for considered species
-    dataPres_Sp = data[data$species == sp & data[,interestVar[1]]>0,]
-    
-    # Extract the response variable values ----
-    abundance = dataPres_Sp[,interestVar]
-    
-    # sum occurences and abundances
-    sumAnnualOcc <- dataPres_Sp %>% 
-      dplyr::group_by(year) %>%
-      dplyr::summarise(Occurrences = length(unique(site)),
-                       Abondance = sum(!!dplyr::sym(interestVar))) %>%
-      dplyr::rename(Année = year)
-  }else{
-    
-    # sum occurences
-    sumAnnualOcc <- dataPres_Sp %>% 
-      dplyr::group_by(year) %>%
-      dplyr::summarise(occurrences = length(unique(site)))%>%
-      dplyr::rename(Year = year)
-  }
+  AnnualSummarySp = makeAnnualSummaryTable(data, sp, interestVar)
   
   # Path to occurrence map
   pathToMapSp = here::here("outputs", repo, "figures", "maps", paste0(sp, ".png"))
@@ -106,7 +84,7 @@ for (sp in speciesList){
                                   obs = obs,
                                   spatialScale = spatialScale,
                                   sumOccurrenceSp = sumOccurrenceSp,
-                                  sumAnnualOcc = sumAnnualOcc,
+                                  AnnualSummarySp = AnnualSummarySp,
                                   dataLongTermTrendSp = dataLongTermTrendSp,
                                   dataShortTermTrendSp = dataShortTermTrendSp,
                                   pathToMapSp = pathToMapSp,

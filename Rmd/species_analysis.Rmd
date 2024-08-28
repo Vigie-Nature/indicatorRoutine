@@ -6,7 +6,7 @@ params:
   sp_french: ""
   sp_latin: ""
   sumOccurrenceSp: ""
-  sumAnnualOcc: ""
+  AnnualSummarySp: ""
   dataLongTermTrendSp: ""
   dataShortTermTrendSp: ""
   pathToPlotSp: ""
@@ -41,7 +41,7 @@ sp_latin = params$sp_latin
 obs = params$obs
 spatialScale = params$spatialScale
 sumOccurrenceSp = params$sumOccurrenceSp
-sumAnnualOcc = params$sumAnnualOcc
+AnnualSummarySp = params$AnnualSummarySp
 dataLongTermTrendSp = params$dataLongTermTrendSp
 dataShortTermTrendSp = params$dataShortTermTrendSp
 pathToPlotSp = params$pathToPlotSp
@@ -88,8 +88,9 @@ kableExtra::kbl(sumOccurrenceSp, align = "c", booktabs = T, centering = T) %>%
 ```
 
 \
-*(a) nombre de visites où l'espèce a été vue ramené à l'ensemble des visites*\
-*(b) abondance totale ramenée au nombre de visites sur les sites où l'espèce a été vue au moins une fois*
+*(a) nombre total de carrés conservés pour les analyses, les sites visités une seule fois étant filtrés*\
+*(b) nombre de visites où l'espèce a été vue ramené à l'ensemble des visites*\
+*(c) abondance totale ramenée au nombre de visites sur les sites où l'espèce a été vue au moins une fois*
 
 ## \textcolor{myorange}{Répartition spatiale depuis `r minYear`}
 
@@ -190,22 +191,25 @@ Changement d'abondance : \textcolor{myorange}{`r perc_ST`\% [`r infPerc_ST`\% ; 
 `r if(is.null(dataShortTermTrendSp)){"-->"}`
 :::
 \
-*Les catégories de tendances sont basées sur les critères de l'EBCC ou de l'UICN. Cf. détail des critères en p3.*
+*Les catégories de tendances sont basées sur les critères de l'EBCC ou de l'UICN. Cf. détail des critères en dernière page.*
 \
-\newpage
-*Table des occurrences annuelles (nombre de sites où l'espèce a été observée) et des abondances annuelles (nombre d'individus contactés dans l'ensemble des sites)*
+\
+\
+\begin{minipage}{\textwidth}
+Table des occurrences annuelles (nombre de sites où l'espèce a été observée) et des abondances annuelles (nombre d'individus contactés dans l'ensemble des sites). Le nombre total de carrés correspond aux carrés conservés pour les analyses, les sites visités une seule fois étant filtrés.
 ```{r fig.align = "center", echo = FALSE}
 `%>%` = magrittr::`%>%`
 
-kableExtra::kbl(sumAnnualOcc, align = "c", booktabs = T, centering = T, longtable = TRUE) %>%
+kableExtra::kbl(AnnualSummarySp, align = "c", booktabs = T, centering = T, longtable = TRUE) %>%
   kableExtra::row_spec(0, color = "#E68146", bold = T, font_size = 11) %>%
-  kableExtra::row_spec(1:nrow(sumAnnualOcc), color = "#E68146", font_size = 11) %>%
+  kableExtra::row_spec(1:nrow(AnnualSummarySp), color = "#E68146", font_size = 11) %>%
   kableExtra::column_spec(2, width = '2.5cm') %>%
-  kableExtra::column_spec(3, width = '2cm')
+  kableExtra::column_spec(3, width = '2.5cm') %>%
+    kableExtra::column_spec(4, width = '2.5cm')
 
 
 ```
-
+\end{minipage}
 
 \newpage
 
