@@ -8,7 +8,7 @@ cat("# IMPORT AND CLEAN DATA #\n")
 #######################################
 
 # Path to data ----
-dataPath <- here::here("data", repo, "countingData.csv")
+dataPath <- here::here("data", repo, Data)
 
 # Read data ----
 data <- data.table::fread(file = dataPath, encoding = "UTF-8", drop = "V1")

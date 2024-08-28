@@ -9,6 +9,10 @@ cat("# LOAD PARAMETERS #\n")
 # Exemple : "STOC_2023_Ile_de_France"
 repo <- "test"
 
+# Nom du jeu de données .csv à charger (sans caractères spéciaux)
+# Exemple : "countingData.csv"
+Data <- "test.csv"
+
 # Nom de l'observatoire étudié (sans caractères spéciaux)
 obs <- "random"
 
