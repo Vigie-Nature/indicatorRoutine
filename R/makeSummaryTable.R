@@ -68,8 +68,8 @@ makeSummaryTable <- function(data, sp, interestVar, year = NULL){
                          meanInd = meanInd)
   
   # Change colnames
-  colnames(sumTable) <- c("Nb carrés occupés", "Total carrés", "Occurrence (a)", 
-                          "Total ind. contactés", "Moyenne ind. contactés (b)")
+  colnames(sumTable) <- c("Nb carrés occupés", "Total carrés (a)", "Occurrence (b)", 
+                          "Total ind. contactés", "Moyenne ind. contactés (c)")
   # Change row.names
   if(is.null(year)){
     rowName <- paste("Depuis", min(data$year))
