@@ -72,7 +72,7 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
     ggplot2::geom_ribbon(ggplot2::aes(ymin = infIndex, ymax = supIndex,  fill = group), alpha = .1) +
     
     # Smooth the variations as a linear trend
-    ggplot2::geom_smooth(data = dataVar, se = FALSE, method = "lm", ggplot2::aes(col = group), linetype = "dotted") +
+    #ggplot2::geom_smooth(data = dataVar, se = FALSE, method = "lm", ggplot2::aes(col = group), linetype = "dotted") +
     
     # Add a title
     ggplot2::ggtitle(plotTitle) +
