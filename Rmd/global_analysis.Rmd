@@ -68,6 +68,8 @@ knitr::include_graphics(pathToGroupPlot)
 ```
 
 `r if(!makeGroupPlot){'<!--'}`
+
+
 :::: {.OrangeGroupBox data-latex=""}
 
 ```{r groupNames, echo = FALSE, eval = makeGroupPlot, results="asis"}
@@ -84,7 +86,6 @@ if(is.null(groupComp)){
 }
 
 ```
-
 ::::
 
 \newpage
@@ -123,13 +124,13 @@ if(is.null(groupComp) | !makeGroupPlot){
 __\textcolor{myorange}{*}__ _\textcolor{myorange}{espèces dont l'occurrence annuelle est trop faible (médiane inférieure à 12) pour que la tendance calculée soit fiable}_ \
 
 :::: {.OrangeGroupBox data-latex=""}
-**Augmentation forte :** taux annuel de croissance et intervalle de confiance supérieurs à 1.036.\
+**Augmentation forte :** taux annuel de croissance et intervalle de confiance supérieurs à 1.026.\
 
-**Augmentation modérée à forte:** taux annuel de croissance et intervalle de confiance supérieurs à 1 et recoupant 1.036. \
+**Augmentation modérée à forte:** taux annuel de croissance et intervalle de confiance supérieurs à 1 et recoupant 1.026. \
 
-**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.036.\
+**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.026.\
 
-**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle (0.964 ; 1.036). \
+**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle (0.964 ; 1.026). \
 
 **Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.964 et 1. \
 
@@ -137,7 +138,7 @@ __\textcolor{myorange}{*}__ _\textcolor{myorange}{espèces dont l'occurrence ann
 
 **Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.964.\
 
-**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.964 ; 1.036). \
+**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.964 ; 1.026). \
 
 *NB : ces catégories sont basées sur le critère Liste Rouge de classement des espèces comme Vulnérable (réduction de population supérieure à 30% sur 10 ans)*
 
