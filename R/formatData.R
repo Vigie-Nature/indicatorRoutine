@@ -37,9 +37,9 @@ formatData = function(data, yearRange, interestVar, fixedEffects, factorVariable
   
   # Select only column of interest ----
   vars = unique(c("ID", "species", "site", "year", "day", "point",
-                  "longitude", "latitude", interestVar, fixedEffects, 
+                  "longitude", "latitude", "saison", interestVar, fixedEffects, 
                   factorVariables, poly, unlist(randomEffects), 
-                  unlist(nestedEffects), unlist(slopeRandomEffects)))
+                  unlist(nestedEffects), unlist(slopeRandomEffects))) # var "saison" has been added a posteriori and is used for SHOC trends
   
   vars = vars[vars %in% colnames(data)]
   data = data[,colnames(data) %in% vars]
