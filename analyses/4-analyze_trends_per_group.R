@@ -18,6 +18,9 @@ dataYearlyVariations = read.csv(pathToYV)
 #############################################
 
 if(makeGroupPlot){
+  if(is.null(groupComp)) {
+    groupComp <- list(c(speciesList))
+  }
   # Reservoirs of names and colors for groups
   allNames = c("A", "B", "C", "D", "E", "F", "G")
   allCols = c("#1FA3D4","#F3AA20", "#235D3A", "#58094F", "#FFBFC5")
@@ -53,6 +56,9 @@ if(makeGroupPlot){
 ##########################################################
 #   DEAL WITH MIS-MATCH FOR COMPOSITION & SPECIES-LIST   #
 ##########################################################
+
+
+if(makeGroupPlot){
 
   # Keep species in composition, only if present in species list
   groupComp = lapply(groupComp, function(gp){
@@ -120,7 +126,7 @@ if(makeGroupPlot){
     groupNames = groupNames[-indGroup]
     groupCols = groupCols[-indGroup]
   }
-
+}
 
 ##################
 #   MAKE PLOTS   #
