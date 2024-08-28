@@ -54,71 +54,72 @@ if(makeGroupPlot){
 #   DEAL WITH MIS-MATCH FOR COMPOSITION & SPECIES-LIST   #
 ##########################################################
 
-# Keep species in composition, only if present in species list
-groupComp = lapply(groupComp, function(gp){
-  ind = which(!is.na(match(gp, speciesList)))
-  if(length(ind) > 0){
-    newGp = gp[ind]
-  }else{
-    newGp = c()
-  }
-  return(newGp)
-})
-
-# Keep species in composition, only if no infinite parameter
-## Extract species that must be removed from groups
-spToRemove = c()
-
-# Measure for each species the median of the number of sites per species x year
-dataLowOcc = dplyr::group_by(data[data[,interestVar[1]] >0,], species, year) %>%
-  dplyr::summarise(nbSite = dplyr::n()) %>%
-  dplyr::group_by(species) %>%
-  dplyr::summarise(medYear = median(nbSite))
-
-# Extract species with median occurrence inferior to 12
-spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
-
-indInf = unique(c(which(is.infinite(dataLongTermTrend$supGR)),
-                  which(is.infinite(dataLongTermTrend$infGR)),
-                  which(is.infinite(dataLongTermTrend$GR))))
-
-if(length(indInf) > 0){
-  spToRemove = c(spToRemove, unique(dataLongTermTrend$species[indInf]))
-}
-
-indInfVar = unique(c(which(is.infinite(dataYearlyVariations$supGR)),
-                     which(is.infinite(dataYearlyVariations$infGR)),
-                     which(is.infinite(dataYearlyVariations$GR))))
-
-if(length(indInfVar) > 0){
-  spToRemove = c(spToRemove, unique(dataYearlyVariations$species[indInfVar]))
-}
-
-## Change group composition accordingly
-if(length(spToRemove)>0){
+  # Keep species in composition, only if present in species list
   groupComp = lapply(groupComp, function(gp){
-    ind = which(!is.na(match(gp, spToRemove)))
-    newGp = gp
+    ind = which(!is.na(match(gp, speciesList)))
     if(length(ind) > 0){
-      newGp = gp[-ind]
+      newGp = gp[ind]
+    }else{
+      newGp = c()
     }
     return(newGp)
   })
-}
-
-
-# Check that all groups are informed (no NULL group)
-indGroup = unlist(sapply(1:length(groupComp), function(i){
-  if(is.null(groupComp[[i]])){
-    return(i)
+  
+  # Keep species in composition, only if no infinite parameter
+  ## Extract species that must be removed from groups
+  spToRemove = c()
+  
+  ## Measure for each species the median of the number of sites per species x year
+  dataLowOcc = dplyr::group_by(data[data[,interestVar[1]] >0,], species, year) %>%
+    dplyr::summarise(nbSite = dplyr::n()) %>%
+    dplyr::group_by(species) %>%
+    dplyr::summarise(medYear = median(nbSite))
+  
+  ### Extract species with median occurrence inferior to 12
+  spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
+  
+  ## Extract species with large IC
+  indInf = unique(c(which(is.infinite(dataLongTermTrend$supGR)),
+                    which(is.infinite(dataLongTermTrend$infGR)),
+                    which(is.infinite(dataLongTermTrend$GR))))
+  
+  if(length(indInf) > 0){
+    spToRemove = c(spToRemove, unique(dataLongTermTrend$species[indInf]))
   }
-}))
-
-if(!is.null(indGroup)){
-  groupComp[indGroup] = NULL
-  groupNames = groupNames[-indGroup]
-  groupCols = groupCols[-indGroup]
-}
+  
+  indInfVar = unique(c(which( dataYearlyVariations$supGR > 1e+03),
+                       which( dataYearlyVariations$infGR > 1e+03),
+                       which( dataYearlyVariations$GR > 1e+03)))
+  
+  if(length(indInfVar) > 0){
+    spToRemove = c(spToRemove, unique(dataYearlyVariations$species[indInfVar]))
+  }
+  
+  ## Change group composition accordingly
+  if(length(spToRemove)>0){
+    groupComp = lapply(groupComp, function(gp){
+      ind = which(!is.na(match(gp, spToRemove)))
+      newGp = gp
+      if(length(ind) > 0){
+        newGp = gp[-ind]
+      }
+      return(newGp)
+    })
+  }
+  
+  
+  # Check that all groups are informed (no NULL group)
+  indGroup = unlist(sapply(1:length(groupComp), function(i){
+    if(is.null(groupComp[[i]])){
+      return(i)
+    }
+  }))
+  
+  if(!is.null(indGroup)){
+    groupComp[indGroup] = NULL
+    groupNames = groupNames[-indGroup]
+    groupCols = groupCols[-indGroup]
+  }
 
 
 ##################
