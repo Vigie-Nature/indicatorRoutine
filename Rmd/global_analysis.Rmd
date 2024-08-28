@@ -87,6 +87,7 @@ if(is.null(groupComp)){
 
 ```
 ::::
+__\textcolor{myorange}{}__ _\textcolor{myorange}{Les espèces dont l'occurrence annuelle est trop faible (médiane inférieure à 12) pour que la tendance calculée soit fiable sont notées dans le tableau ci-dessous avec une astérisque. Ces dernières, ainsi que les espèces dont les variations annuelles sont incertaines sont retirées des listes de spécialistes pour le calcul des tendances}_ \
 
 \newpage
 `r if(!makeGroupPlot){'-->'}`
