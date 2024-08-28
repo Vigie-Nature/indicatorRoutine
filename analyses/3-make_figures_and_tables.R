@@ -41,7 +41,7 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 
 ## For each species, create the plot
 cat("Trend plots with uncertainty in progress...")
-uncertainPlots = plotLinearTrends(speciesList = speciesList, dataName = dataName, dataLongTerm = dataLongTermTrend, 
+uncertainPlots = plotLinearTrends(speciesList = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
                                     dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
                                     distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
                                     N = 100, uncertainty = TRUE, weight = TRUE, save = TRUE, path = pathToPlot)
@@ -55,7 +55,7 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 
 ## For each species, create the plot
 cat("Trend plots without uncertainty in progress...")
-regularPlots = plotLinearTrends(sp = speciesList, dataName = dataName, dataLongTerm = dataLongTermTrend, 
+regularPlots = plotLinearTrends(sp = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
                                 dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
                                 distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
                                 N = 100, uncertainty = FALSE, weight = TRUE, save = TRUE, path = pathToPlot)
