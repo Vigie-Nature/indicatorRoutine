@@ -36,8 +36,9 @@ for (sp in speciesList){
     dataName_sp = dataName[dataName$species == sp,]
     sp_french = dataName_sp$french_name
     sp_latin = dataName_sp$scientific_name
+    sp_french_simpld = dataName_sp$french_name_simplified
   }else{
-    sp_french = sp_latin = sp
+    sp_french = sp_latin = sp_french_simpld = sp
   }
   
   # Filter long term trends
@@ -96,11 +97,11 @@ for (sp in speciesList){
                     output_dir = pathToPdfSp,
                     
                     # Spécifier le fichier
-                    output_file = sp)
+                    output_file = sp_french_simpld)
   
   # Erase automatically created documents
-  unlink(here::here("outputs", repo, "pdf", "species", paste0(sp, ".tex")))
-  unlink(here::here("Rmd", paste0(sp, ".log")))
+  unlink(here::here("outputs", repo, "pdf", "species", paste0(sp_french_simpld, ".tex")))
+  unlink(here::here("Rmd", paste0(sp_french_simpld, ".log")))
   
 }
 
