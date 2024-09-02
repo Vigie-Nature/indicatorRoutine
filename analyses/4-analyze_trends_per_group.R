@@ -85,17 +85,17 @@ if(makeGroupPlot){
   spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
   
   ## Extract species with large IC
-  indInf = unique(c(which(is.infinite(dataLongTermTrend$supGR)),
-                    which(is.infinite(dataLongTermTrend$infGR)),
-                    which(is.infinite(dataLongTermTrend$GR))))
+  indInf = unique(c(which(is.infinite(dataLongTermTrend$supGR) | is.na(dataLongTermTrend$supGR)),
+                    which(is.infinite(dataLongTermTrend$infGR) | is.na(dataLongTermTrend$infGR)),
+                    which(is.infinite(dataLongTermTrend$GR))   | is.na(dataLongTermTrend$GR)))
   
   if(length(indInf) > 0){
     spToRemove = c(spToRemove, unique(dataLongTermTrend$species[indInf]))
   }
   
-  indInfVar = unique(c(which( dataYearlyVariations$supGR > 1e+03),
-                       which( dataYearlyVariations$infGR > 1e+03),
-                       which( dataYearlyVariations$GR > 1e+03)))
+  indInfVar = unique(c(which( dataYearlyVariations$supGR > 1e+03) | is.na(dataYearlyVariations$supGR),
+                       which( dataYearlyVariations$infGR > 1e+03) | is.na(dataYearlyVariations$infGR),
+                       which( dataYearlyVariations$GR > 1e+03)    | is.na(dataYearlyVariations$GR)))
   
   if(length(indInfVar) > 0){
     spToRemove = c(spToRemove, unique(dataYearlyVariations$species[indInfVar]))
