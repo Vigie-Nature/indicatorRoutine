@@ -51,6 +51,22 @@ makeGroupSummaryTable <- function(dataTrend, dataObs, makeGroupPlot, groupComp, 
   # Add an * to species with low occurrence
   dataTrend$french_name[dataTrend$species %in% lowOccSp] = paste0(dataTrend$french_name[dataTrend$species %in% lowOccSp], "*")
   
+  ## Extract species with NA estimates
+  
+  spToRemove = c()
+  
+  indInf = unique(c(which(is.na(dataTrend$supGR)),
+                    which(is.na(dataTrend$infGR)),
+                    which(is.na(dataTrend$GR))))
+  
+  if(length(indInf) > 0){
+    spToRemove = c(spToRemove, unique(dataTrend$species[indInf]))
+  }
+  
+  # Remove sp with NA trends
+  if(length(spToRemove)>0){
+    dataTrend <- dataTrend[!dataTrend$species %in% spToRemove,]
+  }
   # Arrange per species name
   dataTrend = dplyr::arrange(dataTrend, french_name)
   
