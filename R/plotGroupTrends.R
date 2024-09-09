@@ -49,10 +49,10 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
   dataVar$saison <- paste(dataVar$year, dataVar$year+1, sep = "-")
   
   if("saison" %in% colnames(data)){
-    saison_labels <- dataVar$saison
+    saison_labels <- unique(dataVar$saison)
     x_axisName <- "Hiver"
   }  else {
-    saison_labels <- dataVar$year
+    saison_labels <- unique(dataVar$year)
     x_axisName <- "Année"
   }
   
@@ -103,8 +103,8 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
     # Format fill values
     ggplot2::scale_fill_manual(name = "", values = groupCols, labels = groupLabels,
                                guide = ggplot2::guide_legend(nrow = nrow, by.row = FALSE)) 
-    
-    
+  
+  
   # Save the plot as png
   pathToPlot = here::here("outputs", repo, "figures", "group")
   

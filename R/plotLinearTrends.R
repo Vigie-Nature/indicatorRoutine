@@ -47,7 +47,7 @@ plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariatio
         saison_labels <- dataVar_sp$saison
         x_axisName <- "Hiver"
       }  else {
-        saison_labels <- dataVar_sp$year
+        saison_labels <- yearValues
         x_axisName <- "Année"
       }
       

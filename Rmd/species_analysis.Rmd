@@ -152,7 +152,7 @@ catEBCC_ST = dataShortTermTrendSp$trendEBCC
 knitr::include_graphics(pathToPlotSp)
 ```
 
-`r if(warningNoPlot){"<!--"}` *NB : le chiffre bleu sur le graphique (`r GR_LT`) correspond au taux de croissance annuel moyen sur l'ensemble de la période, le chiffre rouge à celui sur les dix dernières années.* `r if(warningNoPlot){"-->"}`
+`r if(warningNoPlot){"<!--"}` *NB : le chiffre bleu sur le graphique (`r GR_LT`) correspond au taux de croissance annuel moyen sur l'ensemble de la période; si le calcul des tendances court terme est réalisé, le chiffre rouge correspond à celui sur les dix dernières années.* `r if(warningNoPlot){"-->"}`
 
 \
 
