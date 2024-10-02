@@ -46,7 +46,7 @@ dataTable = params$dataTable
 ```{r globalVar, include=FALSE}
 minYear = min(unique(dataLongTermTrend$minYear[!is.na(dataLongTermTrend$minYear)]))
 maxYear = max(unique(dataLongTermTrend$maxYear[!is.na(dataLongTermTrend$maxYear)]))
-period = maxYear - minYear
+period = maxYear - minYear + 1
 header = paste0("Tendances ", obs, " - ", spatialScale, " - ", minYear, "/", maxYear)
 ```
 
