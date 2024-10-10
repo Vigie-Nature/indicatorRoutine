@@ -176,6 +176,11 @@ Changement d'abondance : \textcolor{myorange}{`r perc_LT`\% [`r infPerc_LT`\% ; 
 
 `r if(is.null(dataShortTermTrendSp)){"<!--"}`
 
+```{r, echo=FALSE}
+if(is.null(dataShortTermTrendSp)){
+  catEBCC_ST = cat_ST = GR_ST = infGR_ST = supGR_ST = perc_ST = infPerc_ST = supPerc_ST = NULL
+} 
+```
 ::: {.col data-latex="{0.499\\textwidth}"}
 ::: {.OrangeMediumBox data-latex=""}
 \large \textcolor{myorange}{Court terme (`r maxYear - 10` - `r maxYear`)}\
