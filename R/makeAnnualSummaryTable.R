@@ -30,24 +30,27 @@ if(length(interestVar) == 1){
                        Abondance = sum(!!dplyr::sym(interestVar))) %>%
       dplyr::left_join(sites, by = "year") 
     
+    # Change colnames
+    colnames(sumAnnualOcc) <- c("Année", "Nb carrés occupés", "Total ind. contactés","Total carrés")
+    
   }else{
     
     # Extract points that have been visited each year
     sites <- data %>% 
       dplyr::group_by(year) %>%
-      dplyr::summarise(nbSites = length(unique(paste0(data$site, data$point))))
+      dplyr::summarise(nbSites = length(unique(paste0(site,point))))
     
     sumAnnualOcc <- dataPres_Sp %>% 
       dplyr::group_by(year) %>%
-      dplyr::summarise(Occurrences = length(unique(site)),
+      dplyr::summarise(Occurrences = length(unique(paste0(site,point))),
                        Abondance = sum(!!dplyr::sym(interestVar))) %>%
-      dplyr::left_join(sites, by = "year") %>%
-      dplyr::select(year, Occurrences, nbSites, Abondance)
+      dplyr::left_join(sites, by = "year") 
+    
+    # Change colnames
+    colnames(sumAnnualOcc) <- c("Année", "Nb points occupés", "Total ind. contactés","Total points")
     
   }
   
-  # Change colnames
-  colnames(sumAnnualOcc) <- c("Année", "Nb carrés occupés", "Total ind. contactés","Total carrés")
   
 }else{
   
@@ -62,22 +65,20 @@ if(length(interestVar) == 1){
   sumAnnualOcc <- dataPres_Sp %>% 
     dplyr::group_by(year) %>%
     dplyr::summarise(Occurrences = length(unique(site))) %>%
-    dplyr::left_join(sites, by = "year") %>%
-    dplyr::select(year, Occurrences, nbSites, Abondance)
+    dplyr::left_join(sites, by = "year") 
   
   }else{
     
     # Extract sites that have been visited each year
     sites <- data %>% 
       dplyr::group_by(year) %>%
-      dplyr::summarise(nbSites = length(unique(paste0(data$site, data$point))))
+      dplyr::summarise(nbSites = length(unique(paste0(site,point))))
     
     # sum occurences
     sumAnnualOcc <- dataPres_Sp %>% 
       dplyr::group_by(year) %>%
-      dplyr::summarise(Occurrences = length(unique(paste0(data$site, data$point)))) %>%
-      dplyr::left_join(sites, by = "year") %>%
-      dplyr::select(year, Occurrences, nbSites, Abondance)
+      dplyr::summarise(Occurrences = length(unique(paste0(site,point)))) %>%
+      dplyr::left_join(sites, by = "year")
     
   }
   
