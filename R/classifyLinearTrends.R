@@ -11,7 +11,7 @@
 #' @param thresholdSup : a `numeric` value specifying the limiting growth rates (i.e, 1 + 0.026, for an increase of 30% in 10 years)
 
 #' 
-classifyLinearTrends = function(data, distribution, thresholdInf = 0.036, thresholdSup = 0.026){
+classifyLinearTrends = function(data, distribution, thresholdInf = 0.039, thresholdSup = 0.030){
   data$trend = NA
   
   # Erase NA values

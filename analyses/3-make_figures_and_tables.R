@@ -86,22 +86,22 @@ spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
 ###   LINEAR   ###
 cat("Linear trend classification in progress")
 # For each species, match a type of linear trend
-dataLinearClassif_LT = classifyLinearTrends(dataLongTermTrend, distribution, thresholdInf = 0.036, thresholdSup = 0.026)
+dataLinearClassif_LT = classifyLinearTrends(dataLongTermTrend, distribution, thresholdInf = 0.039, thresholdSup = 0.030)
 
 if(makeShortTrend){
-  dataLinearClassif_ST = classifyLinearTrends(dataShortTermTrend, distribution, thresholdInf = 0.036, thresholdSup = 0.026)
+  dataLinearClassif_ST = classifyLinearTrends(dataShortTermTrend, distribution, thresholdInf = 0.039, thresholdSup = 0.030)
 }
 cat(" --> DONE\n")
 
 # Plot a graph that sums up those quadratic trends
 ## Barplot
 cat("Linear trend classification (barplot) in progress")
-plotLinearClassification(dataLinearClassif_LT[!dataLinearClassif_LT$species %in% spToRemove,], distribution, type = "barplot", thresholdInf = 0.036, thresholdSup = 0.026, path = pathToPlot)
+plotLinearClassification(dataLinearClassif_LT[!dataLinearClassif_LT$species %in% spToRemove,], distribution, type = "barplot", thresholdInf = 0.039, thresholdSup = 0.030, path = pathToPlot)
 cat(" --> DONE\n")
 
 ## Errorbar
 cat("Linear trend classification (errorbar) in progress")
-plotLinearClassification(dataLinearClassif_LT[!dataLinearClassif_LT$species %in% spToRemove,], distribution, type = "errorbar", thresholdInf = 0.036, thresholdSup = 0.026, path = pathToPlot)
+plotLinearClassification(dataLinearClassif_LT[!dataLinearClassif_LT$species %in% spToRemove,], distribution, type = "errorbar", thresholdInf = 0.039, thresholdSup = 0.030, path = pathToPlot)
 cat(" --> DONE\n")
 
 ###   QUADRATIC   ###

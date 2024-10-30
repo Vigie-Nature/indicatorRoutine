@@ -11,7 +11,7 @@
 #' @param path : a `string` specifying where the plot should be saved
 #' 
 plotLinearClassification <- function(data, distribution, type = "barplot", 
-                                     thresholdInf = 0.036, thresholdSup = 0.026, path = ""){
+                                     thresholdInf = 0.039, thresholdSup = 0.030, path = ""){
   
   # Erase NA values
   data = data[!is.na(data$trend),]
