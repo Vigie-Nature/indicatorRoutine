@@ -11,3 +11,4 @@ analyses/parameters/
 inst/doc
 /doc/
 /Meta/
+.renv/
