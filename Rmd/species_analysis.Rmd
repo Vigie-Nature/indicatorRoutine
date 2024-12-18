@@ -6,6 +6,7 @@ params:
   sp_french: ""
   sp_latin: ""
   sumOccurrenceSp: ""
+  AnnualSummarySp: ""
   dataLongTermTrendSp: ""
   dataShortTermTrendSp: ""
   pathToPlotSp: ""
@@ -40,6 +41,7 @@ sp_latin = params$sp_latin
 obs = params$obs
 spatialScale = params$spatialScale
 sumOccurrenceSp = params$sumOccurrenceSp
+AnnualSummarySp = params$AnnualSummarySp
 dataLongTermTrendSp = params$dataLongTermTrendSp
 dataShortTermTrendSp = params$dataShortTermTrendSp
 pathToPlotSp = params$pathToPlotSp
@@ -65,7 +67,7 @@ header = paste0("Tendances ", obs, " - ", spatialScale, " - ", minYear, "/", max
 \fancyhead[C]{}
 ```
 ::: {.OrangeLargeBox data-latex=""}
-# \textcolor{myorange}{`r sp_french`} \textcolor{myorange}{-} _\textcolor{myorange}{`r sp_latin`}_
+# \textcolor{myorange}{`r sp_french`} \textcolor{myorange}{-} \textcolor{myorange}{`r sp_latin`}
 :::
 
 ## \textcolor{myorange}{Données : quelques chiffres clés}
@@ -85,8 +87,10 @@ kableExtra::kbl(sumOccurrenceSp, align = "c", booktabs = T, centering = T) %>%
 
 ```
 
-*(a) nombre de visites où l'espèce a été vue ramené à l'ensemble des visites* \
-*(b) abondance totale ramenée au nombre de visites sur les sites où l'espèce a été vue au moins une fois*
+\
+*(a) nombre total de carrés conservés pour les analyses, les sites visités une seule fois étant filtrés*\
+*(b) nombre de visites où l'espèce a été vue ramené à l'ensemble des visites*\
+*(c) abondance totale ramenée au nombre de visites sur les sites où l'espèce a été vue au moins une fois*
 
 ## \textcolor{myorange}{Répartition spatiale depuis `r minYear`}
 
@@ -95,6 +99,9 @@ knitr::include_graphics(pathToMapSp)
 
 
 ```
+\
+***Présence :** Sites `r obs` où l'espèce a été observée au moins une fois depuis `r minYear`*\
+***Absence :** Sites `r obs` où l'espèce n'a pas été contactée*
 
 \newpage
 
@@ -144,17 +151,18 @@ catEBCC_ST = dataShortTermTrendSp$trendEBCC
 ```{r plotTrend, fig.align = "center", out.width="100%", echo=FALSE, eval = !warningNoPlot}
 knitr::include_graphics(pathToPlotSp)
 ```
-`r if(warningNoPlot){"<!--"}`
-*NB : le chiffre bleu sur le graphique (`r GR_LT`) correspond au taux de croissance annuel moyen sur l'ensemble de la période, le chiffre rouge à celui sur les dix dernières années.*
-`r if(warningNoPlot){"-->"}`
+
+`r if(warningNoPlot){"<!--"}` *NB : le chiffre bleu sur le graphique (`r GR_LT`) correspond au taux de croissance annuel moyen sur l'ensemble de la période; si le calcul des tendances court terme est réalisé, le chiffre rouge correspond à celui sur les dix dernières années.* `r if(warningNoPlot){"-->"}`
+
+\
 
 ::: {.cols data-latex=""}
 ::: {.col data-latex="{0.499\\textwidth}"}
 ::: {.OrangeMediumBox data-latex=""}
-**\large \textcolor{myorange}{Long terme (`r minYear` - `r maxYear`)}**\
-*\normalsize Sur cette période de `r period` ans :*\
-**EBCC :** \textcolor{myorange}{`r catEBCC_LT`}\
-**Liste Rouge :** \textcolor{myorange}{`r cat_LT`}\
+\large \textcolor{myorange}{Long terme (`r minYear` - `r maxYear`)}\
+\normalsize Sur cette période de `r period` ans :\
+**Critères EBCC :** \textcolor{myorange}{`r catEBCC_LT`}\
+**Critères Liste Rouge :** \textcolor{myorange}{`r cat_LT`}\
 **Quadratique :** \textcolor{myorange}{`r catQuadr_LT`}\
 \
 Taux annuel de croissance : \textcolor{myorange}{`r GR_LT` [`r infGR_LT` ; `r supGR_LT`]}\
@@ -168,12 +176,17 @@ Changement d'abondance : \textcolor{myorange}{`r perc_LT`\% [`r infPerc_LT`\% ; 
 
 `r if(is.null(dataShortTermTrendSp)){"<!--"}`
 
+```{r, echo=FALSE}
+if(is.null(dataShortTermTrendSp)){
+  catEBCC_ST = cat_ST = GR_ST = infGR_ST = supGR_ST = perc_ST = infPerc_ST = supPerc_ST = NULL
+} 
+```
 ::: {.col data-latex="{0.499\\textwidth}"}
 ::: {.OrangeMediumBox data-latex=""}
-**\large \textcolor{myorange}{Court terme (`r maxYear - 10` - `r maxYear`)}**\
-*\normalsize Sur cette période de 10 ans :*\
-**EBCC :** \textcolor{myorange}{`r catEBCC_ST`}\
-**Liste Rouge :** \textcolor{myorange}{`r cat_ST`}\
+\large \textcolor{myorange}{Court terme (`r maxYear - 10` - `r maxYear`)}\
+\normalsize Sur cette période de 10 ans :\
+**Critères EBCC:** \textcolor{myorange}{`r catEBCC_ST`}\
+**Critères Liste Rouge :** \textcolor{myorange}{`r cat_ST`}\
 \
 Taux annuel de croissance : \textcolor{myorange}{`r GR_ST` [`r infGR_ST` ; `r supGR_ST`]}\
 Changement d'abondance : \textcolor{myorange}{`r perc_ST`\% [`r infPerc_ST`\% ; `r supPerc_ST`\%]}
@@ -181,6 +194,73 @@ Changement d'abondance : \textcolor{myorange}{`r perc_ST`\% [`r infPerc_ST`\% ; 
 :::
 
 `r if(is.null(dataShortTermTrendSp)){"-->"}`
-
-
 :::
+\
+*Les catégories de tendances sont basées sur les critères de l'EBCC ou de l'UICN. Cf. détail des critères en dernière page.*
+\
+\
+\
+\begin{minipage}{\textwidth}
+Table des occurrences annuelles (nombre de sites où l'espèce a été observée) et des abondances annuelles (nombre d'individus contactés dans l'ensemble des sites). Le nombre total de carrés correspond aux carrés conservés pour les analyses, les sites visités une seule fois étant filtrés.
+```{r fig.align = "center", echo = FALSE}
+`%>%` = magrittr::`%>%`
+
+kableExtra::kbl(AnnualSummarySp, align = "c", booktabs = T, centering = T, longtable = TRUE) %>%
+  kableExtra::row_spec(0, color = "#E68146", bold = T, font_size = 11) %>%
+  kableExtra::row_spec(1:nrow(AnnualSummarySp), color = "#E68146", font_size = 11) %>%
+  kableExtra::column_spec(2, width = '2.5cm') %>%
+  kableExtra::column_spec(3, width = '2.5cm') %>%
+    kableExtra::column_spec(4, width = '2.5cm')
+
+
+```
+\end{minipage}
+
+\newpage
+
+## \textcolor{myorange}{Détail des critères de classification}\
+
+:::: {.OrangeGroupBox data-latex=""}
+\large \textcolor{myorange}{Classification "Liste Rouge" }\
+\normalsize
+\
+
+**Augmentation forte :** taux annuel de croissance et intervalle de confiance supérieurs à 1.03.\
+
+**Augmentation modérée à forte:** taux annuel de croissance et intervalle de confiance supérieurs à 1 et recoupant 1.03. \
+
+**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.03.\
+
+**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle (0.961 ; 1.03). \
+
+**Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.961 et 1. \
+
+**Déclin modéré à fort:**  taux annuel de croissance et intervalle de confiance inférieurs à 1 et recoupant 0.961. \
+
+**Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.961.\
+
+**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.961 ; 1.03). \
+
+*NB : Ces catégories sont basées sur le critère A2 de la Liste Rouge de l'UICN classant comme vulnérable les espèces ayant une réduction de population supérieure à 30% sur 10 ans*
+
+::::
+\
+
+:::: {.OrangeGroupBox data-latex=""}
+\large \textcolor{myorange}{Classification "EBCC"}\
+\normalsize
+\
+
+**Forte augmentation :** taux annuel de croissance et intervalle de confiance supérieurs à 1.05 (augmentation de plus de 5% par an).\
+
+**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.05 (augmentation de moins de 5% par an).\
+
+**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle [0.95 ; 1.05]. \
+
+**Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.95 et 1 (déclin de moins de 5% par an). \
+
+**Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.95 (déclin de plus de 5% par an).\
+
+**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.95 ; 1.05). \
+
+::::

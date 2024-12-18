@@ -70,11 +70,15 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
                 paste(levelsToErase, collapse = ", "), "', from variable '", var, "'")
       }
       
+      if(length(unique(data[!is.na(data[,var]),var])) == 1){
+        factorVariables = factorVariables[factorVariables != var]
+        cat("Variable '",var,"' was removed from the analysis due to the presence of 1-level only.\n")
+      }
       
+      # Put factor variables in the right format
+      data[, var] = factor(data[, var])
     }
-    
-    # Put factor variables in the right format
-    data[, factorVariables] <- lapply(data[, factorVariables], factor)
+
   }
   
   

@@ -9,12 +9,19 @@ cat("# LOAD PARAMETERS #\n")
 # Exemple : "STOC_2023_Ile_de_France"
 repo <- "test"
 
+# Nom du jeu de données .csv à charger (sans caractères spéciaux)
+# Exemple : "countingData.csv"
+Data <- "countingData.csv"
+
 # Nom de l'observatoire étudié (sans caractères spéciaux)
 obs <- "random"
 
 # Nom de l'échelle d'observation (sans caractères spéciaux)
 # Exemple : "France" ou "Bretagne" ou "ONF" ou ...
 spatialScale <- "random"
+
+# Est-ce que les absences (0) doivent être générées par la routine ?
+createAbsence <- TRUE # FALSE
 
 # Est-ce que la tendance court-terme doit être réalisée ?
 makeShortTrend <- TRUE # FALSE

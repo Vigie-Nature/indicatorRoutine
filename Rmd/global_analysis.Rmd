@@ -46,7 +46,7 @@ dataTable = params$dataTable
 ```{r globalVar, include=FALSE}
 minYear = min(unique(dataLongTermTrend$minYear[!is.na(dataLongTermTrend$minYear)]))
 maxYear = max(unique(dataLongTermTrend$maxYear[!is.na(dataLongTermTrend$maxYear)]))
-period = maxYear - minYear
+period = maxYear - minYear + 1
 header = paste0("Tendances ", obs, " - ", spatialScale, " - ", minYear, "/", maxYear)
 ```
 
@@ -68,6 +68,8 @@ knitr::include_graphics(pathToGroupPlot)
 ```
 
 `r if(!makeGroupPlot){'<!--'}`
+
+
 :::: {.OrangeGroupBox data-latex=""}
 
 ```{r groupNames, echo = FALSE, eval = makeGroupPlot, results="asis"}
@@ -84,8 +86,8 @@ if(is.null(groupComp)){
 }
 
 ```
-
 ::::
+__\textcolor{myorange}{}__ _\textcolor{myorange}{Les espèces dont l'occurrence annuelle est trop faible (médiane inférieure à 12) pour que la tendance calculée soit fiable sont notées dans le tableau ci-dessous avec une astérisque. Ces dernières, ainsi que les espèces dont les variations annuelles sont incertaines sont retirées des listes de spécialistes pour le calcul des tendances}_ \
 
 \newpage
 `r if(!makeGroupPlot){'-->'}`
@@ -123,21 +125,21 @@ if(is.null(groupComp) | !makeGroupPlot){
 __\textcolor{myorange}{*}__ _\textcolor{myorange}{espèces dont l'occurrence annuelle est trop faible (médiane inférieure à 12) pour que la tendance calculée soit fiable}_ \
 
 :::: {.OrangeGroupBox data-latex=""}
-**Augmentation forte :** taux annuel de croissance et intervalle de confiance supérieurs à 1.036.\
+**Augmentation forte :** taux annuel de croissance et intervalle de confiance supérieurs à 1.03.\
 
-**Augmentation modérée à forte:** taux annuel de croissance et intervalle de confiance supérieurs à 1 et recoupant 1.036. \
+**Augmentation modérée à forte:** taux annuel de croissance et intervalle de confiance supérieurs à 1 et recoupant 1.03. \
 
-**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.036.\
+**Augmentation modérée:**  taux annuel de croissance et intervalle de confiance compris entre 1 et 1.03.\
 
-**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle (0.964 ; 1.036). \
+**Stable :**  l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et est inclus dans l'intervalle (0.961 ; 1.03). \
 
-**Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.964 et 1. \
+**Déclin modéré :**  taux annuel de croissance et intervalles de confiance compris entre 0.961 et 1. \
 
-**Déclin modéré à fort:**  taux annuel de croissance et intervalle de confiance inférieurs à 1 et recoupant 0.964. \
+**Déclin modéré à fort:**  taux annuel de croissance et intervalle de confiance inférieurs à 1 et recoupant 0.961. \
 
-**Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.964.\
+**Déclin fort :**  taux annuel de croissance et intervalle de confiance inférieurs à 0.961.\
 
-**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.964 ; 1.036). \
+**Incertain :**   l'intervalle de confiance du taux de croissance recoupe 1 (pas de tendance significative), et recoupe une des bornes de l'intervalle (0.961 ; 1.03). \
 
 *NB : ces catégories sont basées sur le critère Liste Rouge de classement des espèces comme Vulnérable (réduction de population supérieure à 30% sur 10 ans)*
 

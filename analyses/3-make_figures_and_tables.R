@@ -41,7 +41,7 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 
 ## For each species, create the plot
 cat("Trend plots with uncertainty in progress...")
-uncertainPlots = plotLinearTrends(speciesList = speciesList, dataName = dataName, dataLongTerm = dataLongTermTrend, 
+uncertainPlots = plotLinearTrends(speciesList = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
                                     dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
                                     distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
                                     N = 100, uncertainty = TRUE, weight = TRUE, save = TRUE, path = pathToPlot)
@@ -55,7 +55,7 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 
 ## For each species, create the plot
 cat("Trend plots without uncertainty in progress...")
-regularPlots = plotLinearTrends(sp = speciesList, dataName = dataName, dataLongTerm = dataLongTermTrend, 
+regularPlots = plotLinearTrends(sp = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
                                 dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
                                 distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
                                 N = 100, uncertainty = FALSE, weight = TRUE, save = TRUE, path = pathToPlot)
@@ -70,25 +70,38 @@ save(regularPlots, file = here::here("outputs", repo, "figures", "trends", "regu
 pathToPlot = here::here("outputs", repo, "figures", "classification")
 dir.create(path = pathToPlot, showWarnings = FALSE)
 
+# Create filter for species with low annual occurrences
+
+## Measure for each species the median of the number of sites per species x year
+dataLowOcc = dplyr::group_by(data[data[,interestVar[1]] >0,], species, year) %>%
+  dplyr::summarise(nbSite = dplyr::n()) %>%
+  dplyr::group_by(species) %>%
+  dplyr::summarise(medYear = median(nbSite))
+
+### Extract species with median occurrence inferior to 12
+spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
+
+
+
 ###   LINEAR   ###
 cat("Linear trend classification in progress")
 # For each species, match a type of linear trend
-dataLinearClassif_LT = classifyLinearTrends(dataLongTermTrend, distribution, threshold = 0.036)
+dataLinearClassif_LT = classifyLinearTrends(dataLongTermTrend, distribution, thresholdInf = 0.039, thresholdSup = 0.030)
 
 if(makeShortTrend){
-  dataLinearClassif_ST = classifyLinearTrends(dataShortTermTrend, distribution, threshold = 0.036)
+  dataLinearClassif_ST = classifyLinearTrends(dataShortTermTrend, distribution, thresholdInf = 0.039, thresholdSup = 0.030)
 }
 cat(" --> DONE\n")
 
 # Plot a graph that sums up those quadratic trends
 ## Barplot
 cat("Linear trend classification (barplot) in progress")
-plotLinearClassification(dataLinearClassif_LT, distribution, type = "barplot", threshold = 0.036, path = pathToPlot)
+plotLinearClassification(dataLinearClassif_LT[!dataLinearClassif_LT$species %in% spToRemove,], distribution, type = "barplot", thresholdInf = 0.039, thresholdSup = 0.030, path = pathToPlot)
 cat(" --> DONE\n")
 
 ## Errorbar
 cat("Linear trend classification (errorbar) in progress")
-plotLinearClassification(dataLinearClassif_LT, distribution, type = "errorbar", threshold = 0.036, path = pathToPlot)
+plotLinearClassification(dataLinearClassif_LT[!dataLinearClassif_LT$species %in% spToRemove,], distribution, type = "errorbar", thresholdInf = 0.039, thresholdSup = 0.030, path = pathToPlot)
 cat(" --> DONE\n")
 
 ###   QUADRATIC   ###
@@ -97,8 +110,8 @@ dataQuadrTrends <- NULL
 if(makeQuadraticTrend){
   # Format quadratic trends into table
   cat("Formatting")
-  dataRawQuadrTrend = formatTrendEstimates(data, speciesList, repo, "rawQuadraticTrend")
-  dataOrthoQuadrTrend = formatTrendEstimates(data, speciesList, repo, "orthoQuadraticTrend")
+  dataRawQuadrTrend = formatTrendEstimates(data, speciesList[!speciesList %in% spToRemove], repo, "rawQuadraticTrend")
+  dataOrthoQuadrTrend = formatTrendEstimates(data, speciesList[!speciesList %in% spToRemove], repo, "orthoQuadraticTrend")
   cat(" --> DONE\n")
   
   # For each species, match a type of quadratic trend

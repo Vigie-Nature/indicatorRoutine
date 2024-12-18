@@ -36,8 +36,9 @@ for (sp in speciesList){
     dataName_sp = dataName[dataName$species == sp,]
     sp_french = dataName_sp$french_name
     sp_latin = dataName_sp$scientific_name
+    sp_french_simpld = dataName_sp$french_name_simplified
   }else{
-    sp_french = sp_latin = sp
+    sp_french = sp_latin = sp_french_simpld = sp
   }
   
   # Filter long term trends
@@ -53,6 +54,8 @@ for (sp in speciesList){
   sumOccurrenceSp = makeSummaryTable(data, sp, interestVar)
   sumOccurrenceSp_lastYear = makeSummaryTable(data, sp, interestVar, year = max(data$year))
   sumOccurrenceSp = rbind(sumOccurrenceSp, sumOccurrenceSp_lastYear)
+  
+  AnnualSummarySp = makeAnnualSummaryTable(data, sp, interestVar)
   
   # Path to occurrence map
   pathToMapSp = here::here("outputs", repo, "figures", "maps", paste0(sp, ".png"))
@@ -82,6 +85,7 @@ for (sp in speciesList){
                                   obs = obs,
                                   spatialScale = spatialScale,
                                   sumOccurrenceSp = sumOccurrenceSp,
+                                  AnnualSummarySp = AnnualSummarySp,
                                   dataLongTermTrendSp = dataLongTermTrendSp,
                                   dataShortTermTrendSp = dataShortTermTrendSp,
                                   pathToMapSp = pathToMapSp,
@@ -93,11 +97,11 @@ for (sp in speciesList){
                     output_dir = pathToPdfSp,
                     
                     # Spécifier le fichier
-                    output_file = sp)
+                    output_file = sp_french_simpld)
   
   # Erase automatically created documents
-  unlink(here::here("outputs", repo, "pdf", "species", paste0(sp, ".tex")))
-  unlink(here::here("Rmd", paste0(sp, ".log")))
+  unlink(here::here("outputs", repo, "pdf", "species", paste0(sp_french_simpld, ".tex")))
+  unlink(here::here("Rmd", paste0(sp_french_simpld, ".log")))
   
 }
 

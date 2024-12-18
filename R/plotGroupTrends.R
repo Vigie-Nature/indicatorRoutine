@@ -4,12 +4,13 @@
 #' 
 #' @param dataTrend a `data.frame` containing long-term trends agregated per group
 #' @param dataVar a `data.frame` containing yearly variations agregated per group
+#' @param data a `data.frame` containing observations 
 #' @param groupCols a `vector` containing colors associated with each group
 #' @param distribution a `string` specifying the law distribution
 #' @param repo a `string` specifying the data repository
 #' @param fileName a `string` specifying the name under which the plot must be saved
 #' 
-plotGroupTrends <- function(dataTrend, dataVar, groupCols, distribution, repo, fileName){
+plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, repo, fileName){
   
   # Extract time range 
   minYear <- min(dataVar$year)
@@ -44,6 +45,17 @@ plotGroupTrends <- function(dataTrend, dataVar, groupCols, distribution, repo, f
     nrow = 3
   }
   
+  # Create a "saison" var corresponding to SHOC winter track 
+  dataVar$saison <- paste(dataVar$year, dataVar$year+1, sep = "-")
+  
+  if("saison" %in% colnames(data)){
+    saison_labels <- unique(dataVar$saison)
+    x_axisName <- "Hiver"
+  }  else {
+    saison_labels <- unique(dataVar$year)
+    x_axisName <- "Année"
+  }
+  
   # Make the plot
   plot <- ggplot2::ggplot(dataVar, ggplot2::aes(x = year, y = index)) +
     
@@ -60,13 +72,13 @@ plotGroupTrends <- function(dataTrend, dataVar, groupCols, distribution, repo, f
     ggplot2::geom_ribbon(ggplot2::aes(ymin = infIndex, ymax = supIndex,  fill = group), alpha = .1) +
     
     # Smooth the variations as a linear trend
-    ggplot2::geom_smooth(data = dataVar, se = FALSE, method = "lm", ggplot2::aes(col = group), linetype = "dotted") +
+    #ggplot2::geom_smooth(data = dataVar, se = FALSE, method = "lm", ggplot2::aes(col = group), linetype = "dotted") +
     
     # Add a title
     ggplot2::ggtitle(plotTitle) +
     
     # Format x-axis
-    ggplot2::scale_x_continuous("Année", minYear:maxYear) +
+    ggplot2::scale_x_continuous(name = x_axisName, breaks = minYear:maxYear, labels = saison_labels) + # change year labels on x axis for winter season ) +
     
     # Add title to the y-axis
     ggplot2::ylab(yName) +
@@ -91,8 +103,8 @@ plotGroupTrends <- function(dataTrend, dataVar, groupCols, distribution, repo, f
     # Format fill values
     ggplot2::scale_fill_manual(name = "", values = groupCols, labels = groupLabels,
                                guide = ggplot2::guide_legend(nrow = nrow, by.row = FALSE)) 
-    
-    
+  
+  
   # Save the plot as png
   pathToPlot = here::here("outputs", repo, "figures", "group")
   

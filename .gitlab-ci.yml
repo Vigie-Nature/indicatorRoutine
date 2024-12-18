@@ -1,7 +1,7 @@
 # using a custom image that already has
 # the required packages installed in renv's library
 # (this considerably speeds up the CI pipeline)
-image: jguerber/custom-renv-cache
+image: liseb/custom-renv-install
 
 # for clarity, this is the paths (in the container)
 # that contain renv's cache and library folders :

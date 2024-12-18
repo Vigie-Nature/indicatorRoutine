@@ -147,7 +147,7 @@ La **loi de distribution** utilisée pour les modèles est la suivante : **`r di
 Modèle demandé : `r analysisFormula`.
 
 ```{r longTermModel, echo = FALSE}
-kableExtra::kable(dataSpecLT[,colnames(dataSpecLT) != "modelName"]) %>%
+kableExtra::kable(dataSpecLT[,colnames(dataSpecLT) != "model"]) %>%
   kableExtra:: kable_paper(c("striped", "condensed", "hover"), fixed_thead = T) %>%
   kableExtra::scroll_box(width = "1000px", height = "300px")
 ```
@@ -159,7 +159,7 @@ Modèle demandé : `r analysisFormula`.
 ```{r shortTermModel, echo = FALSE, eval = makeShortTrend}
 `%>%` = magrittr::`%>%`
 
-kableExtra::kable(dataSpecST[,colnames(dataSpecST) != "modelName"]) %>%
+kableExtra::kable(dataSpecST[,colnames(dataSpecST) != "model"]) %>%
   kableExtra:: kable_paper(c("striped", "condensed", "hover"), fixed_thead = T) %>%
   kableExtra::scroll_box(width = "1000px", height = "300px")
 ```
@@ -171,7 +171,7 @@ Modèle demandé : `r analysisFormulaVar`.
 
 ```{r yearlyVariations, echo = FALSE}
 
-kableExtra::kable(dataSpecVar[,colnames(dataSpecVar) != "modelName"]) %>%
+kableExtra::kable(dataSpecVar[,colnames(dataSpecVar) != "model"]) %>%
   kableExtra:: kable_paper(c("striped", "condensed", "hover"), fixed_thead = T) %>%
   kableExtra::scroll_box(width = "1000px", height = "300px")
 ```

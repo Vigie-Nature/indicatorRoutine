@@ -83,7 +83,7 @@ fillAbsence <- function(data, interestVar, speciesList, method){
     matchId = match(paste(dataRes$ID, dataRes$species), paste(data$ID, data$species))
     
     # Change abundance information in the final data.frame ----
-    dataRes[which(!is.na(matchId)), interestVar] = dataPres[matchId[!is.na(matchId)], interestVar] 
+    dataRes[which(!is.na(matchId)), interestVar] = data[matchId[!is.na(matchId)], interestVar] 
     
   }
   cat("Absences have been correctly filled with 0s\n")

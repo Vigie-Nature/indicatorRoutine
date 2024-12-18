@@ -3,6 +3,7 @@
 #' A function that takes all estimations, and turn it to trend curves
 #' 
 #' @param speciesList : a `vector` containing all species names
+#' @param data a `data.frame` containing observations 
 #' @param dataName : a `data.frame` containing french names of the species
 #' @param dataLongTerm : a `data.frame` containing formatted estimates for the long-term trend model
 #' @param dataYearlyVariations : a `data.frame` containing formatted estimates for the yearly variations
@@ -16,7 +17,7 @@
 #' @param save : a `boolean` specifying if the plot should be saved or not
 #' @param path : a `string` specifying the path to the repository where to save plots
 #' 
-plotLinearTrends <- function(speciesList, dataLongTerm, dataYearlyVariations, dataShortTerm = NULL,
+plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariations, dataShortTerm = NULL,
                       dataName = NULL, distribution, plotGamm = TRUE, plotST = TRUE,
                       uncertainty = TRUE, N = 100, weight = TRUE, save = TRUE, path = ""){
   
@@ -25,7 +26,7 @@ plotLinearTrends <- function(speciesList, dataLongTerm, dataYearlyVariations, da
     dataLT_sp = dataLongTerm[dataLongTerm$species == sp,]
     dataVar_sp = dataYearlyVariations[dataYearlyVariations$species == sp,]
     
-    if(nrow(dataLT_sp)==0|nrow(dataLT_sp)==0) {
+    if(nrow(dataLT_sp)==0|nrow(dataVar_sp)==0) {
       message('No plot for species ', sp, ': no model was found for either ',
               'long-term trend or yearly variations\n')
     plot = NULL
@@ -38,6 +39,17 @@ plotLinearTrends <- function(speciesList, dataLongTerm, dataYearlyVariations, da
     }else{
       # Extract values of the temporal series
       yearValues = dataLT_sp$minYear:dataLT_sp$maxYear
+      
+      # Create a "saison" var corresponding to SHOC winter track 
+      dataVar_sp$saison <- paste(dataVar_sp$year, dataVar_sp$year+1, sep = "-")
+      
+      if("saison" %in% colnames(data)){
+        saison_labels <- dataVar_sp$saison
+        x_axisName <- "Hiver"
+      }  else {
+        saison_labels <- yearValues
+        x_axisName <- "Année"
+      }
       
       ###################
       # GAMM VARIATIONS #
@@ -384,7 +396,7 @@ plotLinearTrends <- function(speciesList, dataLongTerm, dataYearlyVariations, da
           ggplot2::ggtitle(title) +
           
           # Format x and y-axis
-          ggplot2::scale_x_continuous("Année", breaks = yearValues, limits = c(dataLT_sp$minYear - 1, dataLT_sp$maxYear +1)) + 
+          ggplot2::scale_x_continuous(name = x_axisName, breaks = yearValues, limits = c(dataLT_sp$minYear - 1, dataLT_sp$maxYear +1), labels = saison_labels) + # change year labels on x axis for winter season for SHOC)
           
           # Rename y-axis                            
           ggplot2::ylab(yName) +
