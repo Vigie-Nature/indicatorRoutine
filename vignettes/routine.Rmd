@@ -41,7 +41,7 @@ La routine crée un certain nombre de fichiers sous format pdf. La production de
 
 *NB : pour que tout fonctionne bien, l'option « Install packages automatically (on-the-fly) » doit être cochée à Yes (lors de l'installation) ou Always (dans les settings, après installation).*
 
-![Figure 2 : Options à cocher dans les paramètres du logiciel MiKTex]
+![Figure 2 : Options à cocher dans les paramètres du logiciel MiKTex](img/miktek_options.png)
 
 ### Packages et versions
 
@@ -129,17 +129,18 @@ colnames(data) <- c("species", "site", "point", "year", "longitude", "latitude",
 
 #### Fichier optionnel : nom des espèces
 
-Un fichier optionnel *speciesName.csv* peut être déposé dans le répertoire **data / observatoire1 /**. Ce fichier contient les correspondances entre nom de code, nom français et nom scientifique. Le format doit être le suivant :
+Un fichier optionnel *speciesName.csv* peut être déposé dans le répertoire **data / observatoire1 /**. Ce fichier contient les correspondances entre nom de code, nom français, nom scientifique et le nom français "simplifié" (i.e. sans accents ni espaces). Le format doit être le suivant :
 
 ```{r}
 knitr::kable(
   data.frame(
-    sp = c("COLPAL", "OENOEN"),
-    french = c("Pigeon ramier", "Traquet motteux"),
-    sci = c("Columba palumbus", "Oenanthe oenanthe")
+    sp = c("COLPAL", "OENOEN","DELURB"),
+    french = c("Pigeon ramier", "Traquet motteux", "Hirondelle de fenêtre"),
+    sci = c("Columba palumbus", "Oenanthe oenanthe", "Delichon urbicum"),
+    french_spl = c("Pigeon_ramier", "Traquet_motteux","Hirondelle_de_fenetre")
   ),
   align = "ccc",
-  col.names = c("species", "french_name", "scientific_name"),
+  col.names = c("species", "french_name", "scientific_name","french_name_simplified"),
   caption = "Tab 3 : Format du jeu de données de noms speciesNames.csv"
 )
 ```
@@ -289,4 +290,87 @@ Une fois l’ensemble des estimations réalisées, le script *3-make_figures_and
 
 #### Tableaux de tendances
 
-Pour la tendance long-terme et les variations annuelles, un tableau est réalisé regroupant pour l’ensemble des espèces, des informations à propos : des estimations, des taux de croissance, des pourcentages d’évolution sur la période, des classes de tendances linéaires et quadratiques. Les variables contenues dans chacun des tableaux sont décrites dans les *Tableau 1 et 2*. Un tableau pour les tendances court-terme est aussi réalisé si le paramètre `makeShortTerm` est `TRUE`. L’ensemble de ces tableaux sont regroupés dans le dossier **outputs / observatoire1 / tables / trends**.
+Pour la tendance long-terme et court-terme (si le paramètre `makeShortTerm` est `TRUE`), un tableau est réalisé regroupant pour l’ensemble des espèces, des informations à propos : des estimations, des taux de croissance, des pourcentages d’évolution sur la période, des classes de tendances linéaires et quadratiques. Les variables contenues dans chacun des tableaux sont décrites dans les *Tableau 1 et 2*. 
+
+```{r}
+knitr::kable(
+  data.frame(
+    col_names = c("french Name", "species", "minYear", "maxYear", "estimate", "infIC", "supIC", "GR", "infGR",
+                  "supGR", "perc", "infPerc", "supPerc", "pval", "trend", "ebccTrend", "quadraticTrend"),
+    col_descr = c("Nom français de l’espèce", "Code de l’espèce (e.g, COLPAL)", "Première année de suivi", "Dernière année de suivi", "Estimation de la tendance", "Borne inférieure de l’intervalle de confiance pour l’estimation de la tendance", "Borne supérieure de l’intervalle de confiance pour l’estimation de la tendance", "Taux de croissance (exponentielle de l’estimation de la tendance)", "Borne inférieure du taux de croissance", "Borne supérieure du taux de croissance", "Pourcentage d’évolution entre la première et la dernière année de suivi", "Borne inférieure du pourcentage d’évolution", "Borne supérieure du pourcentage d’évolution", "Significativité de la tendance", "Classification de la tendance suivant le critère liste rouge", "Classification de la tendance suivant le critère EBCC", "Classification de la tendance quadratique. Optionnel." )
+  ),
+  align = "ccc",
+  col.names = c("Nom des colonnes", "Description des colonnes"),
+  caption = "Tab 5 : Descriptif du contenu des fichiers longTermTrend.csv et shortTermTrend.csv"
+)
+```
+
+
+Un tableau est aussi réalisé pour les modèles de variations annuelles (années en facteur), synthétisant les résultats des tendances estimées pour chaque année et chaque espèce. L’ensemble de ces tableaux sont regroupés dans le dossier **outputs / observatoire1 / tables / trends**.
+
+
+```{r}
+knitr::kable(
+  data.frame(
+    col_names = c("frenchName", "species", "year", "estimate"),
+    col_descr = c("Nom français de l’espèce", "Code de l’espèce (e.g, COLPAL)", "Année considérée", "Estimation annuelle")
+  ),
+  align = "ccc",
+  col.names = c("Nom des colonnes", "Description de la colonne"),
+  caption = "Tab 6 : Descriptif du contenu du fichier yearlyVariations.csv"
+)
+```
+
+#### Classification des tendances linéaires
+
+Les tendances long-termes de chaque espèce sont résumées en 7 catégories : déclin fort, déclin modéré à fort, déclin faible, stable, augmentation modérée, augmentation modérée à forte, augmentation forte, incertain. Cette classification repose sur une valeur seuil correspondant à un déclin de 30% en 10 ans (resp. augmentation de 30% en 10 ans, critère Liste Rouge). Les classes « fort » regroupent les espèces dont l’ensemble de l’intervalle de confiance dépasse le seuil. Les classes « modéré à fort » regroupent les espèces pour lesquelles au moins une partie de l’intervalle de confiance dépasse le seuil. La classe « Incertain » correspond aux estimations non significatives dont l’intervalle de confiance englobe ce seuil. 
+
+![Figure 3 : Critère de classification des taux de croissance dans les différentes catégories](img/crit_classification.jpg)
+Deux figures proposent une visualisation de ces tendances linéaires pour l’ensemble des espèces. Elles sont enregistrées dans le dossier **output / observatoire1 / figures / classification**, et portent les noms *errorbar.png* et *barplot.png*.
+
+#### Classification des tendances quadratiques
+
+Si `makeQuadraticTrend` est TRUE, une figure résumée des tendances quadratiques de l’ensemble des espèces est réalisée. Elle est enregistrée dans le dossier **output / observatoire1 / figures / classification**, sous le nom *quadraticTrend.png*. La réalisation de cette figure repose sur la méthode décrite dans Rigal et al (2020).
+
+#### Figure de tendance
+
+Une figure est réalisée pour chaque espèce pour visualiser sa tendance long-terme et les variations annuelles. Cette figure est complétée par la tendance court-terme et le GAMM en fonction des paramètres choisis par l’utilisateur (`makeShortTerm` et `makeGammTrend` à TRUE). Ces figures sont regroupées dans le dossier : **output / observatoire1 / figures / trends**. Cette sortie peut être paramétrée de sorte à montrer l’incertitude autour des tendances long-terme et court-terme. L’ensemble des figures présentant l’incertitude sont regroupées dans le sous-dossier **uncertainty**, celles ne la présentant pas sont regroupées dans le sous-dossier **regular**. Ces figures portent le nom de code de l’espèce (e.g, COLPAL.png).
+
+#### Tableau de spécification des modèles
+
+Pour la tendance long-terme et les variations annuelles, un tableau est réalisé regroupant pour l’ensemble des espèces, des informations à propos des spécifications du modèle final. Ces spécifications comprennent : le nombre d’observations dans le jeu de données initial et le nombre d’observations finalement utilisées dans le modèle, une information sur la convergence du modèle, la distribution utilisée et les variables retirées par rapport aux spécifications initiales. Ce tableau peut être réalisé pour la tendance court-terme si  le paramètre `makeShortTerm` est TRUE
+
+```{r}
+knitr::kable(
+  data.frame(
+    col_names = c("species", "model", "nbRowsInit", "nbRowsFin", "distribution", "convergence", "removedVars", "Variables retirées par rapport à la spécification de base"),
+    col_descr = c("Nom de Code de l’espèce", "Nom du modèle résumé (longTermTrend, shortTermTrend...)", "Nombre de lignes initial", "Nombre de lignes final", "Distribution utilisée", "Information sur la convergence des modèles (oui / non)")
+  ),
+  align = "ccc",
+  col.names = c("Nom des colonnes", "Description de la colonne"),
+  caption = "Tab 6 : Descriptif du contenu du fichier yearlyVariations.csv"
+)
+```
+
+
+### 4. Analyses groupe d’espèces
+
+Si `makeGroupPlot` est TRUE, le script *4-analyze_trends_per_group.R* est lancé. Il permet de réaliser une figure qui agrège les tendances au sein des différents groupes d’espèces. Cette figure est enregistrée dans le dossier **output / observatoire1 / figures /** group sous le nom de *groupTrendPlot.png*. Si la composition des groupes `groupComp` n’est pas spécifié, alors une figure agrégeant les tendances pour l’ensemble des espèces analysées (`speciesList`) est réalisée.
+
+### 3. Réalisation de pdf
+
+Si `makePDF` est TRUE, le *script 5-create_pdf.R* est lancé. Il permet de synthétiser les figures et tableaux obtenus précédemment à l’intérieur de fiches au format PDF. Ces fiches sont enregistrées dans le dossier **output / observatoire1 / pdf /**.
+
+#### Fiche espèce
+
+Une fiche est réalisée pour chaque espèce, et stockée sous le nom le nom de l’espèce analysée (e.g, *COLPAL.pdf*) dans le sous-dossier **species**. Cette fiche regroupe notamment : 
+    • Un tableau d’occurrence / abondance de l’espèce ;
+    • La carte de répartition de l’espèce ;
+    • La figure de tendance de l’espèce ;
+    • Les chiffres clés issus de ces tendances.
+    
+#### Synthèse globale
+
+Une fiche synthétisant les tendances pour l’ensemble des espèces est proposée à la racine du dossier **pdf**. Elle porte le nom d’Analyse `globale.pdf`. Elle contient :
+    • Une figure présentant les tendances agrégées par groupe d’espèces (ou pour toutes les espèces, si aucun groupe n’est renseigné) ;
+    • Un tableau résumant pour l’ensemble des espèces leur groupe (si renseigné), tendance et classification. 
