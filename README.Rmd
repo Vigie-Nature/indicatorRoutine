@@ -23,7 +23,7 @@ knitr::opts_chunk$set(collapse  = TRUE,
 <!-- badges: end -->
 
 
-Research Compendium of the project **{{ PLEASE ADD A FEW WORDS }}**
+Research Compendium of the project **indicator routine**
 
 
 
@@ -31,7 +31,8 @@ Research Compendium of the project **{{ PLEASE ADD A FEW WORDS }}**
 
 Please cite this compendium as: 
 
-> **{{ PLEASE ADD A CITATION }}**
+Vimont M, Bartholus L, Bas Y, Fontaine B, Fontaine C, Julliard R, Loïs G, Lorrillière R, Martin G, Porcher E (2023), Indicator routine - Routine production of population trends from citizen-science data
+
 
 
 

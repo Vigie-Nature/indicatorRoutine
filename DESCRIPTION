@@ -1,6 +1,6 @@
 Package: indicatorRoutine
 Type: Package
-Title: The Title of the Project
+Title: Routine production of population trends from citizen-science data
 Version: 0.0.0.9000
 Authors@R: c(
     person(given   = "Mathilde",
@@ -8,8 +8,7 @@ Authors@R: c(
            role    = c("aut", "cre", "cph"),
            email   = "mathilde.vimont@gmail.com",
            comment = c(ORCID = "{{orcid}}")))
-Description: A paragraph providing a full description of the project (on 
-    several lines...)
+Description: This analysis routine calculates trend indicators based on species observation data from various Vigie-Nature observatories.
 URL: https://github.com/MathildeVimont/indicatorRoutine
 BugReports: https://github.com/MathildeVimont/indicatorRoutine/issues
 License: GPL (>= 2)
@@ -29,5 +28,7 @@ Imports:
     cowplot (>= 1.1.2),
     maps (>= 3.4.2)
 Suggests: 
+    knitr,
     testthat (>= 3.2.1)
 Config/testthat/edition: 3
+VignetteBuilder: knitr
