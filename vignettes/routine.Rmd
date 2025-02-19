@@ -45,7 +45,7 @@ La routine crée un certain nombre de fichiers sous format pdf. La production de
 
 ### Packages et versions
 
-L'ensemble des packages utilisés sont regroupés dans le Tableau 1. Tous les packages sont automatiquement chargés/installés au lancement de la routine : si ce n'est pas le cas, R vous demandera s'il faut les installer, charger ou mettre à jour, et il faudra répondre oui (Yes ou 1). 
+L'ensemble des packages utilisés sont regroupés dans le Tableau 1. Tous les packages (aux versions affichées ou plus récentes) sont automatiquement chargés/installés au lancement de la routine : si ce n'est pas le cas, R vous demandera s'il faut les installer, charger ou mettre à jour, et il faudra répondre oui (Yes ou 1). 
 La version de R utilisée en local pour développer cette routine est : R 4.3.1.
 
 ```{r}
@@ -83,11 +83,19 @@ table_packages <- knitr::kable(
 kableExtra::collapse_rows(table_packages, columns = c(1))
 ```
 
+#### renv
+Un fichier renv.lock se trouve à la racine du projet. Il contient des informations précises sur les dépendances et versions de packages de la routine et permet de restaurer entièrement l'environnement. Ce fichier peut-être mis à jour par les gestionnaires de la routine pour des versions plus récentes de R et de packages associés et permettre aux utilisateurs de suivre ces évolutions simplement avec la commande 
+```{r echo =TRUE, eval = FALSE}
+renv::restore()
+```
+Pour l'instant, la routine est configurée pour restaurer l'environnement avec renv uniquement pour les utilisateurs sous linux, autrement, ce sont les packages et versions indiqués dans le fichier DESCRIPTION qui seront automatiquement chargés.
+
+
 ### Données
 
 #### Formattage des observations
 
-Les données d'observation doivent être déposées dans le répertoire **data**, au sein d'un sous-répertoire dont le nom est à choisir par l'utilisateur (**observatoire1** sur la Figure 1). Ces données d'observations doivent être au format .csv et porter le nom *countingData.csv*. Elles doivent obligatoirement contenir :
+Les données d'observation doivent être déposées dans le répertoire **data**, au sein d'un sous-répertoire dont le nom est à choisir par l'utilisateur (**observatoire1** sur la Figure 1). Ces données d'observations doivent être au format .csv et le nom du fichier est renseigné dans l'objet `Data`. Elles doivent obligatoirement contenir :
 
  - Une colonne `species` contenant le nom unique des espèces idéalement sous un format simple sans caractère spécial (ex : TURMER, PARMAJ, …) ;
  - Une colonne `site` contenant le nom des lieux d'observation. Si le jeu de données contient deux niveaux spatiaux d'observation (e.g, placette et maille, ou point et site) alors une colonne supplémentaire `point` doit être utilisée pour décrire un niveau spatial plus fin ;
@@ -95,6 +103,8 @@ Les données d'observation doivent être déposées dans le répertoire **data**
  - L'utilisateur peut également renseigner les coordonnées spatiales des sites (ou points) au format décimal, sous le nom de `longitude` et `latitude`, cela permet notamment la création de cartes d'occurrence ;
   
 L'utilisateur peut également renseigner d'autres variables au nom libre, s'il souhaiter les utiliser comme covariables dans les modèles.
+
+Pour le SHOC, ou autre suivi hivernal dont les données sont récoltées à cheval sur deux années (passages en décembre et janvier), il est possible de renseigner une variable `saison` contenant les années concernées pour cette saison hivernale (e.g. "2020-2021"). Les tendances seront calculées en considérant la première année renseignée comme référence mais les plots en sortie seront ajustés pour que l'abscisse indique la saison en question. 
 
 #### Format de la variable réponse
 
@@ -152,6 +162,7 @@ L'utilisateur peut choisir un certain nombre de paramètres afin d'adapter la ro
 Paramètres de contexte :
 
  - `repo` : nom du sous-dossier où sont contenues les données
+ - `Data` : nom du jeu de données .csv (e.g. countingData.csv)
  - `obs` : nom de l’observatoire étudié
  - `spatialScale` : nom de l’échelle d’étude (e.g, nationale, Île-de-France, …)
  
@@ -325,8 +336,9 @@ knitr::kable(
 
 Les tendances long-termes de chaque espèce sont résumées en 7 catégories : déclin fort, déclin modéré à fort, déclin faible, stable, augmentation modérée, augmentation modérée à forte, augmentation forte, incertain. Cette classification repose sur une valeur seuil correspondant à un déclin de 30% en 10 ans (resp. augmentation de 30% en 10 ans, critère Liste Rouge). Les classes « fort » regroupent les espèces dont l’ensemble de l’intervalle de confiance dépasse le seuil. Les classes « modéré à fort » regroupent les espèces pour lesquelles au moins une partie de l’intervalle de confiance dépasse le seuil. La classe « Incertain » correspond aux estimations non significatives dont l’intervalle de confiance englobe ce seuil. 
 
-![Figure 3 : Critère de classification des taux de croissance dans les différentes catégories](img/crit_classification.jpg)
-Deux figures proposent une visualisation de ces tendances linéaires pour l’ensemble des espèces. Elles sont enregistrées dans le dossier **output / observatoire1 / figures / classification**, et portent les noms *errorbar.png* et *barplot.png*.
+![Figure 3 : Critère de classification des taux de croissance dans les différentes catégories](img/crit_classification.png)
+
+Deux figures proposent une visualisation de ces tendances linéaires pour l’ensemble des espèces. Elles sont enregistrées dans le dossier **output / observatoire1 / figures / classification**, et portent les noms *errorbar.png* et *barplot.png*. Dans ces plots, seul les espèces dont les tendances calculées sont "fiables" (i.e. dont la médiane des occurrences annuelles est supérieur à 12) sont considérées.
 
 #### Classification des tendances quadratiques
 
@@ -343,8 +355,8 @@ Pour la tendance long-terme et les variations annuelles, un tableau est réalis�
 ```{r}
 knitr::kable(
   data.frame(
-    col_names = c("species", "model", "nbRowsInit", "nbRowsFin", "distribution", "convergence", "removedVars", "Variables retirées par rapport à la spécification de base"),
-    col_descr = c("Nom de Code de l’espèce", "Nom du modèle résumé (longTermTrend, shortTermTrend...)", "Nombre de lignes initial", "Nombre de lignes final", "Distribution utilisée", "Information sur la convergence des modèles (oui / non)")
+    col_names = c("species", "model", "nbRowsInit", "nbRowsFin", "distribution", "convergence", "removedVars"),
+    col_descr = c("Nom de Code de l’espèce", "Nom du modèle résumé (longTermTrend, shortTermTrend...)", "Nombre de lignes initial", "Nombre de lignes final", "Distribution utilisée", "Information sur la convergence des modèles (oui / non)","Variables retirées par rapport à la spécification de base")
   ),
   align = "ccc",
   col.names = c("Nom des colonnes", "Description de la colonne"),
@@ -364,13 +376,16 @@ Si `makePDF` est TRUE, le *script 5-create_pdf.R* est lancé. Il permet de synth
 #### Fiche espèce
 
 Une fiche est réalisée pour chaque espèce, et stockée sous le nom le nom de l’espèce analysée (e.g, *COLPAL.pdf*) dans le sous-dossier **species**. Cette fiche regroupe notamment : 
-    • Un tableau d’occurrence / abondance de l’espèce ;
-    • La carte de répartition de l’espèce ;
-    • La figure de tendance de l’espèce ;
-    • Les chiffres clés issus de ces tendances.
+
+- Un tableau d’occurrence / abondance de l’espèce ;
+- La carte de répartition de l’espèce ;
+- La figure de tendance de l’espèce ;
+- Les chiffres clés issus de ces tendances;
+- Une table des occurrences (nombre de sites) et abondances annuelles
     
 #### Synthèse globale
 
 Une fiche synthétisant les tendances pour l’ensemble des espèces est proposée à la racine du dossier **pdf**. Elle porte le nom d’Analyse `globale.pdf`. Elle contient :
-    • Une figure présentant les tendances agrégées par groupe d’espèces (ou pour toutes les espèces, si aucun groupe n’est renseigné) ;
-    • Un tableau résumant pour l’ensemble des espèces leur groupe (si renseigné), tendance et classification. 
+
+- Une figure présentant les tendances agrégées par groupe d’espèces (ou pour toutes les espèces, si aucun groupe n’est renseigné) ;
+- Un tableau résumant pour l’ensemble des espèces leur groupe (si renseigné), tendance et classification. 
