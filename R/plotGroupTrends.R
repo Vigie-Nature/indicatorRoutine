@@ -46,7 +46,7 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
   
   # Deal with number of rows for legend
   nGroups <- length(groupCols)
-  nrowLegend <- if (nGroups <= 2) 1 else if (nGroups < 5) 2 else 3
+  nrowLegend <- ceiling(nGroups/2)
   
   # Create a "saison" var corresponding to SHOC winter track 
   dataVar$saison <- paste(dataVar$year, dataVar$year+1, sep = "-")
@@ -101,11 +101,11 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
     
     # Format color values
     ggplot2::scale_colour_manual(name = "", values = groupCols, labels = groupLabels,
-                                 guide = ggplot2::guide_legend(nrow = nrow, by.row = FALSE)) +
+                                 guide = ggplot2::guide_legend(nrow = nrowLegend, by.row = FALSE)) +
     
     # Format fill values
     ggplot2::scale_fill_manual(name = "", values = groupCols, labels = groupLabels,
-                               guide = ggplot2::guide_legend(nrow = nrow, by.row = FALSE)) 
+                               guide = ggplot2::guide_legend(nrow = nrowLegend, by.row = FALSE)) 
   
   
   # Save the plot as png
