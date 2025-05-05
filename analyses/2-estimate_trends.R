@@ -10,6 +10,7 @@ dir.create(path = here::here("outputs", repo, "models", "rawQuadraticTrend"), sh
 dir.create(path = here::here("outputs", repo, "models", "orthoQuadraticTrend"), showWarnings = FALSE)
 dir.create(path = here::here("outputs", repo, "models", "yearlyVariations"), showWarnings = FALSE)
 dir.create(path = here::here("outputs", repo, "models", "gammVariations"), showWarnings = FALSE)
+file.copy(from = here::here("analyses", "0b-load-parameters.R"), to = here::here("outputs", repo))
 
 # Loop on species & make GLM / GAM ----
 
@@ -55,7 +56,7 @@ if (!parallelizeSpecies) {
       sp = s
     ))
   }, simplify = F)
-
+  #write.table(split_data, here::here("outputs", repo, "split_data.txt"), sep = "\t", row.names = FALSE, col.names = TRUE)
   try_parallel <- foreach (
     sp_data = split_data,
     .packages = c("glmmTMB", "dplyr")

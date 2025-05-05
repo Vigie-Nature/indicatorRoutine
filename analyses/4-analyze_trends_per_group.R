@@ -139,10 +139,16 @@ if(makeGroupPlot){
     groupLongTermTrend = agregateTrendsPerGroup(dataLongTermTrend, groupNames, groupComp)
     
     # Agregate yearly variations
-    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames, groupComp)
+    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames, groupComp, useLastYearAsReference = FALSE)
     
     # Plot group trends
     plotGroupTrends(groupLongTermTrend, groupYearlyVariations, data, groupCols, distribution, repo, fileName = "groupTrendPlot")
+    
+    # Agregate yearly variations
+    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames, groupComp, useLastYearAsReference = TRUE)
+    
+    # Plot group trends
+    plotGroupTrends(groupLongTermTrend, groupYearlyVariations, data, groupCols, distribution, repo, fileName = "groupTrendPlotLast")
     
   }else{
     
@@ -151,7 +157,8 @@ if(makeGroupPlot){
     groupLongTermTrend = agregateTrendsPerGroup(dataLongTermTrend, groupNames = "Toutes espèces", groupComp = list(speciesList))
     
     # Agregate yearly variations
-    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames = "Toutes espèces", groupComp = list(speciesList))
+    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames = "Toutes espèces", groupComp = list(speciesList),
+                                                       useLastYearAsReference = FALSE)
     
     # Plot group trends
     plotGroupTrends(groupLongTermTrend, groupYearlyVariations, data, groupCols = "red", distribution, repo, fileName = "groupTrendPlot")
