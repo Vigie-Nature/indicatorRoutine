@@ -10,7 +10,9 @@ dir.create(path = here::here("outputs", repo, "models", "rawQuadraticTrend"), sh
 dir.create(path = here::here("outputs", repo, "models", "orthoQuadraticTrend"), showWarnings = FALSE)
 dir.create(path = here::here("outputs", repo, "models", "yearlyVariations"), showWarnings = FALSE)
 dir.create(path = here::here("outputs", repo, "models", "gammVariations"), showWarnings = FALSE)
-file.copy(from = here::here("analyses", "0b-load-parameters.R"), to = here::here("outputs", repo))
+if (file.exists(here::here("analyses", "0b-load-parameters.R"))) {
+  file.copy(from = here::here("analyses", "0b-load-parameters.R"), to = here::here("outputs", repo))
+}
 
 # Loop on species & make GLM / GAM ----
 
