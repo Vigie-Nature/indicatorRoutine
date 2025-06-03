@@ -59,21 +59,18 @@ estimateTrends <- function(
   ########################  
   if(makeShortTrend){
     # Filter for the latest 10 years
-    dataSp_ST = dataSp[dataSp$year > max(dataSp$year) - 10,]
+    dataSp_ST <- dataSp[dataSp$year > max(dataSp$year) - 10, ]
     
     # Filter to clean sites with only 0 cause observation was prior the period
     sites_only_0 <- dataSp_ST %>%
-      group_by(site) %>%
-      #summarize(total_interestVar = sum( {{ interestVar }}, na.rm = TRUE)) %>%
-      summarize(total_interestVar = sum(.data[[interestVar]], na.rm = TRUE)) %>%
-      filter(total_interestVar == 0) %>%
-      pull(site)  # extrait simplement le vecteur des noms de site
+      dplyr::group_by(site) %>%
+      dplyr::summarize(total_interestVar = sum(.data[[interestVar]], na.rm = TRUE)) %>%
+      dplyr::filter(total_interestVar == 0) %>%
+      dplyr::pull(site)  # extrait simplement le vecteur des noms de site
     
     dataSp_ST <- dataSp_ST %>%
-      filter(!site %in% sites_only_0)
-    
-    write.csv(dataSp_ST, file = here::here("outputs", repo, "models", "shortTermTrend", paste0(sp, ".csv")))
-    
+      dplyr::filter(!site %in% sites_only_0)
+
     # Make the model
     shortTermTrend <- makeGLM(data = dataSp_ST, interestVar = interestVar, fixedEffects = fixedEffects,
                               factorVariables = factorVariables, randomEffects = randomEffects,
