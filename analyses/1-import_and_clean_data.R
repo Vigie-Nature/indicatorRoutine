@@ -11,7 +11,10 @@ cat("# IMPORT AND CLEAN DATA #\n")
 dataPath <- here::here("data", repo, Data)
 
 # Read data ----
-data <- data.table::fread(file = dataPath, encoding = "UTF-8", drop = "V1")
+data <- data.table::fread(file = dataPath, 
+                          encoding = "UTF-8", 
+                          drop = "V1",
+                          colClasses = c(site = "character"))
 
 # Turn data to dataframe ----
 data <- data.frame(data)
@@ -29,6 +32,10 @@ data <- formatData(data, yearRange, interestVar, fixedEffects, factorVariables,
 ##########################
 
 # If required, initialize speciesList ----
+# On garde uniquement les observations où la première variable de interestVar est positive.
+# On regroupe les données par espèce pour calculer
+# nbOcc = length(unique(ID)) le nombre d’ID uniques par espèce
+# nbYear = 5 * length(min(year):max(year)) Calcule une valeur seuil pour filtrer les espèces
 if(is.null(speciesList)){
   grData = dplyr::group_by(data[data[,interestVar[1]]>0,], species) %>%
     dplyr::summarise(nbOcc = length(unique(ID)),
