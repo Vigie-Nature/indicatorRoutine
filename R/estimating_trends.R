@@ -62,23 +62,23 @@ estimateTrends <- function(
   if(makeShortTrend){
     # Filter for the latest 10 years
     dataSp_ST <- dataSp[dataSp$year > max(dataSp$year) - 10, ]
-    
+
     # if("point" %in% colnames(data)){
     #   sites_only_0 <- dataSp_ST %>%
     #     dplyr::group_by(site, point) %>%
     #     dplyr::summarize(total_interestVar = sum(.data[[interestVar]], na.rm = TRUE), .groups = "drop") %>%
     #     dplyr::filter(total_interestVar == 0) %>%
     #     dplyr::select(site, point)
-    #   
+    # 
     #   # Filtrer dataSp_ST pour enlever les couples site-point à 0
     #   dataSp_ST <- dplyr::anti_join(dataSp_ST, sites_only_0, by = c("site", "point"))
-    #   
+    # 
     #   # Filter to remove point with only one year of observation
     #   dataSp_ST <- dataSp_ST %>%
     #     dplyr::group_by(site,point) %>%
-    #     dplyr::filter(n_distinct(year) > 1) %>%
+    #     dplyr::filter(dplyr::n_distinct(year) > 1) %>%
     #     dplyr::ungroup()
-    #   
+    # 
     # } else {
     #   # Filter to clean sites with only 0 cause observation was prior the period
     #   sites_only_0 <- dataSp_ST %>%
@@ -86,26 +86,26 @@ estimateTrends <- function(
     #     dplyr::summarize(total_interestVar = sum(.data[[interestVar]], na.rm = TRUE)) %>%
     #     dplyr::filter(total_interestVar == 0) %>%
     #     dplyr::pull(site)  # extrait simplement le vecteur des noms de site
-    #   
+    # 
     #   dataSp_ST <- dataSp_ST %>%
     #     dplyr::filter(!site %in% sites_only_0)
-    #   
+    # 
     #   # Filter to remove point with only one year of observation
     #   dataSp_ST <- dataSp_ST %>%
     #     dplyr::group_by(site) %>%
-    #     dplyr::filter(n_distinct(year) > 1) %>%
+    #     dplyr::filter(dplyr::n_distinct(year) > 1) %>%
     #     dplyr::ungroup()
     # }
     
     # Définir dynamiquement les colonnes de regroupement
     group_vars <- if ("point" %in% colnames(data)) c("site", "point") else "site"
-    
+
     # Identification des sites (ou couples site-point) à 0 d'abondance
     sites_only_0 <- dataSp_ST %>%
       dplyr::group_by(across(all_of(group_vars))) %>%
       dplyr::summarize(total_interestVar = sum(.data[[interestVar]], na.rm = TRUE), .groups = "drop") %>%
       dplyr::filter(total_interestVar == 0)
-    
+
     # Exclusion de ces sites
     if ("point" %in% colnames(dataSp_ST)) {
       dataSp_ST <- dplyr::anti_join(dataSp_ST, sites_only_0, by = c("site", "point"))
@@ -113,12 +113,14 @@ estimateTrends <- function(
       sites_only_0_vec <- sites_only_0$site
       dataSp_ST <- dplyr::filter(dataSp_ST, !site %in% sites_only_0_vec)
     }
-    
+
     # Filtre des site (ou couples site-point) avec 1 année d'observation
     dataSp_ST <- dataSp_ST %>%
       dplyr::group_by(across(all_of(group_vars))) %>%
       dplyr::filter(dplyr::n_distinct(year) > 1) %>%
       dplyr::ungroup()
+
+    dataSp_ST <- as.data.frame(dataSp_ST)
     
     #write.csv(dataSp_ST, file = here::here("outputs", repo, "models", "shortTermTrend", paste0(sp, ".csv")))
     # Make the model
