@@ -140,6 +140,7 @@ agregateVariationsPerGroup <- function(data, groupNames, groupComp, useLastYearA
   
   # Split each group data per year
   listOfData = lapply(listOfData, function(df) split(df, df$year))
+  #listOfData <- lapply(listOfData, function(x) x[-1])
   
   #############################
   # SIMULATIONS AND INDICATOR #
