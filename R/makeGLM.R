@@ -167,12 +167,14 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
         # Extract model convergence
         modelConv = model$value$fit$convergence
         
-        if(modelConv == 1){
+        if(modelConv == 1 || identifyConvIssue(model)){
+        #if(modelConv == 1){
           # If a convergence issue has been detected 
           # Try to identify the cause, and to solve it
           gardeFou = TRUE ; compt = 0
           
-          while(modelConv == 1 & gardeFou){
+          while ((modelConv == 1 || identifyConvIssue(model)) && gardeFou) {
+          #while(modelConv == 1 & gardeFou){
             cat("New try\n")
             # Initialize parameter modif ----
             modif = FALSE
