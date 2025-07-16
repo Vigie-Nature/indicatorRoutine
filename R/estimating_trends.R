@@ -108,7 +108,7 @@ estimateTrends <- function(
 
     # Exclusion de ces sites
     # Nettoyage pour correspondance avec anti_join
-    if("point" %in% colnames(dataSp_ST)){
+    if(length(group_vars) == 2){
       sites_only_0 <- sites_only_0 %>% dplyr::select(site, point)
       dataSp_ST <- dplyr::anti_join(dataSp_ST, sites_only_0, by = c("site", "point"))
     } else {
