@@ -202,7 +202,8 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
             
             
             # 2. Check if random effects are OK ----
-            if(!modif&!is.null(randomEffects)|length(nestedEffects)>0|length(slopeRandomEffects)>0){
+            # if(!modif&!is.null(randomEffects)|length(nestedEffects)>0|length(slopeRandomEffects)>0){
+            if (!modif && (is.null(randomEffects) || length(nestedEffects) > 0 || length(slopeRandomEffects) > 0)) {
               ## Summary related to random effects
               sumVar = summary(model$value)$varcor$cond
               

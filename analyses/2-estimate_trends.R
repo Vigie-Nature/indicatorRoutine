@@ -27,7 +27,7 @@ if (!parallelizeSpecies) {
     
     estimateTrends(
       sp = sp,
-      data = dataSp,
+      dataSp = dataSp,
       repo = repo,
       interestVar = interestVar,
       fixedEffects = fixedEffects,
@@ -82,6 +82,7 @@ if (!parallelizeSpecies) {
         makeQuadraticTrend = makeQuadraticTrend,
         makeGammTrend = makeGammTrend
       )
+      
   }
   
   stop_cluster(cl, parallelPackage)
