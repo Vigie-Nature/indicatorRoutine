@@ -183,7 +183,7 @@ if(is.null(dataShortTermTrendSp)){
 ```
 ::: {.col data-latex="{0.499\\textwidth}"}
 ::: {.OrangeMediumBox data-latex=""}
-\large \textcolor{myorange}{Court terme (`r maxYear - 10` - `r maxYear`)}\
+\large \textcolor{myorange}{Court terme (`r maxYear - 9` - `r maxYear`)}\
 \normalsize Sur cette période de 10 ans :\
 **Critères EBCC:** \textcolor{myorange}{`r catEBCC_ST`}\
 **Critères Liste Rouge :** \textcolor{myorange}{`r cat_ST`}\
