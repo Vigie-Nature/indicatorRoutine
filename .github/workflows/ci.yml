@@ -3,7 +3,7 @@ name: R-CI Pipeline
 # Déclencheurs : push sur master ou dev_point, et PR vers master
 on:
   push:
-    branches: [ master, dev_point ]
+    branches: [ master]
   pull_request:
     branches: [ master ]
 
@@ -40,7 +40,7 @@ jobs:
 
       # 6 Sauvegarde des outputs (artifacts)
       - name: Upload test outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-outputs
           path: |
