@@ -8,6 +8,11 @@
 #' 
 #' @date 2022/11/09
 
+
+#setting seed for debuging and reproductibility
+set.seed(42)
+
+
 if (.Platform$OS.type == "unix") {
   if(system.file(package='renv') == ""){
     install.packages("renv", repos = "https://pbil.univ-lyon1.fr/CRAN/")

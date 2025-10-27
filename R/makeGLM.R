@@ -128,7 +128,6 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
       # Scale continuous variables
       for (contVar in c(fixedEffects, poly)){
         data[,contVar] = scale(data[,contVar])
-        
       }
       
       ###############################
