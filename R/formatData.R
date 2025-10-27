@@ -29,6 +29,11 @@ formatData = function(data, yearRange, interestVar, fixedEffects, factorVariable
     data$ID = paste(data$ID, data$session)
   }
   
+  # Add the most precise habitat description
+  if("num_points" %in% colnames(data)){
+    data$ID = paste(data$ID, data$code_habitat)
+  }
+  
   
   # Filter for selected range of years ----
   if(!is.null(yearRange)){
@@ -43,6 +48,7 @@ formatData = function(data, yearRange, interestVar, fixedEffects, factorVariable
   
   vars = vars[vars %in% colnames(data)]
   data = data[,colnames(data) %in% vars]
+  #possibilite de switch avec data = data[, vars]
   
   # Erase NA values regarding all variables ----
   rowToErase = which(apply(data[,vars], 1, function(x) any(is.na(x))))

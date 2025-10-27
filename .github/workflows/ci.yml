@@ -1,0 +1,48 @@
+name: R-CI Pipeline
+
+# Déclencheurs : push sur master ou dev_point, et PR vers master
+on:
+  push:
+    branches: [ master]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-check-make:
+    runs-on: ubuntu-latest
+    container:
+      image: liseb/custom-renv-install   # ton Docker existant
+    env:
+      RENV_PATHS_CACHE: "/home/workspace/.renv/cache"
+      RENV_PATHS_LIBRARY: "/home/workspace/.renv/library"
+    steps:
+      # 1 Checkout du code
+      - uses: actions/checkout@v3
+
+      # 2 Afficher la library renv (debug)
+      - name: Show Renv library path
+        run: Rscript -e 'print(renv::paths$library())'
+
+      # 3 Build du package
+      - name: Build package
+        run: Rscript -e 'devtools::build()'
+
+      # 4 Check du package
+      - name: Check package
+        run: Rscript -e 'devtools::check(error_on = "error")'
+
+      # 5 Run make pipeline
+      - name: Make pipeline
+        run: |
+          Rscript -e 'source(here::here("utils/write_test_data.R"))'
+          Rscript -e 'tinytex::reinstall_tinytex(force = TRUE)'
+          Rscript -e 'source("make.R")'
+
+      # 6 Sauvegarde des outputs (artifacts)
+      - name: Upload test outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-outputs
+          path: |
+            data/test
+            outputs/test/pdf

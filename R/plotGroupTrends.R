@@ -20,13 +20,12 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
   plotTitle <- paste0("Tendances par groupe (", minYear, "-", maxYear, ")")
   
   # Make y-axis
-  if(distribution %in% c("nbinom2", "poisson")){
-    yName = "Abondance relative"
-  }else if (distribution %in% c("binomial", "betabinomial")){
-    yName = "Rapport des chances"
-  }else{
-    yName = "Indice"
-  }
+  yName <- switch(distribution,
+                  "nbinom2" = "Abondance relative",
+                  "poisson" = "Abondance relative",
+                  "binomial" = "Rapport des chances",
+                  "betabinomial" = "Rapport des chances",
+                  "Indice")
   
   # Make labels for each group
   groupLabels <- paste0(dataTrend$group, " : ", dataTrend$perc, "% (", 
@@ -35,15 +34,19 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
   # Deal with colors
   if(length(groupCols) > 1){
     groupCols = c(groupCols, "red")
+    groupNames = c(groupNames, "Toutes espèces")
   }
   
+  # Associer les noms de groupes aux couleurs
+  names(groupCols) <- groupNames
+  
+  # Vérifie que les groupes dans dataVar et dataTrend sont bien des facteurs avec les bons niveaux
+  dataVar$group <- factor(dataVar$group, levels = groupNames)
+  dataTrend$group <- factor(dataTrend$group, levels = groupNames)
+  
   # Deal with number of rows for legend
-  nrow = 1
-  if(length(groupCols) > 2 & length(groupCols) < 5){
-    nrow = 2
-  }else{
-    nrow = 3
-  }
+  nGroups <- length(groupCols)
+  nrowLegend <- ceiling(nGroups/2)
   
   # Create a "saison" var corresponding to SHOC winter track 
   dataVar$saison <- paste(dataVar$year, dataVar$year+1, sep = "-")
@@ -98,11 +101,11 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
     
     # Format color values
     ggplot2::scale_colour_manual(name = "", values = groupCols, labels = groupLabels,
-                                 guide = ggplot2::guide_legend(nrow = nrow, by.row = FALSE)) +
+                                 guide = ggplot2::guide_legend(nrow = nrowLegend, by.row = FALSE)) +
     
     # Format fill values
     ggplot2::scale_fill_manual(name = "", values = groupCols, labels = groupLabels,
-                               guide = ggplot2::guide_legend(nrow = nrow, by.row = FALSE)) 
+                               guide = ggplot2::guide_legend(nrow = nrowLegend, by.row = FALSE)) 
   
   
   # Save the plot as png
@@ -113,3 +116,5 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
   
   return(plot)
 }
+
+

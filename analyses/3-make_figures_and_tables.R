@@ -47,6 +47,7 @@ uncertainPlots = plotLinearTrends(speciesList = speciesList, data = data, dataNa
                                     N = 100, uncertainty = TRUE, weight = TRUE, save = TRUE, path = pathToPlot)
 
 save(uncertainPlots, file = here::here("outputs", repo, "figures", "trends", "uncertainPlots.rdata"))
+rm(uncertainPlots)
 
 # Plot trends with no uncertainty
 ## Create repository
@@ -61,6 +62,7 @@ regularPlots = plotLinearTrends(sp = speciesList, data = data, dataName = dataNa
                                 N = 100, uncertainty = FALSE, weight = TRUE, save = TRUE, path = pathToPlot)
 
 save(regularPlots, file = here::here("outputs", repo, "figures", "trends", "regularPlots.rdata"))
+rm(regularPlots)
 
 #################################################
 #   MAKE SUMMARY OF LINEAR & QUADRATIC TRENDS   #
@@ -162,6 +164,6 @@ pathToRepo = here::here("outputs", repo, "figures", "maps")
 dir.create(path = pathToRepo, showWarnings = FALSE)
 
 # Make plots for each species
-maps = makeMap(data = data, speciesList = speciesList, interestVar = interestVar, path = pathToRepo)
+makeMap(data = data, speciesList = speciesList, interestVar = interestVar, path = pathToRepo)
 
 cat(" --> DONE\n")

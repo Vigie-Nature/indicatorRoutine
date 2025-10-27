@@ -49,8 +49,6 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
     stop("the chosen distribution doesn't exist. \nPlease choose between : binomial, betabinomial, gaussian, poisson or nbinom2.")
   }
   
-  
-  
   # Check that year has a variability ----
   if(length(unique(data$year)) == 1){
     model = list(value = NULL, warnings = NULL, error = "No variability in 'year'")
@@ -130,7 +128,6 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
       # Scale continuous variables
       for (contVar in c(fixedEffects, poly)){
         data[,contVar] = scale(data[,contVar])
-        
       }
       
       ###############################
@@ -169,12 +166,14 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
         # Extract model convergence
         modelConv = model$value$fit$convergence
         
-        if(modelConv == 1){
+        if(modelConv == 1 || identifyConvIssue(model)){
+        #if(modelConv == 1){
           # If a convergence issue has been detected 
           # Try to identify the cause, and to solve it
           gardeFou = TRUE ; compt = 0
           
-          while(modelConv == 1 & gardeFou){
+          while ((modelConv == 1 || identifyConvIssue(model)) && gardeFou) {
+          #while(modelConv == 1 & gardeFou){
             cat("New try\n")
             # Initialize parameter modif ----
             modif = FALSE
@@ -202,7 +201,8 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
             
             
             # 2. Check if random effects are OK ----
-            if(!modif&!is.null(randomEffects)|length(nestedEffects)>0|length(slopeRandomEffects)>0){
+            # if(!modif&!is.null(randomEffects)|length(nestedEffects)>0|length(slopeRandomEffects)>0){
+            if (!modif && (is.null(randomEffects) || length(nestedEffects) > 0 || length(slopeRandomEffects) > 0)) {
               ## Summary related to random effects
               sumVar = summary(model$value)$varcor$cond
               
@@ -256,26 +256,28 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
                 
                 # Case of random intercept to erase 
                 else{
-                  if(grepl(":", varToErase, fixed = T)){
+                  # try if  (":" or ".") are present in varToErase
+                  if(grepl("[:.]", varToErase, fixed = F)){
                     
-                    splitVarToErase = unlist(stringr::str_split(varToErase, ":", simplify = T))
+                    # Split on ":" or "." regarding the on present
+                    splitVarToErase <- unlist(stringr::str_split(varToErase, "[:.]", simplify = T))
                     
                     # Add the englobing variable to the random effect
                     randomEffects <- c(randomEffects, splitVarToErase[2])
                     
                     # Erase the nested effect
-                    indToErase = sapply(1:length(nestedEffects), function(x){
+                    indToErase <- sapply(1:length(nestedEffects), function(x){
                       nE = nestedEffects[[x]]
                       if(nE[1] == splitVarToErase[1] & nE[2] == splitVarToErase[2]){
                         return(x)
                       }
                     })
-                    
-                    nestedEffects = nestedEffects[-indToErase]
+                    nestedEffects <- nestedEffects[-indToErase]
                     
                     cat("Random interaction : ", varToErase, " has been erased due to low variance.\n")
                     
                   }else{ 
+                    
                     # Extract index where the varToErase is encompassing
                     indToErase = sapply(1:length(nestedEffects), function(x){
                       nE = nestedEffects[[x]]
@@ -284,6 +286,7 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
                       }}) 
                     
                     # Extract the interaction
+                    
                     randomInteractions = nestedEffects[indToErase]
                     randomInteractions = sapply(randomInteractions,
                                                 function(x) paste(x, collapse = ":"))

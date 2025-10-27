@@ -33,19 +33,20 @@ measureVIF<- function(model){
       # Stop the measure of VIF if NAs are created
       if(any(is.na(d))) {
         VIF <- NA
+      } else {
+        
+        # Variance-covariance matrix on outer product of d
+        prodD <- v/(d %o% d)
+        
+        # Inverse d
+        invD <- solve(prodD)
+        
+        # Return the diagonal of d
+        VIF <- diag(invD)
+        
+        # Round to 2 digits
+        VIF <- round(VIF,2)
       }
-      
-      # Variance-covariance matrix on outer product of d
-      prodD <- v/(d %o% d)
-      
-      # Inverse d
-      invD <- solve(prodD)
-      
-      # Return the diagonal of d
-      VIF <- diag(invD)
-      
-      # Round to 2 digits
-      VIF <- round(VIF,2)
       
     }
   }
