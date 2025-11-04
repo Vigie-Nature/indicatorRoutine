@@ -62,14 +62,12 @@ makeSpecificationsTable <- function(data, speciesList, interestVar, fixedEffects
     # Filter data for considered species
     dataSp = data[data$species == sp, ]
     
-    # Change name of the model
-    model = get(modelName)
     file_path <- here::here("outputs", repo, "models", modelName, paste0(sp, ".rdata"))
 
     # Si le fichier n'existe pas, retourne un data.frame vide avec un message
     if (!file.exists(file_path)) {
       return(data.frame(species = sp,
-        model = modelName,
+        model = NA,
         nbRowsInit = nrow(dataSp),
         nbRows = NA,
         distribution = NA,
@@ -80,6 +78,8 @@ makeSpecificationsTable <- function(data, speciesList, interestVar, fixedEffects
     # Load models
     load(file_path)
     
+    # Change name of the model
+    model = get(modelName)
     
     if(is.null(model$error)){
       ############################
