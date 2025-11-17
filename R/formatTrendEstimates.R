@@ -108,8 +108,21 @@ formatTrendEstimates <- function(data, speciesList, repo, modelName){
                                 pval = NA)
         
       }
-      return(dataRes_sp)
+    }else{
+      dataRes_sp = data.frame(species = sp,
+                                model = modelName,
+                                coef = NA,
+                                minYear = NA,
+                                maxYear = NA,
+                                meanYear = NA,
+                                sdYear = NA,
+                                estimate = NA,
+                                se = NA,
+                                infIC = NA,
+                                supIC = NA,
+                                pval = NA)
     }
+    return(dataRes_sp)
   })
   
   # Bind all data.frames
