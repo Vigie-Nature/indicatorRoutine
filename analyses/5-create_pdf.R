@@ -113,11 +113,15 @@ renderSpeciesReport <- function(sp, data, dataName, dataLongTermTrend, dataShort
   # Extraire les noms français et scientifiques
   if(!is.null(dataName)){
     dataName_sp = dataName[dataName$species == sp,]
-    sp_french = dataName_sp$french_name
-    sp_latin = dataName_sp$scientific_name
-    sp_french_simpld = dataName_sp$french_name_simplified
+    if(nrow(dataName_sp) > 0){
+      sp_french = dataName_sp$french_name
+      sp_latin = dataName_sp$scientific_name
+      sp_french_simpld = dataName_sp$french_name_simplified
+    } else {
+      sp_french <- sp_latin <- sp_french_simpld <- sp
+    }
   } else {
-    sp_french = sp_latin = sp_french_simpld = sp
+    sp_french <- sp_latin <- sp_french_simpld <- sp
   }
 
   # Filtrer les tendances long terme
@@ -233,15 +237,6 @@ if (!parallelizeSpecies) {
   stop_cluster(cl, parallelPackage)
 }
 
-
-
-
-
-
-
-
-
-
 ##########################
 #   MAKE A SUMMARY PDF   #
 ##########################
@@ -259,6 +254,14 @@ if(!is.null(groupComp)){
     # Attribute french 
     french_names = dataLongTermTrend$french_name[ind]
     return(french_names)
+    
+    # Dans les cas ou une des espèces du group n'a pas de tendance énère NA
+    # Test de suppression des NA
+    frenchComp <- lapply(frenchComp, function(x) {
+      x_noNA <- na.omit(x)
+      as.vector(x_noNA)
+    })
+    
   })
 }else{
   # Find which species are in each group
@@ -267,6 +270,7 @@ if(!is.null(groupComp)){
   # Attribute french 
   frenchComp = dataLongTermTrend$french_name[ind]
 }
+
 
 
 # Format summary table for all species

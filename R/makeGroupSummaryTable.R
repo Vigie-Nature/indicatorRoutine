@@ -28,11 +28,16 @@ makeGroupSummaryTable <- function(dataTrend, dataObs, makeGroupPlot, groupComp, 
       # Attribute each species to a group
       ind = sapply(groupComp, function(g){ match(g, dataTrend$species) })
       
+      ind <- lapply(ind, function(x) {
+        x_noNA <- na.omit(x)
+        as.vector(x_noNA)
+      })
+      
       # Add a group column, depending on groupNames
-      dataTrend$group[unlist(ind)] = rep(groupNames, times = sapply(groupComp, length))
+      dataTrend$group[unlist(ind)] = rep(groupNames, times = sapply(ind, length))
       
       # Add a color column, depending on groupNames
-      dataTrend$col[unlist(ind)] = rep(groupCols, times = sapply(groupComp, length))
+      dataTrend$col[unlist(ind)] = rep(groupCols, times = sapply(ind, length))
     }
   }
   

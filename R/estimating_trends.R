@@ -201,7 +201,8 @@ estimateTrends <- function(
   #   rm(gammVariations)
   # }
   # 
-  if(makeGammTrend){
+  if(makeGammTrend && file.exists(here::here(
+    "outputs", repo, "models", "longTermTrend", paste0(sp, ".rdata")))){
     
     data_temp_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, "_data.RData"))
     output_model_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata"))
