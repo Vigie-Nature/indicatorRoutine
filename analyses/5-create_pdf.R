@@ -254,14 +254,12 @@ if(!is.null(groupComp)){
     # Attribute french 
     french_names = dataLongTermTrend$french_name[ind]
     return(french_names)
-    
-    # Dans les cas ou une des espèces du group n'a pas de tendance énère NA
-    # Test de suppression des NA
-    frenchComp <- lapply(frenchComp, function(x) {
-      x_noNA <- na.omit(x)
-      as.vector(x_noNA)
-    })
-    
+  })
+  # Dans les cas ou une des espèces du group n'a pas de tendance énère NA
+  # Test de suppression des NA
+  frenchComp <- lapply(frenchComp, function(x) {
+    x_noNA <- na.omit(x)
+    as.vector(x_noNA)
   })
 }else{
   # Find which species are in each group
