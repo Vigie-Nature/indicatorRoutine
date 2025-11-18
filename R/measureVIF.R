@@ -8,6 +8,8 @@
 #'
 measureVIF<- function(model){
   
+  save(model, file = here::here("outputs", repo, "models", paste0(sp, ".rdata")))
+  
   if(!is.null(model$error)){
     VIF <- NA
     
