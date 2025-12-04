@@ -63,3 +63,24 @@ source("make.R")
   installed (if necessary)
 - All required packages and R functions will be loaded
 - Some analyses listed in the `make.R` might take time
+
+### How to Create an Issue
+
+To report a problem or request a new feature, please use the available
+issue templates.
+
+### Steps
+
+1.  Go to the **Issues** tab of the repository.
+2.  Click **New Issue**.
+3.  Select the appropriate template:
+    - **Bug Report** – for reporting technical issues  
+    - **Feature Request** – for suggesting improvements  
+4.  Fill in the required fields as indicated in the template.
+5.  Click **Submit new issue**.
+
+Using these templates helps ensure that requests are clear, complete,
+and easy to process.
+
+**Create an issue directly:**
+[`New Issue`](https://github.com/Vigie-Nature/indicatorRoutine/issues/new/choose)
