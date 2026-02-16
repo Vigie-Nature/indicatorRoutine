@@ -125,20 +125,22 @@ estimateTrends <- function(
     dataSp_ST <- as.data.frame(dataSp_ST)
 
     # Ajout du filtre sur les occurences comme effectuer pour les longTermTrends
-    grData = dplyr::group_by(dataSp_ST[dataSp_ST[,interestVar[1]]>0,], species) %>%
-    dplyr::summarise(nbOcc = length(unique(ID)),
-                     nbYear = 5*length(min(year):max(year)))
-    if(grData$nbOcc > grData$nbYear) {
-      # Make the model
-      shortTermTrend <- makeGLM(data = dataSp_ST, interestVar = interestVar, fixedEffects = fixedEffects,
-                                factorVariables = factorVariables, randomEffects = randomEffects,
-                                nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                                poly = poly, contr = contr,
-                                distribution = distribution, raw = "raw")
-      
-      cat("Short-Term Trend --> DONE\n")
-      save(shortTermTrend, file = here::here("outputs", repo, "models", "shortTermTrend", paste0(sp, ".rdata")))
-      rm(dataSp_ST, shortTermTrend)
+    if(nrow(dataSp_ST) > 0){
+      grData_ST = dplyr::group_by(dataSp_ST[dataSp_ST[,interestVar[1]]>0,], species) %>%
+      dplyr::summarise(nbOcc = length(unique(ID)),
+                       nbYear = 5*length(min(year):max(year)))
+      if(grData_ST$nbOcc > grData_ST$nbYear) {
+        # Make the model
+        shortTermTrend <- makeGLM(data = dataSp_ST, interestVar = interestVar, fixedEffects = fixedEffects,
+                                  factorVariables = factorVariables, randomEffects = randomEffects,
+                                  nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
+                                  poly = poly, contr = contr,
+                                  distribution = distribution, raw = "raw")
+        
+        cat("Short-Term Trend --> DONE\n")
+        save(shortTermTrend, file = here::here("outputs", repo, "models", "shortTermTrend", paste0(sp, ".rdata")))
+        rm(dataSp_ST, shortTermTrend)
+      }
     }
     
     #write.csv(dataSp_ST, file = here::here("outputs", repo, "models", "shortTermTrend", paste0(sp, ".csv")))
@@ -192,51 +194,51 @@ estimateTrends <- function(
   #######################
   #   GAMM VARIATIONS   #
   #######################
-  # if(makeGammTrend){
-  #   gammVariations <- makeGAM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects,
-  #                             factorVariables = factorVariables, randomEffects = randomEffects,
-  #                             nestedEffects = nestedEffects, poly = poly, distribution = distribution)
-  #   cat("GAM Model --> DONE\n")
-  #   save(gammVariations, file =  here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata")))
-  #   rm(gammVariations)
-  # }
-  # 
-  if(makeGammTrend && file.exists(here::here(
-    "outputs", repo, "models", "longTermTrend", paste0(sp, ".rdata")))){
-    
-    data_temp_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, "_data.RData"))
-    output_model_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata"))
-    
-    # Sauvegarder temporairement les données pour le script
-    save(dataSp, file = data_temp_path)
-
-    # Préparer les paramètres
-    params <- list(
-      data_path       = data_temp_path,
-      output_path     = output_model_path,
-      species         = sp,
-      interestVar     = interestVar,
-      fixedEffects    = fixedEffects,
-      factorVariables = factorVariables,
-      randomEffects   = randomEffects,
-      nestedEffects   = nestedEffects,
-      poly            = poly,
-      distribution    = distribution,
-      repo            = repo
-    )
-
-    # Écriture en .rds
-    rds_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, "_params.rds"))
-    saveRDS(params, file = rds_path)
-
-    # Appel du script enfant avec le JSON comme seul argument
-    cat("Appel au rscript\n")
-    cmd <- sprintf('Rscript R/Rscripts/run_gamm_model.R "%s"', rds_path)
-    print(system.time({ system(cmd, intern = FALSE, wait = TRUE) }))
+  if(makeGammTrend){
+    gammVariations <- makeGAM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects,
+                              factorVariables = factorVariables, randomEffects = randomEffects,
+                              nestedEffects = nestedEffects, poly = poly, distribution = distribution)
     cat("GAM Model --> DONE\n")
-    file.remove(data_temp_path, rds_path)
-    cat("Temporary data removed\n")
+    save(gammVariations, file =  here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata")))
+    rm(gammVariations)
   }
+
+  # if(makeGammTrend && file.exists(here::here(
+  #   "outputs", repo, "models", "longTermTrend", paste0(sp, ".rdata")))){
+  #   
+  #   data_temp_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, "_data.RData"))
+  #   output_model_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata"))
+  #   
+  #   # Sauvegarder temporairement les données pour le script
+  #   save(dataSp, file = data_temp_path)
+  # 
+  #   # Préparer les paramètres
+  #   params <- list(
+  #     data_path       = data_temp_path,
+  #     output_path     = output_model_path,
+  #     species         = sp,
+  #     interestVar     = interestVar,
+  #     fixedEffects    = fixedEffects,
+  #     factorVariables = factorVariables,
+  #     randomEffects   = randomEffects,
+  #     nestedEffects   = nestedEffects,
+  #     poly            = poly,
+  #     distribution    = distribution,
+  #     repo            = repo
+  #   )
+  # 
+  #   # Écriture en .rds
+  #   rds_path <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, "_params.rds"))
+  #   saveRDS(params, file = rds_path)
+  # 
+  #   # Appel du script enfant avec le JSON comme seul argument
+  #   cat("Appel au rscript\n")
+  #   cmd <- sprintf('Rscript R/Rscripts/run_gamm_model.R "%s"', rds_path)
+  #   print(system.time({ system(cmd, intern = FALSE, wait = TRUE) }))
+  #   cat("GAM Model --> DONE\n")
+  #   file.remove(data_temp_path, rds_path)
+  #   cat("Temporary data removed\n")
+  # }
   
   gc(verbose=TRUE, full=TRUE)
 }

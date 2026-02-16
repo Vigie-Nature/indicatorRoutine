@@ -348,8 +348,6 @@ Si `makeQuadraticTrend` est TRUE, une figure résumée des tendances quadratique
 
 Une figure est réalisée pour chaque espèce pour visualiser sa tendance long-terme et les variations annuelles. Cette figure est complétée par la tendance court-terme et le GAMM en fonction des paramètres choisis par l’utilisateur (`makeShortTerm` et `makeGammTrend` à TRUE). Ces figures sont regroupées dans le dossier : **output / observatoire1 / figures / trends**. Cette sortie peut être paramétrée de sorte à montrer l’incertitude autour des tendances long-terme et court-terme. L’ensemble des figures présentant l’incertitude sont regroupées dans le sous-dossier **uncertainty**, celles ne la présentant pas sont regroupées dans le sous-dossier **regular**. Ces figures portent le nom de code de l’espèce (e.g, COLPAL.png).
 
-![Figure 3 : Exemple de figure de sortie expliquée](img/figure_explication.png)
-
 #### Tableau de spécification des modèles
 
 Pour la tendance long-terme et les variations annuelles, un tableau est réalisé regroupant pour l’ensemble des espèces, des informations à propos des spécifications du modèle final. Ces spécifications comprennent : le nombre d’observations dans le jeu de données initial et le nombre d’observations finalement utilisées dans le modèle, une information sur la convergence du modèle, la distribution utilisée et les variables retirées par rapport aux spécifications initiales. Ce tableau peut être réalisé pour la tendance court-terme si  le paramètre `makeShortTerm` est TRUE
