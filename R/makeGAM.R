@@ -165,8 +165,8 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
   ## Deal with nested effects
   if(!is.null(nestedEffects)){
     for(n in nestedEffects){
-      parent <- n[1]  # effet emboitant
-      child  <- n[2]  # effet enboité
+      parent <- n[2]  # effet emboitant
+      child  <- n[1]  # effet emboité
       
       # créer une nouvelle colonne x_y pour l'effet emboîté
       data[[paste0(parent, "_", child)]] <- interaction(data[[parent]], data[[child]], drop = TRUE)

@@ -280,7 +280,8 @@ plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariatio
       signLT <- significanceToText(dataLT_sp$pval)
       
       # x-position of the significance
-      xSignLT <- f$maxYear + 1 ; 
+      xSignLT <- dataLT_sp$maxYear + 1 ; 
+      # xSignLT <- f$maxYear + 1 ; 
       
       # y-position of the significance
       ySignLT <- mean(LTSlopes$estimate[LTSlopes$year == dataLT_sp$maxYear]) 
