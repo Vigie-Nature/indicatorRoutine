@@ -183,7 +183,7 @@ renderSpeciesReport <- function(sp, data, dataName, dataLongTermTrend, dataShort
   unlink(here::here("Rmd", paste0(sp_french_simpld, ".log")))
 }
 
-if (!parallelizeSpecies) {
+if (TRUE) {
   cat("Computing species trends sequentially. It might take a very long time !\n")
 
   for (sp in speciesList){
