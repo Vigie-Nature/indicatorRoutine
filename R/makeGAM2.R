@@ -197,8 +197,8 @@ makeGAM2 <- function(data, interestVar, fixedEffects = NULL,
     }
     
     if(!is.null(nestedEffects)){
-      for(n in nestedEffects){
-        randomFormula <- c(randomFormula, paste0("(1 | ", n[1], "/", n[2], ")"))
+      for(n in nestedEffect){
+        randomFormula <- c(randomFormula, paste0("(1 | ", n[2], "/", n[1], ")"))
       }
     }
     
@@ -239,11 +239,11 @@ makeGAM2 <- function(data, interestVar, fixedEffects = NULL,
     # Run Model ----
     cat("Model is : ", as.character(regrFormula), "\n")
     cat("Random effects are : ", as.character(randomFormula), "\n")
-    model = catchConditions(gamm4::gamm4(formula = regrFormula, 
-                                  random= randomFormula, 
-                                  family = distribution,
-                                  data = data, 
-                                  REML = TRUE))
+    # model = catchConditions(gamm4::gamm4(formula = regrFormula, 
+    #                               random= randomFormula, 
+    #                               family = distribution,
+    #                               data = data, 
+    #                               REML = TRUE))
     
     # # Appel isolé à gamm4 dans un sous-processus via callr
     model <- callr::r(

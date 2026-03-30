@@ -171,7 +171,10 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
       # créer une nouvelle colonne x_y pour l'effet emboîté
       data[[paste0(parent, "_", child)]] <- interaction(data[[parent]], data[[child]], drop = TRUE)
       
-      # ajouter à la formule GAM
+      # Parent effect
+      regrFormula <- paste0(regrFormula, " + s(", parent, ", bs='re')")
+      
+      # Nested effect
       regrFormula <- paste0(regrFormula, " + s(", paste0(parent, "_", child), ", bs='re')")
     }
   }
