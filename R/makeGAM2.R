@@ -197,7 +197,7 @@ makeGAM2 <- function(data, interestVar, fixedEffects = NULL,
     }
     
     if(!is.null(nestedEffects)){
-      for(n in nestedEffect){
+      for(n in nestedEffects){
         randomFormula <- c(randomFormula, paste0("(1 | ", n[2], "/", n[1], ")"))
       }
     }
