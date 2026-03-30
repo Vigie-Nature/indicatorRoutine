@@ -83,4 +83,4 @@ Using these templates helps ensure that requests are clear, complete,
 and easy to process.
 
 **Create an issue directly:**
-[`New Issue`](https://github.com/Vigie-Nature/indicatorRoutine/issues/new/choose)
+[`New issue`](https://github.com/Vigie-Nature/indicatorRoutine/issues/new/choose)

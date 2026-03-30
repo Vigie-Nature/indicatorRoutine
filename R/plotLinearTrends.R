@@ -59,11 +59,14 @@ plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariatio
       # if(plotGamm & file.exists(pathToGamm)){
       #   # Load the corresponding file
       #   load(here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata")))
-        
+      #   
       #   if(is.null(gammVariations$warnings) & is.null(gammVariations$error)){
+      # 
+      #     # Select year
+      #     idx <- which(sapply(model2$value$smooth, function(s) s$term == "year"))
       #     # Extract values of gam
-      #     valuesToPlotGAM = plot(gammVariations$value$gam, se = TRUE, n = 50 * length(yearValues))
-          
+      #     valuesToPlotGAM = plot(gammVariations$value$gam, select = idx, se = TRUE, n = 50 * length(yearValues))
+      #     
       #     # Make data.frame
       #     dataGammVariations_sp = data.frame(year = valuesToPlotGAM[[1]]$x, 
       #                                        estimate = valuesToPlotGAM[[1]]$fit, 
@@ -71,16 +74,16 @@ plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariatio
       #                                        supIC = valuesToPlotGAM[[1]]$fit + 1.96 * valuesToPlotGAM[[1]]$se,
       #                                        group = "GAM",
       #                                        rep = 1)
-
+      # 
       #     #Unscale year
       #     dataSp <- data %>% 
       #       dplyr::filter(species == sp)
-
+      # 
       #     dataGammVariations_sp$year <- (dataGammVariations_sp$year * sd(dataSp$year)) + mean(dataSp$year)
-          
+      #     
       #     # Centrer sur 0
       #     dataGammVariations_sp[,c("estimate", "infIC", "supIC")] = dataGammVariations_sp[,c("estimate", "infIC", "supIC")] - mean(dataGammVariations_sp$estimate)
-          
+      #     
       #     # Passer à l'exponentielle si données d'occurrence ou de comptage
       #     if(distribution != "gaussien"){
       #       dataGammVariations_sp[,c("estimate", "infIC", "supIC")] = exp(dataGammVariations_sp[,c("estimate", "infIC", "supIC")])
@@ -88,7 +91,7 @@ plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariatio
       #   }else{
       #     plotGamm = FALSE
       #   }
-        
+      #   
       # }else{
       #   plotGamm = FALSE
       # }
@@ -96,7 +99,7 @@ plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariatio
       #Doing gammVariation setup for plot per species in another environnement cause gamm4 memorie leak
       if(plotGamm & file.exists(pathToGamm)){
         message("Test setupGammPlot pour ", sp, "\n")
-        dataSp <- data %>% 
+        dataSp <- data %>%
           dplyr::filter(species == sp)
 
         yearValStr <- paste(yearValues, collapse = ",")
@@ -278,6 +281,7 @@ plotLinearTrends <- function(speciesList, data, dataLongTerm, dataYearlyVariatio
       
       # x-position of the significance
       xSignLT <- dataLT_sp$maxYear + 1 ; 
+      # xSignLT <- f$maxYear + 1 ; 
       
       # y-position of the significance
       ySignLT <- mean(LTSlopes$estimate[LTSlopes$year == dataLT_sp$maxYear]) 

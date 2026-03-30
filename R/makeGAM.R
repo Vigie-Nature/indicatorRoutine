@@ -109,6 +109,14 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
     distribution = "nb"
   }
   
+  # Check that factor variables correspond to factor columns
+  # And choose the right contrasts for each categorical variable
+  data <- setContrasts(data = data, factorVariables = factorVariables, contr = contr)
+  
+  # Scale continuous variables
+  for (contVar in c(fixedEffects, poly)){
+    data[,contVar] = scale(data[,contVar])
+  }
   
   ###############
   #   FORMULA   #
@@ -146,17 +154,28 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
   
   ## Turn to object formula
   regrFormula = as.formula(regrFormula)
-  
-  ## Treat random and nested effects 
-  random = unique(unlist(c(randomEffects, nestedEffects)))
-  
-  listRandom = list()
-  if(!is.null(random)){
-    for (r in random){
-      listRandom[[r]] = ~1    
+
+  ## Deal with random effects
+  if(!is.null(randomEffects)){
+    for(r in randomEffects){
+      regrFormula = paste0(regrFormula, " + s(", r, ", bs='re')")
     }
-    
   }
+  
+  ## Deal with nested effects
+  if(!is.null(nestedEffects)){
+    for(n in nestedEffects){
+      parent <- n[2]  # effet emboitant
+      child  <- n[1]  # effet emboité
+      
+      # créer une nouvelle colonne x_y pour l'effet emboîté
+      data[[paste0(parent, "_", child)]] <- interaction(data[[parent]], data[[child]], drop = TRUE)
+      
+      # ajouter à la formule GAM
+      regrFormula <- paste0(regrFormula, " + s(", paste0(parent, "_", child), ", bs='re')")
+    }
+  }
+
   
   #############
   #   MODEL   #
@@ -165,12 +184,11 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
   # Run Model ----
   model = catchConditions(mgcv::gamm(formula = regrFormula,
                                      random = listRandom,
-                                     method = "RMLE",
-                                     data = data, 
+                                     method = "REML",
+                                     data = data,
                                      family = distribution,
-                                     niterPQL = 70))
-  
-  
+                                     niterPQL = 100))
+
   ######################
   # Save model results #
   ######################

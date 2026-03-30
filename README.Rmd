@@ -98,5 +98,4 @@ To report a problem or request a new feature, please use the available issue tem
 
 Using these templates helps ensure that requests are clear, complete, and easy to process.
 
-**Create an issue directly:** [`New Issue`](https://github.com/Vigie-Nature/indicatorRoutine/issues/new/choose)
-
+**Create an issue directly:** [`New issue`](https://github.com/Vigie-Nature/indicatorRoutine/issues/new/choose)
