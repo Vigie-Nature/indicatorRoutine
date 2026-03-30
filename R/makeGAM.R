@@ -182,23 +182,13 @@ makeGAM <- function(data, interestVar, fixedEffects = NULL,
   #############
   
   # Run Model ----
-  # model = catchConditions(mgcv::gamm(formula = regrFormula,
-  #                                    random = listRandom,
-  #                                    method = "REML",
-  #                                    data = data, 
-  #                                    family = distribution,
-  #                                    niterPQL = 100))
+  model = catchConditions(mgcv::gamm(formula = regrFormula,
+                                     random = listRandom,
+                                     method = "REML",
+                                     data = data,
+                                     family = distribution,
+                                     niterPQL = 100))
 
-  model <- catchConditions(mgcv::bam(
-        formula = regrFormula_bam,
-        data = data,
-        family = distribution,
-        method = "fREML",
-        discrete = TRUE
-    )
-  )
-  
-  
   ######################
   # Save model results #
   ######################

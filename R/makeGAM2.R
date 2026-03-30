@@ -237,8 +237,8 @@ makeGAM2 <- function(data, interestVar, fixedEffects = NULL,
     #############
     
     # Run Model ----
-    cat("Le model est : ", as.character(regrFormula), "\n")
-    cat("Les effets aléatoires sont : ", as.character(randomFormula), "\n")
+    cat("Model is : ", as.character(regrFormula), "\n")
+    cat("Random effects are : ", as.character(randomFormula), "\n")
     model = catchConditions(gamm4::gamm4(formula = regrFormula, 
                                   random= randomFormula, 
                                   family = distribution,
@@ -246,37 +246,36 @@ makeGAM2 <- function(data, interestVar, fixedEffects = NULL,
                                   REML = TRUE))
     
     # # Appel isolé à gamm4 dans un sous-processus via callr
-    # model <- callr::r(
-    #   function(regrFormula, randomFormula, distribution, data) {
+    model <- callr::r(
+      function(regrFormula, randomFormula, distribution, data) {
         
-    #     Sys.setenv(OMP_NUM_THREADS = "1")
-    #     Sys.setenv(MKL_NUM_THREADS = "1")
-    #     Sys.setenv(OPENBLAS_NUM_THREADS = "1")
+        Sys.setenv(OMP_NUM_THREADS = "1")
+        Sys.setenv(MKL_NUM_THREADS = "1")
+        Sys.setenv(OPENBLAS_NUM_THREADS = "1")
         
-    #     library(gamm4)
-    #     source(file.path("R", "catchConditions.R"), local = TRUE)
+        library(gamm4)
+        source(file.path("R", "catchConditions.R"), local = TRUE)
         
-    #     catchConditions(gamm4::gamm4(
-    #       formula = regrFormula,
-    #       random = randomFormula,
-    #       family = distribution,
-    #       data = data,
-    #       REML = TRUE
-    #     ))
-    #   },
-    #   args = list(
-    #     regrFormula = regrFormula,
-    #     randomFormula = randomFormula,
-    #     distribution = distribution,
-    #     data = data
-    #   ),
-    #   stderr = here::here("outputs", "stderr.log"),
-    #   stdout = here::here("outputs", "stdout.log"),
-    #   show = FALSE,
-    #   spinner = FALSE
-    # )
+        catchConditions(gamm4::gamm4(
+          formula = regrFormula,
+          random = randomFormula,
+          family = distribution,
+          data = data,
+          REML = TRUE
+        ))
+      },
+      args = list(
+        regrFormula = regrFormula,
+        randomFormula = randomFormula,
+        distribution = distribution,
+        data = data
+      ),
+      stderr = here::here("outputs", "stderr.log"),
+      stdout = here::here("outputs", "stdout.log"),
+      show = FALSE,
+      spinner = FALSE
+    )
     # gc()
-
 
   }
   
