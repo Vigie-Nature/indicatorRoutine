@@ -14,8 +14,15 @@
 #' 
 #' @return
 #' a `data.frame` with an additionnal column and right filtering 
-formatData = function(data, yearRange, interestVar, fixedEffects, factorVariables, 
-                      randomEffects, nestedEffects, slopeRandomEffects, poly){
+formatData = function(data, yearRange,
+                      interestVar = NULL, 
+                      fixedEffects = NULL, 
+                      factorVariables = NULL,
+                      randomEffects = NULL,
+                      nestedEffects = NULL,
+                      slopeRandomEffects = NULL,
+                      poly = NULL, 
+                      offsets = NULL){
   
   # Create unique identifier ----
   data$ID = paste(data$year, data$site)
@@ -43,7 +50,7 @@ formatData = function(data, yearRange, interestVar, fixedEffects, factorVariable
   # Select only column of interest ----
   vars = unique(c("ID", "species", "site", "year", "day", "point",
                   "longitude", "latitude", "saison", interestVar, fixedEffects, 
-                  factorVariables, poly, unlist(randomEffects), 
+                  factorVariables, poly, offsets, unlist(randomEffects), 
                   unlist(nestedEffects), unlist(slopeRandomEffects))) # var "saison" has been added a posteriori and is used for SHOC trends
   
   vars = vars[vars %in% colnames(data)]

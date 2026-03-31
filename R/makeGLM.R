@@ -23,7 +23,7 @@
 makeGLM <- function(data, interestVar, fixedEffects = NULL,
                     factorVariables = NULL, randomEffects = NULL, 
                     nestedEffects = NULL, slopeRandomEffects = NULL, poly = NULL, 
-                    contr = NULL, raw = "raw",
+                    contr = NULL, raw = "raw", offsets = NULL, 
                     distribution = "gaussian"){
   
   ####################
@@ -37,7 +37,7 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
   
   # Check that all variables exist ----
   vars <- unique(c(interestVar, fixedEffects, factorVariables, poly, unlist(randomEffects), 
-                   unlist(nestedEffects), unlist(slopeRandomEffects)))
+                   unlist(nestedEffects), unlist(slopeRandomEffects), offsets))
   
   if (any(!(vars %in% colnames(data)))){
     missingVars <- vars[which(!(vars %in% colnames(data)))]
@@ -142,7 +142,8 @@ makeGLM <- function(data, interestVar, fixedEffects = NULL,
                               nestedEffects = nestedEffects,
                               slopeRandomEffects = slopeRandomEffects,
                               poly = poly, 
-                              raw = raw)
+                              raw = raw,
+                              offsets = offsets)
       
       ##################################
       # Assign correctly distributions #

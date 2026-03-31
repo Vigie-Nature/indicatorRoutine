@@ -10,6 +10,7 @@ estimateTrends <- function(
     slopeRandomEffects,
     poly,
     contr,
+    offsets,
     distribution,
     makeShortTrend,
     makeQuadraticTrend,
@@ -22,7 +23,7 @@ estimateTrends <- function(
   longTermTrend <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects,
                            factorVariables = factorVariables, randomEffects = randomEffects,
                            nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                           poly = poly, contr = contr, distribution = distribution, raw = "raw")
+                           poly = poly, contr = contr, offsets = offsets, distribution = distribution, raw = "raw")
   
   cat("Long-Term Trend --> DONE\n")
   save(longTermTrend, file = here::here("outputs", repo, "models", "longTermTrend", paste0(sp, ".rdata")))
@@ -50,7 +51,7 @@ estimateTrends <- function(
   yearlyVariations <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects_var,
                               factorVariables = factorVariables_var, randomEffects = randomEffects,
                               nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects_var, 
-                              poly = poly, contr = contr, distribution = distribution)
+                              poly = poly, contr = contr, offsets = offsets, distribution = distribution)
   
   cat("Categorical Model --> DONE\n")
   save(yearlyVariations, file = here::here("outputs", repo, "models", "yearlyVariations", paste0(sp, ".rdata")))
@@ -100,13 +101,13 @@ estimateTrends <- function(
     # Définir dynamiquement les colonnes de regroupement
     group_vars <- if ("point" %in% colnames(data)) c("site", "point") else "site"
 
-    # Identification des sites (ou couples site-point) à 0 d'abondance
+    # Filtering site with abondance of 0
     sites_only_0 <- dataSp_ST %>%
       dplyr::group_by(across(all_of(group_vars))) %>%
       dplyr::summarize(total_interestVar = sum(.data[[interestVar]], na.rm = TRUE), .groups = "drop") %>%
       dplyr::filter(total_interestVar == 0)
 
-    # Exclusion de ces sites
+    # Exclusion of those sites
     # Nettoyage pour correspondance avec anti_join
     if(length(group_vars) == 2){
       sites_only_0 <- sites_only_0 %>% dplyr::select(site, point)
@@ -116,7 +117,7 @@ estimateTrends <- function(
       dataSp_ST <- dplyr::filter(dataSp_ST, !site %in% sites_only_0_vec)
     }
     
-    # Filtre des site (ou couples site-point) avec 1 année d'observation
+    # Exclusion of sites with only 1 year of datas
     dataSp_ST <- dataSp_ST %>%
       dplyr::group_by(across(all_of(group_vars))) %>%
       dplyr::filter(dplyr::n_distinct(year) > 1) %>%
@@ -124,7 +125,7 @@ estimateTrends <- function(
 
     dataSp_ST <- as.data.frame(dataSp_ST)
 
-    # Ajout du filtre sur les occurences comme effectuer pour les longTermTrends
+    # Filtering occurences as in longTermTrends methodology
     if(nrow(dataSp_ST) > 0){
       grData_ST = dplyr::group_by(dataSp_ST[dataSp_ST[,interestVar[1]]>0,], species) %>%
       dplyr::summarise(nbOcc = length(unique(ID)),
@@ -134,7 +135,7 @@ estimateTrends <- function(
         shortTermTrend <- makeGLM(data = dataSp_ST, interestVar = interestVar, fixedEffects = fixedEffects,
                                   factorVariables = factorVariables, randomEffects = randomEffects,
                                   nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                                  poly = poly, contr = contr, distribution = distribution, raw = "raw")
+                                  poly = poly, contr = contr, offsets = offsets, distribution = distribution, raw = "raw")
         
         cat("Short-Term Trend --> DONE\n")
         save(shortTermTrend, file = here::here("outputs", repo, "models", "shortTermTrend", paste0(sp, ".rdata")))
@@ -161,7 +162,7 @@ estimateTrends <- function(
     orthoQuadraticTrend <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects_quadr,
                                    factorVariables = factorVariables, randomEffects = randomEffects,
                                    nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                                   poly = poly_quadr, contr = contr, distribution = distribution, raw = "ortho")
+                                   poly = poly_quadr, contr = contr, offsets = offsets, distribution = distribution, raw = "ortho")
     
     cat("Orthogonal Quadratic Trend --> DONE\n")
     save(orthoQuadraticTrend, file = here::here("outputs", repo, "models", "orthoQuadraticTrend", paste0(sp, ".rdata")))
@@ -171,7 +172,7 @@ estimateTrends <- function(
     rawQuadraticTrend <- makeGLM(data = dataSp, interestVar = interestVar, fixedEffects = fixedEffects_quadr,
                                  factorVariables = factorVariables, randomEffects = randomEffects,
                                  nestedEffects = nestedEffects, slopeRandomEffects = slopeRandomEffects,
-                                 poly = poly_quadr, contr = contr, distribution = distribution, raw = "raw")
+                                 poly = poly_quadr, contr = contr, offsets = offsets, distribution = distribution, raw = "raw")
     cat("Raw Quadratic Trend --> DONE\n")
     save(rawQuadraticTrend, file = here::here("outputs", repo, "models", "rawQuadraticTrend", paste0(sp, ".rdata")))
     rm(rawQuadraticTrend)

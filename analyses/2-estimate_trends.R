@@ -37,6 +37,7 @@ if (!parallelizeSpecies) {
       slopeRandomEffects = slopeRandomEffects,
       poly = poly,
       contr = contr,
+      offsets = offsets,
       distribution = distribution,
       makeShortTrend = makeShortTrend,
       makeQuadraticTrend = makeQuadraticTrend,
