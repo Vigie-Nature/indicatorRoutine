@@ -41,7 +41,8 @@ if (!parallelizeSpecies) {
       distribution = distribution,
       makeShortTrend = makeShortTrend,
       makeQuadraticTrend = makeQuadraticTrend,
-      makeGammTrend = makeGammTrend
+      makeGammTrend = makeGammTrend,
+      removeSingleYearSites = removeSingleYearSites
     )
     
   }
@@ -81,7 +82,8 @@ if (!parallelizeSpecies) {
         distribution = distribution,
         makeShortTrend = makeShortTrend,
         makeQuadraticTrend = makeQuadraticTrend,
-        makeGammTrend = makeGammTrend
+        makeGammTrend = makeGammTrend,
+        removeSingleYearSites = removeSingleYearSites
       )
       
   }

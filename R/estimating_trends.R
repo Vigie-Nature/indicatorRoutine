@@ -14,7 +14,8 @@ estimateTrends <- function(
     distribution,
     makeShortTrend,
     makeQuadraticTrend,
-    makeGammTrend
+    makeGammTrend,
+    removeSingleYearSites
 ) {
   
   #######################
@@ -118,10 +119,12 @@ estimateTrends <- function(
     }
     
     # Exclusion of sites with only 1 year of datas
-    dataSp_ST <- dataSp_ST %>%
-      dplyr::group_by(across(all_of(group_vars))) %>%
-      dplyr::filter(dplyr::n_distinct(year) > 1) %>%
-      dplyr::ungroup()
+    if(removeSingleYearSites){
+      dataSp_ST <- dataSp_ST %>%
+        dplyr::group_by(across(all_of(group_vars))) %>%
+        dplyr::filter(dplyr::n_distinct(year) > 1) %>%
+        dplyr::ungroup()
+    }
 
     dataSp_ST <- as.data.frame(dataSp_ST)
 
