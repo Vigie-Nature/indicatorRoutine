@@ -24,7 +24,8 @@ checkData <- function(data,
                       randomEffects = NULL,
                       nestedEffects = NULL,
                       slopeRandomEffects = NULL,
-                      poly = NULL){
+                      poly = NULL, 
+                      offsets = NULL){
   allIsOK = TRUE
   
   # Set of mandatory variables ----
@@ -37,7 +38,7 @@ checkData <- function(data,
   }
   
   # Set of variables included in the model ----
-  modelVars <- unique(c(interestVar, fixedEffects, factorVariables, randomEffects, 
+  modelVars <- unique(c(interestVar, fixedEffects, factorVariables, randomEffects, offsets, 
                         unlist(poly) , unlist(nestedEffects), unlist(slopeRandomEffects)))
   
   if(!all(modelVars %in% colnames(data))){

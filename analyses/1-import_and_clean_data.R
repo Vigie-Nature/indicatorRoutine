@@ -21,11 +21,12 @@ data <- data.frame(data)
 
 # Check all columns of interest are in the dataframe ----
 check <- checkData(data, interestVar, fixedEffects, factorVariables, 
-                   randomEffects, nestedEffects, poly)
+                   randomEffects, nestedEffects, poly, offsets)
 
 # Filter data according to species & time ----
 data <- formatData(data, yearRange, interestVar, fixedEffects, factorVariables, 
-                   randomEffects, nestedEffects, slopeRandomEffects, poly)
+                   randomEffects, nestedEffects, slopeRandomEffects, poly, 
+                   offsets, removeSingleYearSites)
 
 ##########################
 #   MISSING PARAMETERS   #

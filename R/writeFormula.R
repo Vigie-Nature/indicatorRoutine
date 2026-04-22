@@ -22,7 +22,8 @@ writeFormula <- function(interestVar = "count",
                          randomEffects = NULL,
                          nestedEffects = list(),
                          slopeRandomEffects = list(),
-                         raw = "raw"){
+                         raw = "raw",
+                         offsetss = NULL){
   
   ## Initialize formula ----
   if(length(interestVar) == 1){
@@ -84,6 +85,12 @@ writeFormula <- function(interestVar = "count",
     }
   }
   
+  ## Add offsets
+  if (!is.null(offsets)) {
+    for (off in offsets) {
+      regrFormula <- paste0(regrFormula, " + offset(", off, ")")
+    }
+  }
   
   ## Turn character to formula type
   regrFormula <- as.formula(regrFormula)

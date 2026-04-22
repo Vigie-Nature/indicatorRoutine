@@ -63,6 +63,11 @@ speciesList <- NULL # c("ERIRUB", "PASDOM")
 # Si NULL, toutes les années sont utilisées
 yearRange <- NULL # c(2001, 2021)
 
+# Retirer les sites avec une année d'observation
+# Si TRUE, tout les sites avec 1 année d'observation sont retirer pour 
+# les longTermTrends et les shortTermTrends
+removeSingleYearSites <- TRUE
+
 ##########################
 # Construire les modèles #
 ##########################
@@ -105,6 +110,10 @@ slopeRandomEffects <- list(c("year", "point"))
 # NB : si une variable est renseignée dans l'effet polynomial, elle ne doit pas être mise dans les effets fixes continus
 poly <- NULL
 
+# Quels sont les offsets
+# NULL si aps d'offsets
+# offsets <- c("logCoefCorr")
+offsets <- NULL
 
 #####################################
 #   Définir les groupes d'espèces   #
