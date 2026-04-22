@@ -11,6 +11,8 @@
 #' @param nestedEffects a `list` of 2-elements `vector` containing variables that should be treated as nested effects 
 #' @param slopeRandomEffects a `list` of 2-elements `vector` containing variables that should be treated as random slopes
 #' @param poly a `vector` containing variables that should be treated as 2nd-order polynomial effects
+#' @param offset a `vector` containing variables that should be treated as offsets
+#' @param removeSingleYearSites a `bool`indicating if site with one year of survey should be filtered
 #' 
 #' @return
 #' a `data.frame` with an additionnal column and right filtering 
@@ -22,7 +24,8 @@ formatData = function(data, yearRange,
                       nestedEffects = NULL,
                       slopeRandomEffects = NULL,
                       poly = NULL, 
-                      offsets = NULL){
+                      offsets = NULL,
+                      removeSingleYearSites = TRUE){
   
   # Create unique identifier ----
   data$ID = paste(data$year, data$site)
@@ -63,6 +66,17 @@ formatData = function(data, yearRange,
     data = data[-rowToErase,]
     cat("Due to missing values,", length(rowToErase), "rows were removed from the analysis.\n")
   }
+  
+  if(removeSingleYearSites){
+    # Dynamically define grouping columns
+    group_vars <- if ("point" %in% colnames(data)) c("site", "point") else "site"
+    # Exclusion of sites with only 1 year of datas
+    data <- data %>%
+      dplyr::group_by(across(all_of(group_vars))) %>%
+      dplyr::filter(dplyr::n_distinct(year) > 1) %>%
+      dplyr::ungroup()
+  }
+
   
   return(data)
 }

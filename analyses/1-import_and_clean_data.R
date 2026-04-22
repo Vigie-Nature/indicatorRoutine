@@ -25,7 +25,8 @@ check <- checkData(data, interestVar, fixedEffects, factorVariables,
 
 # Filter data according to species & time ----
 data <- formatData(data, yearRange, interestVar, fixedEffects, factorVariables, 
-                   randomEffects, nestedEffects, slopeRandomEffects, poly, offsets)
+                   randomEffects, nestedEffects, slopeRandomEffects, poly, 
+                   offsets, removeSingleYearSites)
 
 ##########################
 #   MISSING PARAMETERS   #
