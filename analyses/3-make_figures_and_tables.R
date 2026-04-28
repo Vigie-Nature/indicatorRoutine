@@ -41,13 +41,76 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 
 ## For each species, create the plot
 cat("Trend plots with uncertainty in progress...")
-uncertainPlots = plotLinearTrends(speciesList = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
-                                    dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
-                                    distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
-                                    N = 100, uncertainty = TRUE, weight = TRUE, save = TRUE, path = pathToPlot)
+# uncertainPlots = plotLinearTrends(speciesList = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
+#                                     dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
+#                                     distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
+#                                     N = 100, uncertainty = TRUE, weight = TRUE, save = TRUE, path = pathToPlot)
+  if(!parallelizeSpecies){
 
+    message("Computing species plots sequentially...\n")
+
+    uncertainPlots <- sapply(speciesList, function(sp){
+
+      plotLinearTrends(
+        sp = sp,
+        data = data,
+        dataLongTerm = dataLongTermTrend,
+        dataYearlyVariations = dataYearlyVariations,
+        dataShortTerm = dataShortTermTrend,
+        dataName = dataName,
+        distribution = distribution,
+        plotGamm = makeGammTrend,
+        plotST = makeShortTrend,
+        uncertainty = TRUE,
+        N = 100,
+        weight = TRUE,
+        save = TRUE,
+        path = pathToPlot,
+        repo = repo
+      )
+
+    })
+
+    # return(uncertainPlots)
+  } else {
+    cat("Computing species plots trends in parallel. \n")
+    library(parallelPackage, character.only = T) # load correct library
+    cl <- start_cluster(as.numeric(nbCores), parallelPackage) # spawn a cluster and register it
+
+    uncertainPlots <- foreach(
+      sp = speciesList) %dopar% {
+        
+        devtools::load_all(here::here())
+        cat("Appel à", sp,  "\n")
+        plotLinearTrends(
+          sp = sp,
+          data = data,
+          dataLongTerm = dataLongTermTrend,
+          dataYearlyVariations = dataYearlyVariations,
+          dataShortTerm = dataShortTermTrend,
+          dataName = dataName,
+          distribution = distribution,
+          plotGamm = makeGammTrend,
+          plotST = makeShortTrend,
+          uncertainty = TRUE,
+          N = 100,
+          weight = TRUE,
+          save = TRUE,
+          path = pathToPlot,
+          repo = repo
+    )
+        gc()
+    }
+    stopCluster(cl)
+    # return(uncertainPlots)
+  }
+
+
+cat("preparing summary RDATA\n")
 save(uncertainPlots, file = here::here("outputs", repo, "figures", "trends", "uncertainPlots.rdata"))
+cat("summary RDATA done\n")
 rm(uncertainPlots)
+cat("suppress done")
 
 # Plot trends with no uncertainty
 ## Create repository
@@ -56,10 +119,68 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 
 ## For each species, create the plot
 cat("Trend plots without uncertainty in progress...")
-regularPlots = plotLinearTrends(sp = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
-                                dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
-                                distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
-                                N = 100, uncertainty = FALSE, weight = TRUE, save = TRUE, path = pathToPlot)
+# regularPlots = plotLinearTrends(sp = speciesList, data = data, dataName = dataName, dataLongTerm = dataLongTermTrend, 
+#                                 dataYearlyVariations = dataYearlyVariations, dataShortTerm = dataShortTermTrend,
+#                                 distribution = distribution, plotST = makeShortTrend, plotGamm = makeGammTrend, 
+#                                 N = 100, uncertainty = FALSE, weight = TRUE, save = TRUE, path = pathToPlot)
+
+if(!parallelizeSpecies){
+  
+  message("Computing species plots sequentially...\n")
+  
+  regularPlots <- lapply(speciesList, function(sp){
+    
+    plotLinearTrends(
+      sp = sp,
+      data = data,
+      dataLongTerm = dataLongTermTrend,
+      dataYearlyVariations = dataYearlyVariations,
+      dataShortTerm = dataShortTermTrend,
+      dataName = dataName,
+      distribution = distribution,
+      plotGamm = makeGammTrend,
+      plotST = makeShortTrend,
+      uncertainty = FALSE,
+      N = 100,
+      weight = TRUE,
+      save = TRUE,
+      path = pathToPlot,
+      repo = repo
+    )
+    
+  })
+  
+  return(regularPlots)
+} else {
+  cat("Computing species plots trends in parallel. \n")
+  library(parallelPackage, character.only = T) # load correct library
+  cl <- start_cluster(as.numeric(nbCores), parallelPackage) # spawn a cluster and register it
+  
+  regularPlots <- foreach(
+    sp = speciesList) %dopar% {
+      
+      devtools::load_all(here::here())
+      plotLinearTrends(
+        sp = sp,
+        data = data,
+        dataLongTerm = dataLongTermTrend,
+        dataYearlyVariations = dataYearlyVariations,
+        dataShortTerm = dataShortTermTrend,
+        dataName = dataName,
+        distribution = distribution,
+        plotGamm = makeGammTrend,
+        plotST = makeShortTrend,
+        uncertainty = FALSE,
+        N = 100,
+        weight = TRUE,
+        save = TRUE,
+        path = pathToPlot,
+        repo = repo
+      )
+    }
+  stopCluster(cl)
+  return(regularPlots)
+}
 
 save(regularPlots, file = here::here("outputs", repo, "figures", "trends", "regularPlots.rdata"))
 rm(regularPlots)
