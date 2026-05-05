@@ -96,15 +96,23 @@ plotLinearTrends <- function(sp, data, dataLongTerm, dataYearlyVariations, dataS
     # }
 
     #Doing gammVariation setup for plot per species in another environnement cause gamm4 memorie leak
-    # if(plotGamm & file.exists(pathToGamm)){
-    #   message("Test setupGammPlot pour ", sp, "\n")
-    #   dataSp <- data %>%
-    #     dplyr::filter(species == sp)
-    # 
-    #   yearValStr <- paste(yearValues, collapse = ",")
-    #   system(sprintf("Rscript R/Rscripts/setupGammPlot.R %s %s %s %s %f %f", repo, sp, yearValStr, distribution,
-    #     sd(dataSp$year), mean(dataSp$year)))
-    #   }
+    if(plotGamm & file.exists(pathToGamm)){
+      message("Test setupGammPlot pour ", sp, "\n")
+      dataSp <- data %>%
+        dplyr::filter(species == sp)
+
+      yearValStr <- paste(yearValues, collapse = ",")
+      # system(sprintf("Rscript R/Rscripts/setupGammPlot.R %s %s %s %s %f %f", repo, sp, yearValStr, distribution,
+      #   sd(dataSp$year), mean(dataSp$year)))
+      
+      setGammPlotV2(repo = repo, 
+                    sp = sp, 
+                    yearValues = yearValStr, 
+                    distribution = distribution, 
+                    sdDataSp = sd(dataSp$year), 
+                    mnDataSp = mean(dataSp$year))
+      
+      }
 
     #Loading the values
     pathToGammVal <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".csv"))
