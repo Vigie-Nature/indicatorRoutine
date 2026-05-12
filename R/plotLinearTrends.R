@@ -1,9 +1,9 @@
 #' plotLinearTrends
 #'
-#' A function that takes all estimations, and turn it to trend curves
+#' A function that takes all estimations for a specie, and turn it to trend curves
 #' 
 #' @param sp : a a `string` specifying the species to compute
-#' @param data a `data.frame` containing observations 
+#' @param data a `data.frame` containing observations for the species
 #' @param dataName : a `data.frame` containing french names of the species
 #' @param dataLongTerm : a `data.frame` containing formatted estimates for the long-term trend model
 #' @param dataYearlyVariations : a `data.frame` containing formatted estimates for the yearly variations
@@ -55,6 +55,7 @@ plotLinearTrends <- function(sp, data, dataLongTerm, dataYearlyVariations, dataS
     ###################
     pathToGamm <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata"))
     
+    # #Old version for MGCV objects
     # if(plotGamm & file.exists(pathToGamm)){
     #   # Load the corresponding file
     #   load(here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".rdata")))
@@ -96,32 +97,81 @@ plotLinearTrends <- function(sp, data, dataLongTerm, dataYearlyVariations, dataS
     # }
 
     #Doing gammVariation setup for plot per species in another environnement cause gamm4 memorie leak
-    if(plotGamm & file.exists(pathToGamm)){
-      message("Test setupGammPlot pour ", sp, "\n")
-      dataSp <- data %>%
-        dplyr::filter(species == sp)
+    if (plotGamm & file.exists(pathToGamm)) {
+      #V1 faire le chargement du gamm dans une autre instance R
+      # yearValStr <- paste(yearValues, collapse = ",")
+      # system(sprintf("Rscript R/Rscripts/setupGammPlotOld.R %s %s %s %s %f %f", repo, sp, yearValStr, distribution,
+      #   sd(data$year), mean(data$year)))
+      # 
+      # #Loading the values
+      # pathToGammVal <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".csv"))
+      # if(file.exists(pathToGammVal)){
+      #   dataGammVariations_sp <- data.table::fread(pathToGammVal)
+      # } else {
+      #   plotGamm = FALSE
+      # }
 
+      #V2 faire el chagemetn du gam dans une fonction
       yearValStr <- paste(yearValues, collapse = ",")
-      # system(sprintf("Rscript R/Rscripts/setupGammPlot.R %s %s %s %s %f %f", repo, sp, yearValStr, distribution,
-      #   sd(dataSp$year), mean(dataSp$year)))
-      
-      setGammPlotV2(repo = repo, 
-                    sp = sp, 
-                    yearValues = yearValStr, 
-                    distribution = distribution, 
-                    sdDataSp = sd(dataSp$year), 
-                    mnDataSp = mean(dataSp$year))
-      
+      dataGammVariations_sp = setGammPlot(
+        repo = repo,
+        sp = sp,
+        yearValues = yearValStr,
+        distribution = distribution,
+        sdDataSp = sd(data$year),
+        mnDataSp = mean(data$year)
+      )
+      if(is.null(dataGammVariations_sp)){
+        plotGamm = FALSE
       }
-
-    #Loading the values
-    pathToGammVal <- here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".csv"))
-    if(file.exists(pathToGammVal)){
-      dataGammVariations_sp <- data.table::fread(pathToGammVal)
-    } else {
+      
+      # #V3 faire le chargement sur cette instance R
+      # load(here::here(
+      #   "outputs",
+      #   repo,
+      #   "models",
+      #   "gammVariations",
+      #   paste0(sp, ".rdata")
+      # ))
+      # if (is.null(gammVariations$warnings) &
+      #     is.null(gammVariations$error)) {
+      #   # Extract values of gam
+      #   valuesToPlotGAM = plot(gammVariations$value$gam,
+      #                          se = TRUE,
+      #                          n = 50 * length(yearValues))
+      # 
+      #   # Make data.frame
+      #   dataGammVariations_sp = data.frame(
+      #     year = valuesToPlotGAM[[1]]$x,
+      #     estimate = valuesToPlotGAM[[1]]$fit,
+      #     infIC = valuesToPlotGAM[[1]]$fit - 1.96 * valuesToPlotGAM[[1]]$se,
+      #     supIC = valuesToPlotGAM[[1]]$fit + 1.96 * valuesToPlotGAM[[1]]$se,
+      #     group = "GAM",
+      #     rep = 1
+      #   )
+      # 
+      #   dataGammVariations_sp$year <- (dataGammVariations_sp$year * sd(data$year)) + mean(data$year)
+      #   # dataGammVariations_sp$year <- (dataGammVariations_sp$year * sdDataSp) + mnDataSp
+      # 
+      #   # Centrer sur 0
+      #   dataGammVariations_sp[, c("estimate", "infIC", "supIC")] = dataGammVariations_sp[, c("estimate", "infIC", "supIC")] - mean(dataGammVariations_sp$estimate)
+      # 
+      #   # Passer à l'exponentielle si données d'occurrence ou de comptage
+      #   if (distribution != "gaussien") {
+      #     dataGammVariations_sp[, c("estimate", "infIC", "supIC")] = exp(dataGammVariations_sp[, c("estimate", "infIC", "supIC")])
+      #   }
+      # 
+      #   # #Write the csv
+      #   # pathToSave = here::here("outputs", repo, "models", "gammVariations", paste0(sp, ".csv"))
+      #   #
+      #   # data.table::fwrite(dataGammVariations_sp, file = pathToSave)
+      # } else {
+      #   plotGamm = FALSE
+      # }
+    }  else {
       plotGamm = FALSE
     }
-
+    
     
     ####################
     # SHORT-TERM TREND #

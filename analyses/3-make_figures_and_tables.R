@@ -46,6 +46,7 @@ if (!parallelizeSpecies) {
   message("Computing species plots sequentially...\n")
   
   uncertainPlots <- lapply(speciesList, function(sp) {
+    print(sp)
     dataSp <- dplyr::filter(data, species == sp)
     plotLinearTrends(
       sp = sp,
@@ -78,6 +79,7 @@ if (!parallelizeSpecies) {
   
   uncertainPlots <- foreach(sp = speciesList, data_sp = dataList)  %dopar%
     {
+      
       devtools::load_all(here::here())
       
       plotLinearTrends(
@@ -97,6 +99,7 @@ if (!parallelizeSpecies) {
         path = pathToPlot,
         repo = repo
       )
+
     }
   stopCluster(cl)
 }
@@ -117,6 +120,7 @@ if(!parallelizeSpecies) {
   
   regularPlots <- lapply(speciesList, function(sp) {
     dataSp <- dplyr::filter(data, species == sp)
+
     plotLinearTrends(
       sp = sp,
       data = dataSp,
@@ -134,7 +138,7 @@ if(!parallelizeSpecies) {
       path = pathToPlot,
       repo = repo
     )
-    
+
   })
 } else {
   cat("Computing species plots trends in parallel. \n")
@@ -146,9 +150,10 @@ if(!parallelizeSpecies) {
   })
   names(dataList) = speciesList
   
-  regularPlots <- foreach(sp = speciesList, data_sp = dataList) %dopar%
+  uncertainPlots <- foreach(sp = speciesList, data_sp = dataList)  %dopar%
     {
       devtools::load_all(here::here())
+      
       plotLinearTrends(
         sp = sp,
         data = data_sp,
