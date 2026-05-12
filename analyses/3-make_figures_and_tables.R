@@ -150,7 +150,7 @@ if(!parallelizeSpecies) {
   })
   names(dataList) = speciesList
   
-  uncertainPlots <- foreach(sp = speciesList, data_sp = dataList)  %dopar%
+  regularPlots <- foreach(sp = speciesList, data_sp = dataList)  %dopar%
     {
       devtools::load_all(here::here())
       
