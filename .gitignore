@@ -13,3 +13,6 @@ inst/doc
 /Meta/
 .renv/
 dev/
+speciesName.csv
+R/Rscripts/setupGammPlotOld.R
+indicatorRoutine.Rproj
