@@ -78,5 +78,5 @@ formatData = function(data, yearRange,
   }
 
   
-  return(data)
+  return(as.data.frame(data))
 }
