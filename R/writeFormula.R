@@ -23,7 +23,7 @@ writeFormula <- function(interestVar = "count",
                          nestedEffects = list(),
                          slopeRandomEffects = list(),
                          raw = "raw",
-                         offsetss = NULL){
+                         offsets = NULL){
   
   ## Initialize formula ----
   if(length(interestVar) == 1){
