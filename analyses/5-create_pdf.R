@@ -188,10 +188,12 @@ if (TRUE) {
 
   for (sp in speciesList){
     cat(sp, "\n")
+    dataSp <- data %>% 
+      dplyr::filter(species == sp)
 
     renderSpeciesReport(
       sp = sp,
-      data = data,
+      data = dataSp,
       dataName = dataName,
       dataLongTermTrend = dataLongTermTrend,
       dataShortTermTrend = dataShortTermTrend,
@@ -212,27 +214,37 @@ if (TRUE) {
   cat("Generation of pdf in parralel\n")
   library(parallelPackage, character.only = TRUE)
   cl <- start_cluster(as.numeric(nbCores), parallelPackage)
+  split_data <- sapply(speciesList, function(s) {
+    return(list(
+      dataSp = data %>% 
+        dplyr::filter(species == s),
+      sp = s
+    ))
+  }, simplify = F)
 
-  try_parallel <- foreach(sp = speciesList,
-                          .packages = c("rmarkdown", "here", "dplyr")) %dopar% {
-                            devtools::load_all(here::here()) # Charger les fonctions
+  try_parallel <- foreach(
+    sp_data = split_data,
+    .packages = c("rmarkdown", "here", "dplyr")
+  ) %dopar%
+    {
+      devtools::load_all(here::here()) # Charger les fonctions
 
-                            renderSpeciesReport(
-                              sp = sp,
-                              data = data,
-                              dataName = dataName,
-                              dataLongTermTrend = dataLongTermTrend,
-                              dataShortTermTrend = dataShortTermTrend,
-                              makeShortTrend = makeShortTrend,
-                              uncertainPlots = uncertainPlots,
-                              regularPlots = regularPlots,
-                              repo = repo,
-                              interestVar = interestVar,
-                              obs = obs,
-                              spatialScale = spatialScale,
-                              pathToPdfSp = pathToPdfSp
-                            )
-                          }
+      renderSpeciesReport(
+        sp = sp_data$sp,
+        dataSp = sp_data$dataSp,
+        dataName = dataName,
+        dataLongTermTrend = dataLongTermTrend,
+        dataShortTermTrend = dataShortTermTrend,
+        makeShortTrend = makeShortTrend,
+        uncertainPlots = uncertainPlots,
+        regularPlots = regularPlots,
+        repo = repo,
+        interestVar = interestVar,
+        obs = obs,
+        spatialScale = spatialScale,
+        pathToPdfSp = pathToPdfSp
+      )
+    }
 
   stop_cluster(cl, parallelPackage)
 }
@@ -276,24 +288,28 @@ dataTable = makeGroupSummaryTable(dataTrend = dataLongTermTrend, dataObs = data,
                                   makeGroupPlot, groupComp, groupNames, groupCols)
 
 # Make global pdf
-rmarkdown::render(input = here::here("Rmd", "global_analysis.Rmd"),
-                  
-                  # Specify parameters
-                  params = list(obs = obs,
-                                spatialScale = spatialScale,
-                                makeGroupPlot = makeGroupPlot, 
-                                groupComp = groupComp,
-                                frenchComp = frenchComp,
-                                groupNames = groupNames,
-                                pathToGroupPlot = pathToGroupPlot,
-                                dataLongTermTrend = dataLongTermTrend,
-                                dataTable = dataTable),
-                  
-                  # Specify output repertory
-                  output_dir = pathToPdf,
-                  
-                  # Specify output file name
-                  output_file = "Analyse globale")
+rmarkdown::render(
+  input = here::here("Rmd", "global_analysis.Rmd"),
+
+  # Specify parameters
+  params = list(
+    obs = obs,
+    spatialScale = spatialScale,
+    makeGroupPlot = makeGroupPlot,
+    groupComp = groupComp,
+    frenchComp = frenchComp,
+    groupNames = groupNames,
+    pathToGroupPlot = pathToGroupPlot,
+    dataLongTermTrend = dataLongTermTrend,
+    dataTable = dataTable
+  ),
+
+  # Specify output repertory
+  output_dir = pathToPdf,
+
+  # Specify output file name
+  output_file = "Analyse globale"
+)
 
 # Erase automatically created documents
 unlink(here::here("outputs", repo, "pdf", "Analyse globale.tex"))
