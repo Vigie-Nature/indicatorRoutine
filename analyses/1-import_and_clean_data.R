@@ -37,20 +37,26 @@ data <- formatData(data, yearRange, interestVar, fixedEffects, factorVariables,
 # On regroupe les données par espèce pour calculer
 # nbOcc = length(unique(ID)) le nombre d’ID uniques par espèce
 # nbYear = 5 * length(min(year):max(year)) Calcule une valeur seuil pour filtrer les espèces
-if(is.null(speciesList)){
-  grData = dplyr::group_by(data[data[,interestVar[1]]>0,], species) %>%
-    dplyr::summarise(nbOcc = length(unique(ID)),
-                     nbYear = 5*length(min(year):max(year)))
+# if(is.null(speciesList)){
+#   grData = dplyr::group_by(data[data[,interestVar[1]]>0,], species) %>%
+#     dplyr::summarise(nbOcc = length(unique(ID)),
+#                      nbYear = 5*length(min(year):max(year)))
   
-  speciesList <- grData$species[grData$nbOcc > grData$nbYear]
+#   speciesList <- grData$species[grData$nbOcc > grData$nbYear]
   
-} else { # allow to filter species with a few or no occurrences 
-  grData = dplyr::group_by(data[data$species %in% speciesList & data[,interestVar[1]]>0,], species) %>%
-    dplyr::summarise(nbOcc = length(unique(ID)),
-                     nbYear = 5*length(min(year):max(year)))
+# } else { # allow to filter species with a few or no occurrences 
+#   grData = dplyr::group_by(data[data$species %in% speciesList & data[,interestVar[1]]>0,], species) %>%
+#     dplyr::summarise(nbOcc = length(unique(ID)),
+#                      nbYear = 5*length(min(year):max(year)))
   
-  speciesList <- grData$species[grData$nbOcc > grData$nbYear]
-}
+#   speciesList <- grData$species[grData$nbOcc > grData$nbYear]
+# }
+
+# if(is.null(speciesList)){
+#   speciesList <- sort(unique(data$species))
+# }
+
+speciesList <- filterData(data, speciesList, filters)
 
 # If required, initialize distribution ----
 if(is.null(distribution)){

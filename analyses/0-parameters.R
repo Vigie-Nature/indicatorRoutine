@@ -38,6 +38,10 @@ makeGroupPlot <- FALSE # TRUE
 # Est-ce que le pdf doit être créé ?
 makePDF <- TRUE # FALSE
 
+# Quels filtres doivent être appliqués ? 
+# Soit "STOC", "VigieFlore" ou NULL
+filters <- "VigieFlore
+
 ###########################
 # Optionnel : performance #
 ###########################

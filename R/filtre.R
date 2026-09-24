@@ -6,7 +6,7 @@
 #' @param speciesList a `list` object containing the list of species in the study
 #' @param filters a `character` either "STOC" or "VigieFlore" indicating the methodologies
 #'
-#' @returns
+#' @returns speciesList a `list` object containing the list of species in the study
 #' 
 #'
 
@@ -17,6 +17,9 @@ filterData <- function(data, speciesList, filters) {
     speciesList <- sort(unique(data$species))
   }
 
+  if(is.null(filters)){
+    return(speciesList)
+  }
   # STOC filter
   # On garde uniquement les observations où la première variable de interestVar est positive.
   # On regroupe les données par espèce pour calculer
