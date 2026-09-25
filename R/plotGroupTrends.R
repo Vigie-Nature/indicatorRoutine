@@ -5,12 +5,13 @@
 #' @param dataTrend a `data.frame` containing long-term trends agregated per group
 #' @param dataVar a `data.frame` containing yearly variations agregated per group
 #' @param data a `data.frame` containing observations 
+#' @param groupComp a `list` containing vectors of species names contained in each group
 #' @param groupCols a `vector` containing colors associated with each group
 #' @param distribution a `string` specifying the law distribution
 #' @param repo a `string` specifying the data repository
 #' @param fileName a `string` specifying the name under which the plot must be saved
 #' 
-plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, repo, fileName){
+plotGroupTrends <- function(dataTrend, dataVar, data, groupComp, groupCols, distribution, repo, fileName){
   
   # Extract time range 
   minYear <- min(dataVar$year)
@@ -27,18 +28,38 @@ plotGroupTrends <- function(dataTrend, dataVar, data, groupCols, distribution, r
                   "betabinomial" = "Rapport des chances",
                   "Indice")
   
-  # Make labels for each group
-  groupLabels <- paste0(dataTrend$group, " : ", dataTrend$perc, "% (", 
-                        dataTrend$infPerc, "% ; ", dataTrend$supPerc, '%)')
+  # # Make labels for each group
+  # groupLabels <- paste0(dataTrend$group, " : ", dataTrend$perc, "% (", 
+  #                       dataTrend$infPerc, "% ; ", dataTrend$supPerc, '%)')
   
   # Deal with colors
+  # Nombre d'espèces par groupe
+  nSpecies <- vapply(
+    groupComp,
+    function(x) length(unique(x)),
+    integer(1)
+  )
+
   if(length(groupCols) > 1){
     groupCols = c(groupCols, "red")
     groupNames = c(groupNames, "Toutes espèces")
+    nSpecies <- c(
+    nSpecies,
+    `Toutes espèces` = length(unique(unlist(groupComp))))
   }
-  
+
   # Associer les noms de groupes aux couleurs
   names(groupCols) <- groupNames
+  names(nSpecies) <- groupNames
+
+  # Make labels for each group
+  groupLabels <- paste0(
+    dataTrend$group,
+    " (", nSpecies[as.character(dataTrend$group)], " espèces) : ",
+    dataTrend$perc, "% (",
+    dataTrend$infPerc, "% ; ",
+    dataTrend$supPerc, "%)"
+  )
   
   # Vérifie que les groupes dans dataVar et dataTrend sont bien des facteurs avec les bons niveaux
   dataVar$group <- factor(dataVar$group, levels = groupNames)
