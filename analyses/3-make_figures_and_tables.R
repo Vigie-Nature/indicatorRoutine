@@ -104,6 +104,7 @@ if (!parallelizeSpecies) {
   stopCluster(cl)
 }
 
+names(uncertainPlots) <- speciesList
 save(uncertainPlots, file = here::here("outputs", repo, "figures", "trends", "uncertainPlots.rdata"))
 rm(uncertainPlots)
 
@@ -175,6 +176,7 @@ if(!parallelizeSpecies) {
   stopCluster(cl)
 }
 
+names(regularPlots) <- speciesList
 save(regularPlots, file = here::here("outputs", repo, "figures", "trends", "regularPlots.rdata"))
 rm(regularPlots)
 
