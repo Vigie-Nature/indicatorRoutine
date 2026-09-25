@@ -40,7 +40,7 @@ makePDF <- TRUE # FALSE
 
 # Quels filtres doivent être appliqués ? 
 # Soit "STOC", "VigieFlore" ou NULL
-filters <- "VigieFlore
+filters <- "STOC"
 
 ###########################
 # Optionnel : performance #
