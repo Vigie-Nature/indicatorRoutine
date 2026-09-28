@@ -57,6 +57,7 @@ data <- formatData(data, yearRange, interestVar, fixedEffects, factorVariables,
 # }
 
 speciesList <- filterData(data, speciesList, filters)
+data <- data %>% dplyr::filter(species %in% speciesList)
 
 # If required, initialize distribution ----
 if(is.null(distribution)){
