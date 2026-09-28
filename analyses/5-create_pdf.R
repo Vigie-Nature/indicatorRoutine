@@ -30,224 +30,212 @@ pathToPdfSp = here::here("outputs", repo, "pdf", "species")
 dir.create(path = pathToPdfSp, showWarnings = FALSE)
 
 
-# for (sp in speciesList){
-# 
-#   # Extract french and scientific names if specified
-#   if(!is.null(dataName)){
-#     dataName_sp = dataName[dataName$species == sp,]
-#     sp_french = dataName_sp$french_name
-#     sp_latin = dataName_sp$scientific_name
-#     sp_french_simpld = dataName_sp$french_name_simplified
-#   }else{
-#     sp_french = sp_latin = sp_french_simpld = sp
-#   }
-# 
-#   # Filter long term trends
-#   dataLongTermTrendSp = dataLongTermTrend[dataLongTermTrend$species == sp,]
-# 
-#   # Filter short term trends
-#   dataShortTermTrendSp = NULL
-#   if(makeShortTrend){
-#     dataShortTermTrendSp = dataShortTermTrend[dataShortTermTrend$species == sp,]
-#   }
-# 
-#   # Make occurrence summary from observations
-#   sumOccurrenceSp = makeSummaryTable(data, sp, interestVar)
-#   sumOccurrenceSp_lastYear = makeSummaryTable(data, sp, interestVar, year = max(data$year))
-#   sumOccurrenceSp = rbind(sumOccurrenceSp, sumOccurrenceSp_lastYear)
-# 
-#   AnnualSummarySp = makeAnnualSummaryTable(data, sp, interestVar)
-# 
-#   # Path to occurrence map
-#   pathToMapSp = here::here("outputs", repo, "figures", "maps", paste0(sp, ".png"))
-# 
-#   # Path to trend plot
-#   warningUncertainty = FALSE
-#   warningNoPlot = FALSE
-#   if(length(uncertainPlots[[sp]]$layers) > 0){
-#     pathToPlotSp = here::here("outputs", repo, "figures", "trends", "uncertainty", paste0(sp, ".png"))
-#   }else{
-#     pathToPlotSp = here::here("outputs", repo, "figures", "trends", "regular", paste0(sp, ".png"))
-# 
-#     if(length(regularPlots[[sp]]$layers)> 0){
-#       warningUncertainty = TRUE
-#     }else{
-#       warningNoPlot = TRUE
-#     }
-# 
-#   }
-#   # Make species pdf
-#   rmarkdown::render(input = here::here("Rmd", "species_analysis.Rmd"),
-# 
-#                     # Spécifier les paramètres
-#                     params = list(sp = sp,
-#                                   sp_french = sp_french,
-#                                   sp_latin = sp_latin,
-#                                   obs = obs,
-#                                   spatialScale = spatialScale,
-#                                   sumOccurrenceSp = sumOccurrenceSp,
-#                                   AnnualSummarySp = AnnualSummarySp,
-#                                   dataLongTermTrendSp = dataLongTermTrendSp,
-#                                   dataShortTermTrendSp = dataShortTermTrendSp,
-#                                   pathToMapSp = pathToMapSp,
-#                                   pathToPlotSp = pathToPlotSp,
-#                                   warningUncertainty = warningUncertainty,
-#                                   warningNoPlot = warningNoPlot),
-# 
-#                     # Spécifier le répertoire
-#                     output_dir = pathToPdfSp,
-# 
-#                     # Spécifier le fichier
-#                     output_file = sp_french_simpld)
-# 
-#   # Erase automatically created documents
-#   unlink(here::here("outputs", repo, "pdf", "species", paste0(sp_french_simpld, ".tex")))
-#   unlink(here::here("Rmd", paste0(sp_french_simpld, ".log")))
-# 
-# }
+for (sp in speciesList){
 
-renderSpeciesReport <- function(sp, data, dataName, dataLongTermTrend, dataShortTermTrend,
-                                makeShortTrend, uncertainPlots, regularPlots,
-                                repo, interestVar, obs, spatialScale, pathToPdfSp) {
-
-  # Extraire les noms français et scientifiques
+  # Extract french and scientific names if specified
   if(!is.null(dataName)){
     dataName_sp = dataName[dataName$species == sp,]
-    if(nrow(dataName_sp) > 0){
-      sp_french = dataName_sp$french_name
-      sp_latin = dataName_sp$scientific_name
-      sp_french_simpld = dataName_sp$french_name_simplified
-    } else {
-      sp_french <- sp_latin <- sp_french_simpld <- sp
-    }
-  } else {
-    sp_french <- sp_latin <- sp_french_simpld <- sp
+    sp_french = dataName_sp$french_name
+    sp_latin = dataName_sp$scientific_name
+    sp_french_simpld = dataName_sp$french_name_simplified
+  }else{
+    sp_french = sp_latin = sp_french_simpld = sp
   }
 
-  # Filtrer les tendances long terme
+  # Filter long term trends
   dataLongTermTrendSp = dataLongTermTrend[dataLongTermTrend$species == sp,]
 
-  # Filtrer les tendances court terme
+  # Filter short term trends
   dataShortTermTrendSp = NULL
-  if (makeShortTrend) {
+  if(makeShortTrend){
     dataShortTermTrendSp = dataShortTermTrend[dataShortTermTrend$species == sp,]
   }
 
-  # Résumés d'occurrence
+  # Make occurrence summary from observations
   sumOccurrenceSp = makeSummaryTable(data, sp, interestVar)
   sumOccurrenceSp_lastYear = makeSummaryTable(data, sp, interestVar, year = max(data$year))
   sumOccurrenceSp = rbind(sumOccurrenceSp, sumOccurrenceSp_lastYear)
 
   AnnualSummarySp = makeAnnualSummaryTable(data, sp, interestVar)
 
-  # Chemins vers les figures
+  # Path to occurrence map
   pathToMapSp = here::here("outputs", repo, "figures", "maps", paste0(sp, ".png"))
 
+  # Path to trend plot
   warningUncertainty = FALSE
   warningNoPlot = FALSE
-  if (length(uncertainPlots[[sp]]$layers) > 0) {
+  if(length(uncertainPlots[[sp]]$layers) > 0){
     pathToPlotSp = here::here("outputs", repo, "figures", "trends", "uncertainty", paste0(sp, ".png"))
-  } else {
+  }else{
     pathToPlotSp = here::here("outputs", repo, "figures", "trends", "regular", paste0(sp, ".png"))
-    if (length(regularPlots[[sp]]$layers) > 0) {
+
+    if(length(regularPlots[[sp]]$layers)> 0){
       warningUncertainty = TRUE
-    } else {
+    }else{
       warningNoPlot = TRUE
     }
+
   }
+  # Make species pdf
+  rmarkdown::render(input = here::here("Rmd", "species_analysis.Rmd"),
 
-  # Génération du rapport PDF via RMarkdown
-  rmarkdown::render(
-    input = here::here("Rmd", "species_analysis.Rmd"),
-    params = list(
-      sp = sp,
-      sp_french = sp_french,
-      sp_latin = sp_latin,
-      obs = obs,
-      spatialScale = spatialScale,
-      sumOccurrenceSp = sumOccurrenceSp,
-      AnnualSummarySp = AnnualSummarySp,
-      dataLongTermTrendSp = dataLongTermTrendSp,
-      dataShortTermTrendSp = dataShortTermTrendSp,
-      pathToMapSp = pathToMapSp,
-      pathToPlotSp = pathToPlotSp,
-      warningUncertainty = warningUncertainty,
-      warningNoPlot = warningNoPlot
-    ),
-    output_dir = pathToPdfSp,
-    output_file = sp_french_simpld
-  )
+                    # Spécifier les paramètres
+                    params = list(sp = sp,
+                                  sp_french = sp_french,
+                                  sp_latin = sp_latin,
+                                  obs = obs,
+                                  spatialScale = spatialScale,
+                                  sumOccurrenceSp = sumOccurrenceSp,
+                                  AnnualSummarySp = AnnualSummarySp,
+                                  dataLongTermTrendSp = dataLongTermTrendSp,
+                                  dataShortTermTrendSp = dataShortTermTrendSp,
+                                  pathToMapSp = pathToMapSp,
+                                  pathToPlotSp = pathToPlotSp,
+                                  warningUncertainty = warningUncertainty,
+                                  warningNoPlot = warningNoPlot),
 
-  # Nettoyage
+                    # Spécifier le répertoire
+                    output_dir = pathToPdfSp,
+
+                    # Spécifier le fichier
+                    output_file = sp_french_simpld)
+
+  # Erase automatically created documents
   unlink(here::here("outputs", repo, "pdf", "species", paste0(sp_french_simpld, ".tex")))
   unlink(here::here("Rmd", paste0(sp_french_simpld, ".log")))
+
 }
 
-if (TRUE) {
-  cat("Computing species trends sequentially. It might take a very long time !\n")
+# renderSpeciesReport <- function(sp, data, dataName, dataLongTermTrend, dataShortTermTrend,
+#                                 makeShortTrend, uncertainPlots, regularPlots,
+#                                 repo, interestVar, obs, spatialScale, pathToPdfSp) {
 
-  for (sp in speciesList){
-    cat(sp, "\n")
-    dataSp <- data %>% 
-      dplyr::filter(species == sp)
+#   # Extraire les noms français et scientifiques
+#   if(!is.null(dataName)){
+#     dataName_sp = dataName[dataName$species == sp,]
+#     if(nrow(dataName_sp) > 0){
+#       sp_french = dataName_sp$french_name
+#       sp_latin = dataName_sp$scientific_name
+#       sp_french_simpld = dataName_sp$french_name_simplified
+#     } else {
+#       sp_french <- sp_latin <- sp_french_simpld <- sp
+#     }
+#   } else {
+#     sp_french <- sp_latin <- sp_french_simpld <- sp
+#   }
 
-    renderSpeciesReport(
-      sp = sp,
-      data = dataSp,
-      dataName = dataName,
-      dataLongTermTrend = dataLongTermTrend,
-      dataShortTermTrend = dataShortTermTrend,
-      makeShortTrend = makeShortTrend,
-      uncertainPlots = uncertainPlots,
-      regularPlots = regularPlots,
-      repo = repo,
-      interestVar = interestVar,
-      obs = obs,
-      spatialScale = spatialScale,
-      pathToPdfSp = pathToPdfSp
-    )
+#   # Filtrer les tendances long terme
+#   dataLongTermTrendSp = dataLongTermTrend[dataLongTermTrend$species == sp,]
 
-  }
+#   # Filtrer les tendances court terme
+#   dataShortTermTrendSp = NULL
+#   if (makeShortTrend) {
+#     dataShortTermTrendSp = dataShortTermTrend[dataShortTermTrend$species == sp,]
+#   }
 
-} else {
+#   # Résumés d'occurrence
+#   sumOccurrenceSp = makeSummaryTable(data, sp, interestVar)
+#   sumOccurrenceSp_lastYear = makeSummaryTable(data, sp, interestVar, year = max(data$year))
+#   sumOccurrenceSp = rbind(sumOccurrenceSp, sumOccurrenceSp_lastYear)
+
+#   AnnualSummarySp = makeAnnualSummaryTable(data, sp, interestVar)
+
+#   # Chemins vers les figures
+#   pathToMapSp = here::here("outputs", repo, "figures", "maps", paste0(sp, ".png"))
+
+#   warningUncertainty = FALSE
+#   warningNoPlot = FALSE
+#   if (length(uncertainPlots[[sp]]$layers) > 0) {
+#     pathToPlotSp = here::here("outputs", repo, "figures", "trends", "uncertainty", paste0(sp, ".png"))
+#   } else {
+#     pathToPlotSp = here::here("outputs", repo, "figures", "trends", "regular", paste0(sp, ".png"))
+#     if (length(regularPlots[[sp]]$layers) > 0) {
+#       warningUncertainty = TRUE
+#     } else {
+#       warningNoPlot = TRUE
+#     }
+#   }
+
+#   # Génération du rapport PDF via RMarkdown
+#   rmarkdown::render(
+#     input = here::here("Rmd", "species_analysis.Rmd"),
+#     params = list(
+#       sp = sp,
+#       sp_french = sp_french,
+#       sp_latin = sp_latin,
+#       obs = obs,
+#       spatialScale = spatialScale,
+#       sumOccurrenceSp = sumOccurrenceSp,
+#       AnnualSummarySp = AnnualSummarySp,
+#       dataLongTermTrendSp = dataLongTermTrendSp,
+#       dataShortTermTrendSp = dataShortTermTrendSp,
+#       pathToMapSp = pathToMapSp,
+#       pathToPlotSp = pathToPlotSp,
+#       warningUncertainty = warningUncertainty,
+#       warningNoPlot = warningNoPlot
+#     ),
+#     output_dir = pathToPdfSp,
+#     output_file = sp_french_simpld
+#   )
+
+#   # Nettoyage
+#   unlink(here::here("outputs", repo, "pdf", "species", paste0(sp_french_simpld, ".tex")))
+#   unlink(here::here("Rmd", paste0(sp_french_simpld, ".log")))
+# }
+
+# if (TRUE) {
+#   cat("Computing species trends sequentially. It might take a very long time !\n")
+
+#   for (sp in speciesList){
+#     cat(sp, "\n")
+
+#     renderSpeciesReport(
+#       sp = sp,
+#       data = data,
+#       dataName = dataName,
+#       dataLongTermTrend = dataLongTermTrend,
+#       dataShortTermTrend = dataShortTermTrend,
+#       makeShortTrend = makeShortTrend,
+#       uncertainPlots = uncertainPlots,
+#       regularPlots = regularPlots,
+#       repo = repo,
+#       interestVar = interestVar,
+#       obs = obs,
+#       spatialScale = spatialScale,
+#       pathToPdfSp = pathToPdfSp
+#     )
+
+#   }
+
+# } else {
   
-  cat("Generation of pdf in parralel\n")
-  library(parallelPackage, character.only = TRUE)
-  cl <- start_cluster(as.numeric(nbCores), parallelPackage)
-  split_data <- sapply(speciesList, function(s) {
-    return(list(
-      dataSp = data %>% 
-        dplyr::filter(species == s),
-      sp = s
-    ))
-  }, simplify = F)
+#   cat("Generation of pdf in parralel\n")
+#   library(parallelPackage, character.only = TRUE)
+#   cl <- start_cluster(as.numeric(nbCores), parallelPackage)
 
-  try_parallel <- foreach(
-    sp_data = split_data,
-    .packages = c("rmarkdown", "here", "dplyr")
-  ) %dopar%
-    {
-      devtools::load_all(here::here()) # Charger les fonctions
+#   try_parallel <- foreach(sp = speciesList,
+#                           .packages = c("rmarkdown", "here", "dplyr")) %dopar% {
+#                             devtools::load_all(here::here()) # Charger les fonctions
 
-      renderSpeciesReport(
-        sp = sp_data$sp,
-        dataSp = sp_data$dataSp,
-        dataName = dataName,
-        dataLongTermTrend = dataLongTermTrend,
-        dataShortTermTrend = dataShortTermTrend,
-        makeShortTrend = makeShortTrend,
-        uncertainPlots = uncertainPlots,
-        regularPlots = regularPlots,
-        repo = repo,
-        interestVar = interestVar,
-        obs = obs,
-        spatialScale = spatialScale,
-        pathToPdfSp = pathToPdfSp
-      )
-    }
+#                             renderSpeciesReport(
+#                               sp = sp,
+#                               data = data,
+#                               dataName = dataName,
+#                               dataLongTermTrend = dataLongTermTrend,
+#                               dataShortTermTrend = dataShortTermTrend,
+#                               makeShortTrend = makeShortTrend,
+#                               uncertainPlots = uncertainPlots,
+#                               regularPlots = regularPlots,
+#                               repo = repo,
+#                               interestVar = interestVar,
+#                               obs = obs,
+#                               spatialScale = spatialScale,
+#                               pathToPdfSp = pathToPdfSp
+#                             )
+#                           }
 
-  stop_cluster(cl, parallelPackage)
-}
+#   stop_cluster(cl, parallelPackage)
+# }
 
 ##########################
 #   MAKE A SUMMARY PDF   #
@@ -288,28 +276,24 @@ dataTable = makeGroupSummaryTable(dataTrend = dataLongTermTrend, dataObs = data,
                                   makeGroupPlot, groupComp, groupNames, groupCols)
 
 # Make global pdf
-rmarkdown::render(
-  input = here::here("Rmd", "global_analysis.Rmd"),
-
-  # Specify parameters
-  params = list(
-    obs = obs,
-    spatialScale = spatialScale,
-    makeGroupPlot = makeGroupPlot,
-    groupComp = groupComp,
-    frenchComp = frenchComp,
-    groupNames = groupNames,
-    pathToGroupPlot = pathToGroupPlot,
-    dataLongTermTrend = dataLongTermTrend,
-    dataTable = dataTable
-  ),
-
-  # Specify output repertory
-  output_dir = pathToPdf,
-
-  # Specify output file name
-  output_file = "Analyse globale"
-)
+rmarkdown::render(input = here::here("Rmd", "global_analysis.Rmd"),
+                  
+                  # Specify parameters
+                  params = list(obs = obs,
+                                spatialScale = spatialScale,
+                                makeGroupPlot = makeGroupPlot, 
+                                groupComp = groupComp,
+                                frenchComp = frenchComp,
+                                groupNames = groupNames,
+                                pathToGroupPlot = pathToGroupPlot,
+                                dataLongTermTrend = dataLongTermTrend,
+                                dataTable = dataTable),
+                  
+                  # Specify output repertory
+                  output_dir = pathToPdf,
+                  
+                  # Specify output file name
+                  output_file = "Analyse globale")
 
 # Erase automatically created documents
 unlink(here::here("outputs", repo, "pdf", "Analyse globale.tex"))

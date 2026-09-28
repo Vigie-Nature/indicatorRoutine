@@ -42,7 +42,7 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 ## For each species, create the plot
 cat("Trend plots with uncertainty in progress...")
 
-if (!parallelizeSpecies) {
+if (TRUE) {
   message("Computing species plots sequentially...\n")
   
   uncertainPlots <- lapply(speciesList, function(sp) {
@@ -116,7 +116,7 @@ dir.create(path = pathToPlot, showWarnings = FALSE)
 ## For each species, create the plot
 cat("Trend plots without uncertainty in progress...")
 
-if(!parallelizeSpecies) {
+if(TRUE) {
   message("Computing species plots sequentially...\n")
   
   regularPlots <- lapply(speciesList, function(sp) {
