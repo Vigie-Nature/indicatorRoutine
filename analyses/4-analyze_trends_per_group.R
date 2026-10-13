@@ -76,14 +76,15 @@ if(makeGroupPlot){
   spToRemove = c()
   
   ## Measure for each species the median of the number of sites per species x year
-  dataLowOcc = dplyr::group_by(data[data[,interestVar[1]] >0,], species, year) %>%
-    dplyr::summarise(nbSite = dplyr::n()) %>%
-    dplyr::group_by(species) %>%
-    dplyr::summarise(medYear = median(nbSite))
+  if(exists("minMedianAnnualOccurence")){
+    dataLowOcc = dplyr::group_by(data[data[,interestVar[1]] >0,], species, year) %>%
+      dplyr::summarise(nbSite = dplyr::n()) %>%
+      dplyr::group_by(species) %>%
+      dplyr::summarise(medYear = median(nbSite))
   
-  ### Extract species with median occurrence inferior to 12
-  spToRemove = dataLowOcc$species[dataLowOcc$medYear < 12]
-  
+    ### Extract species with median occurrence inferior to minMedianAnnualOccurence
+    spToRemove = dataLowOcc$species[dataLowOcc$medYear < minMedianAnnualOccurence]
+  }
   ## Extract species with large IC
   indInf = unique(c(which(is.infinite(dataLongTermTrend$supGR) | is.na(dataLongTermTrend$supGR)),
                     which(is.infinite(dataLongTermTrend$infGR) | is.na(dataLongTermTrend$infGR)),
@@ -139,7 +140,8 @@ if(makeGroupPlot){
     groupLongTermTrend = agregateTrendsPerGroup(dataLongTermTrend, groupNames, groupComp)
     
     # Agregate yearly variations
-    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames, groupComp, useLastYearAsReference = FALSE)
+    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames, groupComp, referenceMethod = "Mean10")
+      #  = agregateVariationsPerGroupMean10(dataYearlyVariations, groupNames, groupComp)
     
     # Plot group trends
     plotGroupTrends(groupLongTermTrend, groupYearlyVariations, data, groupComp, groupCols, distribution, repo, fileName = "groupTrendPlot")
@@ -158,7 +160,7 @@ if(makeGroupPlot){
     
     # Agregate yearly variations
     groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames = "Toutes espèces", groupComp = list(speciesList),
-                                                       useLastYearAsReference = FALSE)
+                                                       referenceMethod = "Mean10")
     
     # Plot group trends
     plotGroupTrends(groupLongTermTrend, groupYearlyVariations, data, groupCols = "red", distribution, repo, fileName = "groupTrendPlot")

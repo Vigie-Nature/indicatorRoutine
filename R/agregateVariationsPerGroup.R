@@ -108,7 +108,7 @@
 # }
 
 
-agregateVariationsPerGroup <- function(data, groupNames, groupComp, useLastYearAsReference = FALSE){
+agregateVariationsPerGroup <- function(data, groupNames, groupComp, referenceMethod = "First"){
   
   # Extract the number of groups
   groupNb = length(groupComp)
@@ -175,12 +175,33 @@ agregateVariationsPerGroup <- function(data, groupNames, groupComp, useLastYearA
     sapply(ind, function(x) sd(x, na.rm = T))
   })
   
-  # Determine the reference value based on the boolean parameter
-  if (useLastYearAsReference) {
-    refVal = sapply(meanIndex, function(x) x[length(x)])
+  # # Determine the reference value based on the boolean parameter
+  # if (useLastYearAsReference) {
+  #   refVal = sapply(meanIndex, function(x) x[length(x)])
+  # } else {
+  #   refVal = sapply(meanIndex, function(x) x[1])
+  # }
+
+  # Determine referenceValue
+  # either, firstYear, alst Year or a mean of years of observations
+  refVal <- sapply(meanIndex, function(x) {
+  
+  if (referenceMethod == "First") {
+    x[1]
+    
+  } else if (referenceMethod == "Last") {
+    x[length(x)]
+    
+  } else if (referenceMethod == "Mean") {
+    mean(x, na.rm = TRUE)
+    
+  } else if (referenceMethod == "Mean10") {
+    mean(x[1:min(10, length(x))], na.rm = TRUE)
+    
   } else {
-    refVal = sapply(meanIndex, function(x) x[1])
+    stop("referenceMethod must be 'First', 'Last', 'Mean' or 'Mean10'")
   }
+})
   
   # Calculate the lower bound of the confidence interval, and turn exponential + center on reference value
   infIndex <- lapply(1:length(groupNames), function(i){
@@ -195,8 +216,9 @@ agregateVariationsPerGroup <- function(data, groupNames, groupComp, useLastYearA
   })
   
   # Turn mean index to exponential and center on reference value
-  meanIndex <- lapply(meanIndex, function(x) exp(x) / exp(x[which(names(x) == names(refVal)[1])]))
-  #meanIndex <- lapply(meanIndex, function(x) exp(x)/exp(x[1]))
+  # meanIndex <- lapply(meanIndex, function(x) exp(x)/exp(x[1])) #FIRST VERSION
+  # meanIndex <- lapply(meanIndex, function(x) exp(x) / exp(x[which(names(x) == names(refVal)[1])])) #SECOND VERSION
+  meanIndex <- lapply(seq_along(meanIndex), function(i) {  exp(meanIndex[[i]]) / exp(refVal[i])}) # LAST VERSION
   
   
   # Make resulting dataframe
