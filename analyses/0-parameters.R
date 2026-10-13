@@ -124,6 +124,14 @@ offsets <- NULL
 #####################################
 # A remplir si makeGroupPlot == TRUE
 
+# Année de référence
+# Les valeurs peuvent être "First", "Last", "Mean" or "Mean10"
+# Pour utiliser respectivement la permière/ dernière année ou al moyenne de toutes les années ou des 10 premières
+referenceMethod = "Mean10"
+
+# Extraite les espèce avec une occurence médian par année inférieur à X pour els groupPlots
+minMedianAnnualOccurence = 12
+
 # Nom du/des groupes d'espèces
 # NULL si toutes les espèces doivent être mises dans le même groupe
 groupNames <- NULL # c("Généralistes", "Spécialistes agricoles", "Spécialistes forestiers", "Spécialistes urbains") 

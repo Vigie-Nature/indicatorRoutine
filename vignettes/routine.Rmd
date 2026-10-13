@@ -193,6 +193,8 @@ Paramètres de filtre des données` :
  
 Paramètres pour les groupes :
 
+ - `referenceMethod` : méthode de définition de l'année de référence pour les groupPlots ("First", "Last", "Mean" ou "Mean10").
+ - `minMedianAnnualOccurence` : seuil minimal de médiane annuelle d'occurrence pour inclure une espèce dans les groupPlots.
  - `groupNames` : nom des groupes
  - `groupComp` : espèces incluses dans chaque groupe
  - `groupCols` : couleurs à utiliser pour chaque groupe
@@ -369,7 +371,7 @@ knitr::kable(
 
 Si `makeGroupPlot` est TRUE, le script *4-analyze_trends_per_group.R* est lancé. Il permet de réaliser une figure qui agrège les tendances au sein des différents groupes d’espèces. Cette figure est enregistrée dans le dossier **output / observatoire1 / figures /** group sous le nom de *groupTrendPlot.png*. Si la composition des groupes `groupComp` n’est pas spécifié, alors une figure agrégeant les tendances pour l’ensemble des espèces analysées (`speciesList`) est réalisée.
 
-### 3. Réalisation de pdf
+### 5. Réalisation de pdf
 
 Si `makePDF` est TRUE, le *script 5-create_pdf.R* est lancé. Il permet de synthétiser les figures et tableaux obtenus précédemment à l’intérieur de fiches au format PDF. Ces fiches sont enregistrées dans le dossier **output / observatoire1 / pdf /**.
 
