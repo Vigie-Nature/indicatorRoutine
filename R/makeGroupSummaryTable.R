@@ -26,7 +26,7 @@ makeGroupSummaryTable <- function(dataTrend, dataObs, makeGroupPlot, groupComp, 
       dataTrend$group = ""
     }else{
       # Attribute each species to a group
-      ind = sapply(groupComp, function(g){ match(g, dataTrend$species) })
+      ind = lapply(groupComp, function(g){ match(g, dataTrend$species) })
       
       ind <- lapply(ind, function(x) {
         x_noNA <- na.omit(x)

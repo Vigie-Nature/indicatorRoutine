@@ -140,7 +140,7 @@ if(makeGroupPlot){
     groupLongTermTrend = agregateTrendsPerGroup(dataLongTermTrend, groupNames, groupComp)
     
     # Agregate yearly variations
-    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames, groupComp, referenceMethod = "Mean10")
+    groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames, groupComp, referenceMethod = referenceMethod)
       #  = agregateVariationsPerGroupMean10(dataYearlyVariations, groupNames, groupComp)
     
     # Plot group trends
@@ -160,7 +160,7 @@ if(makeGroupPlot){
     
     # Agregate yearly variations
     groupYearlyVariations = agregateVariationsPerGroup(dataYearlyVariations, groupNames = "Toutes espèces", groupComp = list(speciesList),
-                                                       referenceMethod = "Mean10")
+                                                       referenceMethod = referenceMethod)
     
     # Plot group trends
     plotGroupTrends(groupLongTermTrend, groupYearlyVariations, data, groupCols = "red", distribution, repo, fileName = "groupTrendPlot")
