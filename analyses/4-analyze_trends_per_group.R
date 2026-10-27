@@ -18,7 +18,9 @@ dataYearlyVariations = read.csv(pathToYV)
 #############################################
 
 if(makeGroupPlot){
-  if(is.null(groupComp)) {
+
+  plotAllSpecies <- is.null(groupComp)
+  if(plotAllSpecies) {
     groupComp <- list(c(speciesList))
   }
   # Reservoirs of names and colors for groups
@@ -134,7 +136,7 @@ if(makeGroupPlot){
 ##################
 
 if(makeGroupPlot){
-  if(!is.null(groupComp)){
+  if(!plotAllSpecies){
     #   PLOT PER GROUPS   #
     # Agregate linear trends
     groupLongTermTrend = agregateTrendsPerGroup(dataLongTermTrend, groupNames, groupComp)
